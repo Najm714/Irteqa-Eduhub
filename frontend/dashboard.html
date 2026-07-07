@@ -429,188 +429,174 @@
         }
 
         /* ============================================================
-           تبويبات الخدمات
+           قائمة الخدمات المنسدلة (Dropdown)
            ============================================================ */
-        .services-tabs-wrapper {
+        .services-dropdown-wrapper {
             background: var(--bg-card);
-            padding: 15px 20px;
             border-radius: var(--radius);
+            padding: 25px 30px;
             box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-            overflow-x: auto;
-        }
-
-        .services-tabs {
-            display: flex;
-            gap: 10px;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: thin;
-        }
-
-        .services-tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-        .services-tabs::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 10px;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 50px;
-            background: var(--bg-body);
-            color: var(--text-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            border: 1px solid transparent;
-            flex-shrink: 0;
-        }
-
-        .tab-btn:hover {
-            background: var(--border-color);
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active {
-            background: var(--gradient-main);
-            color: #fff;
-            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
-            border-color: var(--primary);
-        }
-
-        .tab-btn i {
-            margin-left: 8px;
-        }
-
-        /* ============================================================
-           بطاقات الخدمات الفرعية
-           ============================================================ */
-        .sub-services-container {
             margin-bottom: 35px;
+            border: 1px solid var(--border-color);
         }
 
-        .sub-services-grid {
+        .services-dropdown-wrapper .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .services-dropdown-wrapper .dropdown-header h3 {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .services-dropdown-wrapper .dropdown-header h3 i {
+            color: var(--primary);
+        }
+
+        .services-dropdown-wrapper .dropdown-header .service-count {
+            background: var(--bg-body);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .sub-service-card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            gap: 15px;
+            max-height: 0;
             overflow: hidden;
+            transition: max-height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+            opacity: 0;
         }
 
-        .sub-service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-main);
+        .services-grid.open {
+            max-height: 5000px;
+            opacity: 1;
         }
 
-        .sub-service-card:hover {
-            transform: translateY(-5px);
+        .services-grid .service-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-body);
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .services-grid .service-item:hover {
+            transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
             border-color: var(--primary-light);
         }
 
-        .sub-service-card .service-icon {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .sub-service-card .service-info {
-            flex: 1;
-        }
-
-        .sub-service-card .service-info h4 {
-            color: var(--text-color);
-            font-size: 1rem;
-            margin-bottom: 8px;
-        }
-
-        .sub-service-card .service-info p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
-
-        .sub-service-card .service-info .service-tag {
-            display: inline-block;
-            background: rgba(124, 58, 237, 0.1);
-            color: var(--primary);
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .sub-service-card .service-actions {
+        .services-grid .service-item .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-main);
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
+            transition: var(--transition);
         }
 
-        .sub-service-card .service-actions button {
+        .services-grid .service-item:hover .service-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.35);
+        }
+
+        .services-grid .service-item .service-name {
             flex: 1;
-            padding: 10px 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .services-grid .service-item .service-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .services-grid .service-item .service-actions button {
+            padding: 6px 14px;
             border: none;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             font-family: 'Cairo', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            white-space: nowrap;
         }
 
-        .btn-request-sub {
+        .btn-request-service {
             background: var(--gradient-main);
             color: #fff;
         }
 
-        .btn-request-sub:hover {
+        .btn-request-service:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3);
         }
 
-        .btn-view-models {
+        .btn-view-models-service {
             background: var(--gradient-secondary);
             color: #fff;
         }
 
-        .btn-view-models:hover {
+        .btn-view-models-service:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
         }
 
-        .btn-request-sub:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
+        /* زر عرض/إخفاء الخدمات */
+        .toggle-services-btn {
+            background: var(--gradient-main);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-services-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .toggle-services-btn i {
+            transition: var(--transition);
+        }
+
+        .toggle-services-btn.active i {
+            transform: rotate(180deg);
         }
 
         /* ============================================================
@@ -1172,7 +1158,7 @@
             .quick-stats {
                 grid-template-columns: 1fr 1fr;
             }
-            .sub-services-grid {
+            .services-grid {
                 grid-template-columns: 1fr;
             }
             .models-grid {
@@ -1189,12 +1175,21 @@
             .order-card .order-footer .order-actions {
                 justify-content: center;
             }
-            .services-tabs-wrapper {
-                padding: 10px 15px;
+            .services-dropdown-wrapper {
+                padding: 18px 15px;
             }
-            .tab-btn {
-                padding: 8px 14px;
-                font-size: 0.8rem;
+            .services-grid .service-item {
+                flex-direction: column;
+                text-align: center;
+                padding: 18px;
+            }
+            .services-grid .service-item .service-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .services-grid .service-item .service-actions button {
+                justify-content: center;
+                width: 100%;
             }
             .modal-box {
                 padding: 25px 20px;
@@ -1216,9 +1211,6 @@
             .order-card {
                 padding: 15px;
             }
-            .sub-service-card .service-actions {
-                flex-direction: column;
-            }
             .modal-box .model-item {
                 flex-direction: column;
                 gap: 10px;
@@ -1239,6 +1231,18 @@
             }
             .dashboard-title h1 {
                 font-size: 1.6rem;
+            }
+            .services-grid .service-item .service-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            .services-grid .service-item .service-name {
+                font-size: 0.85rem;
+            }
+            .toggle-services-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
             .modal-box .model-item .model-info {
                 flex-direction: column;
@@ -1323,20 +1327,20 @@
             <div id="alertMessage" class="alert"></div>
 
             <!-- ============================================================
-            تبويبات الخدمات الرئيسية
+            قائمة الخدمات المنسدلة
             ============================================================ -->
-            <div class="services-tabs-wrapper">
-                <div class="services-tabs" id="servicesTabs">
-                    <!-- سيتم إنشاء الأزرار بواسطة JavaScript -->
+            <div class="services-dropdown-wrapper" data-aos="fade-up">
+                <div class="dropdown-header">
+                    <h3><i class="fas fa-concierge-bell"></i> خدماتنا الأكاديمية</h3>
+                    <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                        <span class="service-count" id="servicesCount">0 خدمة</span>
+                        <button class="toggle-services-btn" id="toggleServicesBtn" onclick="toggleServices()">
+                            <i class="fas fa-chevron-down"></i> عرض الخدمات
+                        </button>
+                    </div>
                 </div>
-            </div>
-
-            <!-- ============================================================
-            بطاقات الخدمات الفرعية
-            ============================================================ -->
-            <div class="sub-services-container" id="subServicesContainer">
-                <div class="sub-services-grid" id="subServicesGrid">
-                    <!-- سيتم إنشاء البطاقات بواسطة JavaScript -->
+                <div class="services-grid" id="servicesGrid">
+                    <!-- سيتم تعبئتها بواسطة JavaScript -->
                 </div>
             </div>
 
@@ -1409,130 +1413,72 @@
         });
 
         // ============================================================
-        // تعريف الرابط الأساسي للـ API حسب البيئة - الإصلاح الرئيسي
+        // تعريف الرابط الأساسي للـ API حسب البيئة
         // ============================================================
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:5000' 
-            : 'https://draseh-platform-1.onrender.com';
+            : 'https://irteqa-eduhub.onrender.com';
 
         console.log('🌐 API_URL:', API_URL);
 
         // ============================================================
-        // بيانات الخدمات الكاملة (الرئيسية والفرعية)
+        // قائمة الخدمات - بشكل مباشر بدون خدمات رئيسية وفرعية
         // ============================================================
-        const SERVICES_DATA = [{
-            id: 'statistics',
-            icon: 'fa-chart-line',
-            title: '📊 التحليل الإحصائي والبحثي',
-            subServices: [
-                'التحليل الإحصائي للبحوث العلمية والطبية',
-                'SPSS – AMOS – Smart PLS',
-                'STATA – SAS – E-Views',
-                'التحليل الإحصائي النوعي',
-                'التحليل التلوي (Meta-Analysis)',
-                'النماذج التنبؤية المتقدمة',
-                'تفسير النتائج ومناقشتها'
-            ]
-        }, {
-            id: 'proposal',
-            icon: 'fa-file-alt',
-            title: '🔬 إعداد الخطط والمقترحات البحثية',
-            subServices: [
-                'إعداد المقترحات والخطط البحثية',
-                'اقتراح عناوين الرسائل العلمية',
-                'إعداد الإطار النظري والدراسات السابقة',
-                'بناء النماذج والتصورات البحثية',
-                'إعداد أدوات الدراسة العلمية',
-                'تصميم وتحكيم الاستبيانات والاختبارات'
-            ]
-        }, {
-            id: 'literature',
-            icon: 'fa-book',
-            title: '📚 المراجع والدراسات السابقة',
-            subServices: [
-                'توفير وجمع المراجع العلمية',
-                'تلخيص الدراسات السابقة',
-                'توثيق المراجع وفق الأنماط العلمية',
-                'تلخيص الكتب والمراجع العربية والإنجليزية',
-                'رومنة المراجع',
-                'تحليل ورسم الخرائط العلمية'
-            ]
-        }, {
-            id: 'publication',
-            icon: 'fa-pen-fancy',
-            title: '📝 إعداد وتجهيز الأبحاث للنشر العلمي',
-            subServices: [
-                'تجهيز الأبحاث وفق متطلبات المجلات المحكمة',
-                'ترجمة الأبحاث العلمية',
-                'إعادة صياغة الأبحاث وفق المعايير الأكاديمية',
-                'التدقيق اللغوي والإملائي المتخصص',
-                'تنسيق الأبحاث والرسائل العلمية',
-                'فحص التشابه والاقتباس العلمي',
-                'ترشيح المجلات العلمية المناسبة للنشر',
-                'مراجعة الأبحاث قبل التقديم للمجلات',
-                'خدمات التحكيم والمراجعة العلمية'
-            ]
-        }, {
-            id: 'design',
-            icon: 'fa-paint-brush',
-            title: '🎨 التصميم الأكاديمي والجرافيكس',
-            subServices: [
-                'تصميم البوسترات البحثية الاحترافية',
-                'تصميم بوسترات المؤتمرات العلمية',
-                'تصميم العروض التقديمية الاحترافية',
-                'تصميم عروض تقديمية ثلاثية الأبعاد (3D)',
-                'تصميم الإنفوجرافيك الأكاديمي',
-                'تصميم الخرائط الذهنية والمفاهيمية',
-                'تصميم الهوية البصرية للمشاريع الأكاديمية',
-                'تصميم الملفات التدريبية والحقائب التعليمية'
-            ]
-        }, {
-            id: 'video',
-            icon: 'fa-video',
-            title: '🎬 إنتاج الفيديو والمحتوى الرقمي',
-            subServices: [
-                'تصميم فيديوهات تعليمية احترافية',
-                'إنتاج فيديوهات بالذكاء الاصطناعي',
-                'تصميم الموشن جرافيك الأكاديمي',
-                'تصميم الفيديوهات باستخدام برامج Adobe',
-                'إعداد المحتوى المرئي للعروض والمؤتمرات',
-                'تحويل الأبحاث والمشاريع إلى محتوى مرئي احترافي'
-            ]
-        }, {
-            id: 'consulting',
-            icon: 'fa-handshake',
-            title: '💼 الاستشارات والخدمات الأكاديمية',
-            subServices: [
-                'الاستشارات الأكاديمية والبحثية',
-                'جلسات استشارية سريعة',
-                'خدمة إنقاذ البحث',
-                'كتابة السيرة الذاتية (CV)',
-                'كتابة خطاب الغرض من الدراسة (SOP)'
-            ]
-        }, {
-            id: 'tutoring',
-            icon: 'fa-chalkboard-teacher',
-            title: '📖 خدمات الشرح والمراجعة الأكاديمية',
-            subServices: [
-                'شرح المقررات النظرية والعملية',
-                'المراجعات المكثفة قبل الاختبارات',
-                'إعداد الملخصات الأكاديمية',
-                'إعداد الخرائط الذهنية والمفاهيمية',
-                'إعداد بنوك الأسئلة',
-                'حل التمارين والواجبات التدريبية',
-                'متابعة استفسارات الطلاب',
-                'التركيز على النقاط المهمة والمتوقعة للاختبارات'
-            ]
-        }];
+        const SERVICES_LIST = [
+            { id: 'consulting', icon: 'fa-handshake', name: 'الاستشارات الأكاديمية' },
+            { id: 'thesis-titles', icon: 'fa-lightbulb', name: 'اقتراح عناوين رسائل ماجستير و دكتوراه' },
+            { id: 'literature-review', icon: 'fa-book', name: 'توفير المراجع و تلخيص الدراسات السابقة' },
+            { id: 'research-proposal', icon: 'fa-file-alt', name: 'إعداد المقترح البحثي / خطة البحث' },
+            { id: 'plagiarism-check', icon: 'fa-shield-alt', name: 'فحص السرقة الأدبية والعلمية (Plagiarism)' },
+            { id: 'romanization', icon: 'fa-font', name: 'خدمة رومنة المراجع' },
+            { id: 'amos-analysis', icon: 'fa-project-diagram', name: 'خدمة التحليل الإحصائي AMOS' },
+            { id: 'previous-studies', icon: 'fa-globe', name: 'خدمة إعداد الدراسات السابقة العربية أو الأجنبية' },
+            { id: 'collection-documentation', icon: 'fa-archive', name: 'جمع وتوثيق المادة العلمية' },
+            { id: 'academic-translation', icon: 'fa-language', name: 'الترجمة الأكاديمية المعتمدة' },
+            { id: 'research-tools', icon: 'fa-clipboard-check', name: 'تصميم وتحكيم أدوات البحث' },
+            { id: 'spss-analysis', icon: 'fa-chart-bar', name: 'التحليل الإحصائي ومناقشة النتائج (SPSS)' },
+            { id: 'paraphrasing', icon: 'fa-edit', name: 'إعادة الصياغة' },
+            { id: 'meta-analysis', icon: 'fa-chart-pie', name: 'خدمة التحليل التلوي (Meta-analysis) والنماذج التنبؤية' },
+            { id: 'local-supervisor', icon: 'fa-chalkboard-teacher', name: 'خدمة تحكيم مشرف محلي' },
+            { id: 'qualitative-analysis', icon: 'fa-comment', name: 'خدمة التحليل الإحصائي النوعي' },
+            { id: 'eviews-analysis', icon: 'fa-chart-line', name: 'خدمة التحليل الإحصائي ببرنامج E-Views' },
+            { id: 'sas-analysis', icon: 'fa-database', name: 'خدمة التحليل الإحصائي ببرنامج SAS' },
+            { id: 'proofreading', icon: 'fa-spell-check', name: 'التدقيق اللغوي والإملائي' },
+            { id: 'academic-critique', icon: 'fa-comment-dots', name: 'النقد الأكاديمي' },
+            { id: 'thesis-formatting', icon: 'fa-file-pdf', name: 'تنسيق الرسالة حسب دليل الجامعة' },
+            { id: 'plagiarism', icon: 'fa-shield-alt', name: 'فحص السرقة الأدبية' },
+            { id: 'isi-publication', icon: 'fa-scroll', name: 'النشر في المجلات العلمية ومجلات ISI' },
+            { id: 'results-discussion', icon: 'fa-comments', name: 'مناقشة النتائج وتفسيرها' },
+            { id: 'cv-design', icon: 'fa-id-card', name: 'خدمة تصميم و كتابة السيرة الذاتية' },
+            { id: 'training-packages', icon: 'fa-briefcase', name: 'إعداد الحقائب التدريبية' },
+            { id: 'presentations', icon: 'fa-presentation', name: 'إعداد العروض التقديمية' },
+            { id: 'statement-of-purpose', icon: 'fa-envelope-open-text', name: 'كتابة خطاب الغرض من الدراسة' },
+            { id: 'uk-language-study', icon: 'fa-flag-gb', name: 'خدمة دراسة اللغة في بريطانيا' },
+            { id: 'content-writing', icon: 'fa-pen-nib', name: 'خدمة كتابة المحتوى' },
+            { id: 'conceptual-model', icon: 'fa-cubes', name: 'خدمة بناء التصور المقترح أو النموذج المقترح' },
+            { id: 'science-mapping', icon: 'fa-map', name: 'تحليل ورسم الخرائط العلمية' },
+            { id: 'reflective-essays', icon: 'fa-brain', name: 'خدمة كتابة المقالات التأملية' },
+            { id: 'quick-consulting', icon: 'fa-bolt', name: 'خدمة جلسات استشارية سريعة' },
+            { id: 'research-rescue', icon: 'fa-life-ring', name: 'خدمة إنقاذ البحث' },
+            { id: 'peer-review', icon: 'fa-users-cog', name: 'خدمات التقييم الأكاديمي أو مراجعة الزملاء' },
+            { id: 'research-grants', icon: 'fa-money-bill-wave', name: 'خدمات الإعداد للتمويل البحثي والمنح' },
+            { id: 'journal-recommendation', icon: 'fa-newspaper', name: 'خدمة ترشيح المجلات العملية المحكمة' },
+            { id: 'research-posters', icon: 'fa-poster', name: 'خدمة تصميم البوسترات البحثية الاحترافية' },
+            { id: 'book-summary', icon: 'fa-book-reader', name: 'خدمة تلخيص الكتب والمراجع العربية والإنجليزية' },
+            { id: 'medical-statistics', icon: 'fa-heartbeat', name: 'خدمة التحليل الإحصائي للبحوث الطبية' },
+            { id: 'ebook', icon: 'fa-book-open', name: 'خدمة عمل كتاب إلكتروني وفق المعايير الأكاديمية' },
+            { id: 'smart-pls', icon: 'fa-route', name: 'خدمة التحليل الإحصائي ببرنامج Smat PLS' },
+            { id: 'stata-analysis', icon: 'fa-calculator', name: 'خدمة التحليل الإحصائي ببرنامج STATA' }
+        ];
 
         // ============================================================
         // المتغيرات العامة
         // ============================================================
         let currentToken = localStorage.getItem('token') || '';
         let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
-        let currentServiceId = 'statistics';
         let allOrders = [];
         let cachedModels = [];
+        let servicesVisible = false;
 
         // ============================================================
         // تبديل الوضع (Dark/Light)
@@ -1600,56 +1546,45 @@
         }
 
         // ============================================================
-        // عرض تبويبات الخدمات الرئيسية
+        // عرض/إخفاء الخدمات
         // ============================================================
-        function renderTabs() {
-            const tabsContainer = document.getElementById('servicesTabs');
-            tabsContainer.innerHTML = SERVICES_DATA.map(service => `
-                <button class="tab-btn ${service.id === currentServiceId ? 'active' : ''}" 
-                        onclick="switchService('${service.id}')">
-                    <i class="fas ${service.icon}"></i> ${service.title}
-                </button>
-            `).join('');
-        }
-
-        // ============================================================
-        // التبديل بين الخدمات
-        // ============================================================
-        function switchService(serviceId) {
-            currentServiceId = serviceId;
-            renderTabs();
-            renderSubServices(serviceId);
-            document.getElementById('subServicesContainer').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // ============================================================
-        // عرض الخدمات الفرعية - مع زر النماذج السابقة
-        // ============================================================
-        function renderSubServices(serviceId) {
-            const grid = document.getElementById('subServicesGrid');
-            const service = SERVICES_DATA.find(s => s.id === serviceId);
-
-            if (!service) {
-                grid.innerHTML = `<div class="empty-state"><p>لم يتم العثور على الخدمات</p></div>`;
-                return;
+        function toggleServices() {
+            const grid = document.getElementById('servicesGrid');
+            const btn = document.getElementById('toggleServicesBtn');
+            servicesVisible = !servicesVisible;
+            
+            if (servicesVisible) {
+                grid.classList.add('open');
+                btn.innerHTML = '<i class="fas fa-chevron-up"></i> إخفاء الخدمات';
+                btn.classList.add('active');
+            } else {
+                grid.classList.remove('open');
+                btn.innerHTML = '<i class="fas fa-chevron-down"></i> عرض الخدمات';
+                btn.classList.remove('active');
             }
+        }
 
-            grid.innerHTML = service.subServices.map((sub, index) => `
-                <div class="sub-service-card" data-aos="fade-up" data-aos-delay="${index * 50}">
+        // ============================================================
+        // عرض الخدمات
+        // ============================================================
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const countEl = document.getElementById('servicesCount');
+            
+            countEl.textContent = `${SERVICES_LIST.length} خدمة`;
+
+            grid.innerHTML = SERVICES_LIST.map((service, index) => `
+                <div class="service-item" data-aos="fade-up" data-aos-delay="${index * 20}">
                     <div class="service-icon">
                         <i class="fas ${service.icon}"></i>
                     </div>
-                    <div class="service-info">
-                        <h4>${sub}</h4>
-                        <p>خدمة فرعية ضمن ${service.title}</p>
-                        <span class="service-tag">${service.title.split(' ')[0]}</span>
-                    </div>
+                    <span class="service-name">${service.name}</span>
                     <div class="service-actions">
-                        <button class="btn-request-sub" onclick="requestSubService('${sub}', '${serviceId}')">
-                            <i class="fas fa-shopping-cart"></i> طلب الخدمة
+                        <button class="btn-request-service" onclick="requestService('${service.id}', '${service.name}')">
+                            <i class="fas fa-shopping-cart"></i> طلب
                         </button>
-                        <button class="btn-view-models" onclick="openModelsModal('${serviceId}')">
-                            <i class="fas fa-folder-open"></i> النماذج السابقة
+                        <button class="btn-view-models-service" onclick="openModelsModal('${service.id}')">
+                            <i class="fas fa-folder-open"></i> نماذج
                         </button>
                     </div>
                 </div>
@@ -1657,29 +1592,12 @@
         }
 
         // ============================================================
-        // طلب خدمة فرعية
+        // طلب خدمة
         // ============================================================
-        function requestSubService(subServiceName, serviceType) {
-            const encodedName = encodeURIComponent(subServiceName);
-            const encodedType = encodeURIComponent(serviceType);
-            window.location.href = `request-service.html?id=${serviceType}&name=${encodedName}&category=${getCategoryName(serviceType)}`;
-        }
-
-        // ============================================================
-        // الحصول على اسم الفئة
-        // ============================================================
-        function getCategoryName(serviceType) {
-            const categories = {
-                'statistics': 'التحليل الإحصائي والبحثي',
-                'proposal': 'إعداد الخطط والمقترحات البحثية',
-                'literature': 'المراجع والدراسات السابقة',
-                'publication': 'إعداد وتجهيز الأبحاث للنشر العلمي',
-                'design': 'التصميم الأكاديمي والجرافيكس',
-                'video': 'إنتاج الفيديو والمحتوى الرقمي',
-                'consulting': 'الاستشارات والخدمات الأكاديمية',
-                'tutoring': 'خدمات الشرح والمراجعة الأكاديمية'
-            };
-            return categories[serviceType] || 'خدمات أكاديمية';
+        function requestService(serviceId, serviceName) {
+            const encodedName = encodeURIComponent(serviceName);
+            const encodedId = encodeURIComponent(serviceId);
+            window.location.href = `request-service.html?id=${serviceId}&name=${encodedName}&category=${serviceName}`;
         }
 
         // ============================================================
@@ -1692,7 +1610,6 @@
 
                 if (data.success && data.data && data.data.length > 0) {
                     cachedModels = data.data;
-                    // تخزين في localStorage
                     try {
                         localStorage.setItem('cachedModels', JSON.stringify(cachedModels));
                     } catch (e) {}
@@ -1700,7 +1617,6 @@
                     return cachedModels;
                 }
 
-                // محاولة جلب من localStorage
                 const cached = localStorage.getItem('cachedModels');
                 if (cached) {
                     try {
@@ -1718,7 +1634,6 @@
                 return [];
             } catch (error) {
                 console.error('❌ خطأ في جلب النماذج:', error);
-                // محاولة جلب من localStorage
                 const cached = localStorage.getItem('cachedModels');
                 if (cached) {
                     try {
@@ -1744,7 +1659,6 @@
             const subtitle = document.getElementById('modalSubtitle');
             const list = document.getElementById('modalModelsList');
 
-            // عرض حالة التحميل
             list.innerHTML = `
                 <div class="loading-models">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -1752,14 +1666,12 @@
                 </div>
             `;
 
-            // التأكد من تحميل النماذج
             if (cachedModels.length === 0) {
                 await loadModels();
             }
 
-            // الحصول على اسم الخدمة
-            const service = SERVICES_DATA.find(s => s.id === serviceId);
-            const serviceName = service ? service.title : 'الخدمة';
+            const service = SERVICES_LIST.find(s => s.id === serviceId);
+            const serviceName = service ? service.name : 'الخدمة';
             
             title.textContent = `📄 نماذج ${serviceName}`;
             subtitle.textContent = 'نماذج سابقة مرتبطة بهذه الخدمة';
@@ -1767,8 +1679,10 @@
             console.log('🔍 البحث عن نماذج للخدمة:', serviceId);
             console.log('📦 جميع النماذج:', cachedModels);
 
-            // فلترة النماذج حسب الخدمة الرئيسية
-            const filteredModels = cachedModels.filter(m => m.mainService === serviceId);
+            const filteredModels = cachedModels.filter(m => {
+                if (!m.mainService) return false;
+                return m.mainService.toLowerCase() === serviceId.toLowerCase();
+            });
 
             console.log('📊 النماذج المطابقة:', filteredModels.length);
 
@@ -1777,11 +1691,8 @@
                     <div class="empty-models-modal">
                         <i class="fas fa-file-alt"></i>
                         <h4>لا توجد نماذج سابقة</h4>
-                        <p>لا توجد نماذج مرتبطة بهذه الخدمة حالياً</p>
+                        <p>لا توجد نماذج مرتبطة بخدمة "${serviceName}" حالياً</p>
                         <p style="font-size:0.85rem; margin-top:10px;">📤 يمكنك طلب الخدمة للحصول على نموذج جديد</p>
-                        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:5px;">
-                            💡 تأكد من أن النماذج المرفوعة تحتوي على الخدمة الرئيسية "${serviceId}"
-                        </p>
                     </div>
                 `;
             } else {
@@ -1818,50 +1729,30 @@
             document.body.style.overflow = 'auto';
         }
 
-        // إغلاق المودال عند الضغط خارج المحتوى
         document.getElementById('modelsModal').addEventListener('click', function(e) {
             if (e.target === this) closeModelsModal();
         });
 
-        // إغلاق المودال بالضغط على Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeModelsModal();
         });
 
         // ============================================================
-        // عرض نموذج من المودال - ✅ تم الإصلاح
+        // عرض نموذج من المودال
         // ============================================================
         async function viewModelFromModal(id) {
             try {
                 const response = await fetch(`${API_URL}/api/models/${id}`);
                 const data = await response.json();
-
                 if (data.success && data.data.fileData) {
                     window.open(data.data.fileData, '_blank');
                 } else {
                     showAlert('❌ تعذر عرض النموذج', 'danger');
                 }
             } catch (error) {
-                console.error('❌ خطأ:', error);
+                console.error(error);
                 showAlert('❌ حدث خطأ في عرض النموذج', 'danger');
             }
-        }
-
-        // ============================================================
-        // الحصول على اسم الخدمة من المعرف
-        // ============================================================
-        function getServiceName(serviceId) {
-            const services = {
-                'statistics': 'التحليل الإحصائي والبحثي',
-                'proposal': 'إعداد الخطط والمقترحات البحثية',
-                'literature': 'المراجع والدراسات السابقة',
-                'publication': 'إعداد وتجهيز الأبحاث للنشر العلمي',
-                'design': 'التصميم الأكاديمي والجرافيكس',
-                'video': 'إنتاج الفيديو والمحتوى الرقمي',
-                'consulting': 'الاستشارات والخدمات الأكاديمية',
-                'tutoring': 'خدمات الشرح والمراجعة الأكاديمية'
-            };
-            return services[serviceId] || serviceId;
         }
 
         // ============================================================
@@ -1880,7 +1771,7 @@
         }
 
         // ============================================================
-        // جلب النماذج للعميل (في قسم النماذج)
+        // جلب النماذج للعميل
         // ============================================================
         async function loadModelsForClient() {
             const grid = document.getElementById('clientModelsGrid');
@@ -1900,7 +1791,6 @@
                     return;
                 }
 
-                // تحديث النماذج المخزنة
                 cachedModels = data.data;
                 try {
                     localStorage.setItem('cachedModels', JSON.stringify(cachedModels));
@@ -1939,7 +1829,7 @@
         }
 
         // ============================================================
-        // تحميل نموذج - ✅ تم الإصلاح
+        // تحميل نموذج
         // ============================================================
         async function downloadModel(id) {
             try {
@@ -1961,7 +1851,7 @@
         }
 
         // ============================================================
-        // عرض نموذج - ✅ تم الإصلاح
+        // عرض نموذج
         // ============================================================
         async function viewModel(id) {
             try {
@@ -2078,7 +1968,7 @@
         }
 
         // ============================================================
-        // رفع الملفات - ✅ تم الإصلاح
+        // رفع الملفات
         // ============================================================
         async function uploadFiles(orderId) {
             const input = document.createElement('input');
@@ -2136,16 +2026,7 @@
         }
 
         // ============================================================
-        // تحميل النماذج عند بدء التشغيل
-        // ============================================================
-        async function init() {
-            await loadModels();
-            console.log('📦 النماذج المحملة:', cachedModels);
-            console.log('🔑 مفاتيح الخدمات المتوفرة:', SERVICES_DATA.map(s => s.id));
-        }
-
-        // ============================================================
-        // جعل الدوال متاحة عالمياً للاستدعاء من أي مكان
+        // جعل الدوال متاحة عالمياً
         // ============================================================
         window.openModelsModal = openModelsModal;
         window.closeModelsModal = closeModelsModal;
@@ -2153,17 +2034,18 @@
         window.downloadModel = downloadModel;
         window.viewModel = viewModel;
         window.loadModels = loadModels;
+        window.toggleServices = toggleServices;
+        window.requestService = requestService;
 
         // ============================================================
         // تشغيل التطبيق
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             if (checkAuth()) {
-                renderTabs();
-                renderSubServices(currentServiceId);
+                renderServices();
                 loadOrders();
                 loadModelsForClient();
-                init();
+                loadModels();
             }
         });
     </script>

@@ -329,6 +329,65 @@
         }
 
         /* ============================================================
+           فلترة النماذج حسب الخدمة
+           ============================================================ */
+        .filter-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .filter-section .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-section .filter-row label {
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-section .filter-row label i {
+            color: var(--primary);
+        }
+
+        .filter-section .filter-row select {
+            padding: 10px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            background: var(--bg-body);
+            color: var(--text-color);
+            transition: var(--transition);
+            min-width: 250px;
+            cursor: pointer;
+        }
+
+        .filter-section .filter-row select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        .filter-section .filter-row .filter-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-body);
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ============================================================
            نموذج رفع النماذج (للمدير فقط)
            ============================================================ */
         .upload-section {
@@ -624,8 +683,6 @@
         }
 
         .model-card .model-tags .tag {
-            background: rgba(124, 58, 237, 0.1);
-            color: var(--primary);
             padding: 2px 12px;
             border-radius: 20px;
             font-size: 0.7rem;
@@ -633,13 +690,18 @@
         }
 
         .model-card .model-tags .tag.service-tag {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--accent);
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--primary);
         }
 
         .model-card .model-tags .tag.sub-service-tag {
             background: rgba(236, 72, 153, 0.1);
             color: var(--secondary);
+        }
+
+        .model-card .model-tags .tag.category-tag {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent);
         }
 
         .model-card .model-meta {
@@ -652,14 +714,6 @@
             border-top: 1px solid var(--border-color);
             font-size: 0.8rem;
             color: var(--text-muted);
-        }
-
-        .model-card .model-meta .category {
-            background: rgba(124, 58, 237, 0.1);
-            color: var(--primary);
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-weight: 600;
         }
 
         .model-card .model-meta .size {
@@ -1112,6 +1166,15 @@
             .modal-box .model-item .model-info {
                 flex-direction: column;
             }
+
+            .filter-section .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-section .filter-row select {
+                min-width: auto;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1175,11 +1238,25 @@
             <!-- رأس الصفحة -->
             <div class="page-header" data-aos="fade-up">
                 <h1>📄 <span>النماذج الأكاديمية</span></h1>
-                <p>تصفح وتحميل النماذج الأكاديمية والبحثية المتاحة</p>
+                <p>تصفح وتحميل النماذج الأكاديمية والبحثية المتاحة حسب الخدمة</p>
             </div>
 
             <!-- رسائل التنبيه -->
             <div id="alertMessage" class="alert"></div>
+
+            <!-- ============================================================
+            فلترة النماذج حسب الخدمة
+            ============================================================ -->
+            <div class="filter-section" data-aos="fade-up">
+                <div class="filter-row">
+                    <label for="serviceFilter"><i class="fas fa-filter"></i> تصفية حسب الخدمة:</label>
+                    <select id="serviceFilter" onchange="filterModelsByService(this.value)">
+                        <option value="all">جميع الخدمات</option>
+                        <!-- سيتم تعبئة الخيارات بواسطة JavaScript -->
+                    </select>
+                    <span class="filter-count" id="filterCount">عرض جميع النماذج</span>
+                </div>
+            </div>
 
             <!-- ============================================================
             قسم رفع النماذج (للمدير فقط)
@@ -1212,25 +1289,10 @@
 
                     <!-- الخدمة الرئيسية -->
                     <div class="form-group">
-                        <label>الخدمة الرئيسية <span class="required">*</span></label>
+                        <label>الخدمة <span class="required">*</span></label>
                         <select id="mainService" required>
-                            <option value="">اختر الخدمة الرئيسية</option>
-                            <option value="statistics">📊 التحليل الإحصائي والبحثي</option>
-                            <option value="proposal">🔬 إعداد الخطط والمقترحات البحثية</option>
-                            <option value="literature">📚 المراجع والدراسات السابقة</option>
-                            <option value="publication">📝 إعداد وتجهيز الأبحاث للنشر العلمي</option>
-                            <option value="design">🎨 التصميم الأكاديمي والجرافيكس</option>
-                            <option value="video">🎬 إنتاج الفيديو والمحتوى الرقمي</option>
-                            <option value="consulting">💼 الاستشارات والخدمات الأكاديمية</option>
-                            <option value="tutoring">📖 خدمات الشرح والمراجعة الأكاديمية</option>
-                        </select>
-                    </div>
-
-                    <!-- الخدمة الفرعية -->
-                    <div class="form-group">
-                        <label>الخدمة الفرعية <span class="required">*</span></label>
-                        <select id="subService" required disabled>
-                            <option value="">اختر الخدمة الرئيسية أولاً</option>
+                            <option value="">اختر الخدمة</option>
+                            <!-- سيتم تعبئة الخيارات بواسطة JavaScript -->
                         </select>
                     </div>
 
@@ -1345,113 +1407,54 @@
     </script>
     <script>
         // ============================================================
-        // بيانات الخدمات والخدمات الفرعية
+        // قائمة الخدمات الجديدة - نفس الخدمات الموجودة في dashboard
         // ============================================================
-        const SERVICES_DATA = {
-            'statistics': {
-                name: 'التحليل الإحصائي والبحثي',
-                icon: 'fa-chart-line',
-                subServices: [
-                    'التحليل الإحصائي للبحوث العلمية والطبية',
-                    'SPSS – AMOS – Smart PLS',
-                    'STATA – SAS – E-Views',
-                    'التحليل الإحصائي النوعي',
-                    'التحليل التلوي (Meta-Analysis)',
-                    'النماذج التنبؤية المتقدمة',
-                    'تفسير النتائج ومناقشتها'
-                ]
-            },
-            'proposal': {
-                name: 'إعداد الخطط والمقترحات البحثية',
-                icon: 'fa-file-alt',
-                subServices: [
-                    'إعداد المقترحات والخطط البحثية',
-                    'اقتراح عناوين الرسائل العلمية',
-                    'إعداد الإطار النظري والدراسات السابقة',
-                    'بناء النماذج والتصورات البحثية',
-                    'إعداد أدوات الدراسة العلمية',
-                    'تصميم وتحكيم الاستبيانات والاختبارات'
-                ]
-            },
-            'literature': {
-                name: 'المراجع والدراسات السابقة',
-                icon: 'fa-book',
-                subServices: [
-                    'توفير وجمع المراجع العلمية',
-                    'تلخيص الدراسات السابقة',
-                    'توثيق المراجع وفق الأنماط العلمية',
-                    'تلخيص الكتب والمراجع العربية والإنجليزية',
-                    'رومنة المراجع',
-                    'تحليل ورسم الخرائط العلمية'
-                ]
-            },
-            'publication': {
-                name: 'إعداد وتجهيز الأبحاث للنشر العلمي',
-                icon: 'fa-pen-fancy',
-                subServices: [
-                    'تجهيز الأبحاث وفق متطلبات المجلات المحكمة',
-                    'ترجمة الأبحاث العلمية',
-                    'إعادة صياغة الأبحاث وفق المعايير الأكاديمية',
-                    'التدقيق اللغوي والإملائي المتخصص',
-                    'تنسيق الأبحاث والرسائل العلمية',
-                    'فحص التشابه والاقتباس العلمي',
-                    'ترشيح المجلات العلمية المناسبة للنشر',
-                    'مراجعة الأبحاث قبل التقديم للمجلات',
-                    'خدمات التحكيم والمراجعة العلمية'
-                ]
-            },
-            'design': {
-                name: 'التصميم الأكاديمي والجرافيكس',
-                icon: 'fa-paint-brush',
-                subServices: [
-                    'تصميم البوسترات البحثية الاحترافية',
-                    'تصميم بوسترات المؤتمرات العلمية',
-                    'تصميم العروض التقديمية الاحترافية',
-                    'تصميم عروض تقديمية ثلاثية الأبعاد (3D)',
-                    'تصميم الإنفوجرافيك الأكاديمي',
-                    'تصميم الخرائط الذهنية والمفاهيمية',
-                    'تصميم الهوية البصرية للمشاريع الأكاديمية',
-                    'تصميم الملفات التدريبية والحقائب التعليمية'
-                ]
-            },
-            'video': {
-                name: 'إنتاج الفيديو والمحتوى الرقمي',
-                icon: 'fa-video',
-                subServices: [
-                    'تصميم فيديوهات تعليمية احترافية',
-                    'إنتاج فيديوهات بالذكاء الاصطناعي',
-                    'تصميم الموشن جرافيك الأكاديمي',
-                    'تصميم الفيديوهات باستخدام برامج Adobe',
-                    'إعداد المحتوى المرئي للعروض والمؤتمرات',
-                    'تحويل الأبحاث والمشاريع إلى محتوى مرئي احترافي'
-                ]
-            },
-            'consulting': {
-                name: 'الاستشارات والخدمات الأكاديمية',
-                icon: 'fa-handshake',
-                subServices: [
-                    'الاستشارات الأكاديمية والبحثية',
-                    'جلسات استشارية سريعة',
-                    'خدمة إنقاذ البحث',
-                    'كتابة السيرة الذاتية (CV)',
-                    'كتابة خطاب الغرض من الدراسة (SOP)'
-                ]
-            },
-            'tutoring': {
-                name: 'خدمات الشرح والمراجعة الأكاديمية',
-                icon: 'fa-chalkboard-teacher',
-                subServices: [
-                    'شرح المقررات النظرية والعملية',
-                    'المراجعات المكثفة قبل الاختبارات',
-                    'إعداد الملخصات الأكاديمية',
-                    'إعداد الخرائط الذهنية والمفاهيمية',
-                    'إعداد بنوك الأسئلة',
-                    'حل التمارين والواجبات التدريبية',
-                    'متابعة استفسارات الطلاب',
-                    'التركيز على النقاط المهمة والمتوقعة للاختبارات'
-                ]
-            }
-        };
+        const SERVICES_LIST = [
+            { id: 'consulting', icon: 'fa-handshake', name: 'الاستشارات الأكاديمية' },
+            { id: 'thesis-titles', icon: 'fa-lightbulb', name: 'اقتراح عناوين رسائل ماجستير و دكتوراه' },
+            { id: 'literature-review', icon: 'fa-book', name: 'توفير المراجع و تلخيص الدراسات السابقة' },
+            { id: 'research-proposal', icon: 'fa-file-alt', name: 'إعداد المقترح البحثي / خطة البحث' },
+            { id: 'plagiarism-check', icon: 'fa-shield-alt', name: 'فحص السرقة الأدبية والعلمية (Plagiarism)' },
+            { id: 'romanization', icon: 'fa-font', name: 'خدمة رومنة المراجع' },
+            { id: 'amos-analysis', icon: 'fa-project-diagram', name: 'خدمة التحليل الإحصائي AMOS' },
+            { id: 'previous-studies', icon: 'fa-globe', name: 'خدمة إعداد الدراسات السابقة العربية أو الأجنبية' },
+            { id: 'collection-documentation', icon: 'fa-archive', name: 'جمع وتوثيق المادة العلمية' },
+            { id: 'academic-translation', icon: 'fa-language', name: 'الترجمة الأكاديمية المعتمدة' },
+            { id: 'research-tools', icon: 'fa-clipboard-check', name: 'تصميم وتحكيم أدوات البحث' },
+            { id: 'spss-analysis', icon: 'fa-chart-bar', name: 'التحليل الإحصائي ومناقشة النتائج (SPSS)' },
+            { id: 'paraphrasing', icon: 'fa-edit', name: 'إعادة الصياغة' },
+            { id: 'meta-analysis', icon: 'fa-chart-pie', name: 'خدمة التحليل التلوي (Meta-analysis) والنماذج التنبؤية' },
+            { id: 'local-supervisor', icon: 'fa-chalkboard-teacher', name: 'خدمة تحكيم مشرف محلي' },
+            { id: 'qualitative-analysis', icon: 'fa-comment', name: 'خدمة التحليل الإحصائي النوعي' },
+            { id: 'eviews-analysis', icon: 'fa-chart-line', name: 'خدمة التحليل الإحصائي ببرنامج E-Views' },
+            { id: 'sas-analysis', icon: 'fa-database', name: 'خدمة التحليل الإحصائي ببرنامج SAS' },
+            { id: 'proofreading', icon: 'fa-spell-check', name: 'التدقيق اللغوي والإملائي' },
+            { id: 'academic-critique', icon: 'fa-comment-dots', name: 'النقد الأكاديمي' },
+            { id: 'thesis-formatting', icon: 'fa-file-pdf', name: 'تنسيق الرسالة حسب دليل الجامعة' },
+            { id: 'plagiarism', icon: 'fa-shield-alt', name: 'فحص السرقة الأدبية' },
+            { id: 'isi-publication', icon: 'fa-scroll', name: 'النشر في المجلات العلمية ومجلات ISI' },
+            { id: 'results-discussion', icon: 'fa-comments', name: 'مناقشة النتائج وتفسيرها' },
+            { id: 'cv-design', icon: 'fa-id-card', name: 'خدمة تصميم و كتابة السيرة الذاتية' },
+            { id: 'training-packages', icon: 'fa-briefcase', name: 'إعداد الحقائب التدريبية' },
+            { id: 'presentations', icon: 'fa-presentation', name: 'إعداد العروض التقديمية' },
+            { id: 'statement-of-purpose', icon: 'fa-envelope-open-text', name: 'كتابة خطاب الغرض من الدراسة' },
+            { id: 'uk-language-study', icon: 'fa-flag-gb', name: 'خدمة دراسة اللغة في بريطانيا' },
+            { id: 'content-writing', icon: 'fa-pen-nib', name: 'خدمة كتابة المحتوى' },
+            { id: 'conceptual-model', icon: 'fa-cubes', name: 'خدمة بناء التصور المقترح أو النموذج المقترح' },
+            { id: 'science-mapping', icon: 'fa-map', name: 'تحليل ورسم الخرائط العلمية' },
+            { id: 'reflective-essays', icon: 'fa-brain', name: 'خدمة كتابة المقالات التأملية' },
+            { id: 'quick-consulting', icon: 'fa-bolt', name: 'خدمة جلسات استشارية سريعة' },
+            { id: 'research-rescue', icon: 'fa-life-ring', name: 'خدمة إنقاذ البحث' },
+            { id: 'peer-review', icon: 'fa-users-cog', name: 'خدمات التقييم الأكاديمي أو مراجعة الزملاء' },
+            { id: 'research-grants', icon: 'fa-money-bill-wave', name: 'خدمات الإعداد للتمويل البحثي والمنح' },
+            { id: 'journal-recommendation', icon: 'fa-newspaper', name: 'خدمة ترشيح المجلات العملية المحكمة' },
+            { id: 'research-posters', icon: 'fa-poster', name: 'خدمة تصميم البوسترات البحثية الاحترافية' },
+            { id: 'book-summary', icon: 'fa-book-reader', name: 'خدمة تلخيص الكتب والمراجع العربية والإنجليزية' },
+            { id: 'medical-statistics', icon: 'fa-heartbeat', name: 'خدمة التحليل الإحصائي للبحوث الطبية' },
+            { id: 'ebook', icon: 'fa-book-open', name: 'خدمة عمل كتاب إلكتروني وفق المعايير الأكاديمية' },
+            { id: 'smart-pls', icon: 'fa-route', name: 'خدمة التحليل الإحصائي ببرنامج Smat PLS' },
+            { id: 'stata-analysis', icon: 'fa-calculator', name: 'خدمة التحليل الإحصائي ببرنامج STATA' }
+        ];
 
         // ============================================================
         // تفعيل AOS
@@ -1468,6 +1471,7 @@
         let models = [];
         let currentToken = localStorage.getItem('token') || '';
         let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+        let currentFilter = 'all';
 
         // ============================================================
         // تبديل الوضع (Dark/Light)
@@ -1501,40 +1505,32 @@
         });
 
         // ============================================================
-        // تعبئة الخدمات الفرعية عند اختيار الخدمة الرئيسية
+        // تعبئة قائمة الخدمات في الفلتر وفي نموذج الرفع
         // ============================================================
-        document.getElementById('mainService').addEventListener('change', function() {
-            const mainServiceId = this.value;
-            const subSelect = document.getElementById('subService');
+        function populateServiceSelects() {
+            // فلتر الخدمات
+            const filterSelect = document.getElementById('serviceFilter');
+            // إضافة خيار "جميع الخدمات" أولاً
+            filterSelect.innerHTML = '<option value="all">جميع الخدمات</option>';
+            
+            SERVICES_LIST.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = service.name;
+                filterSelect.appendChild(option);
+            });
 
-            // مسح الخيارات السابقة
-            while (subSelect.options.length > 0) {
-                subSelect.remove(0);
-            }
-
-            if (mainServiceId && SERVICES_DATA[mainServiceId]) {
-                const service = SERVICES_DATA[mainServiceId];
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'اختر الخدمة الفرعية';
-                subSelect.appendChild(defaultOption);
-
-                service.subServices.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    subSelect.appendChild(option);
-                });
-
-                subSelect.disabled = false;
-            } else {
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'اختر الخدمة الرئيسية أولاً';
-                subSelect.appendChild(defaultOption);
-                subSelect.disabled = true;
-            }
-        });
+            // نموذج رفع النماذج - الخدمة الرئيسية
+            const mainSelect = document.getElementById('mainService');
+            mainSelect.innerHTML = '<option value="">اختر الخدمة</option>';
+            
+            SERVICES_LIST.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = service.name;
+                mainSelect.appendChild(option);
+            });
+        }
 
         // ============================================================
         // التحقق من صلاحية المستخدم
@@ -1583,6 +1579,35 @@
                     }
                 }
             });
+        }
+
+        // ============================================================
+        // فلترة النماذج حسب الخدمة
+        // ============================================================
+        function filterModelsByService(serviceId) {
+            currentFilter = serviceId;
+            const countEl = document.getElementById('filterCount');
+
+            if (serviceId === 'all') {
+                countEl.textContent = 'عرض جميع النماذج';
+            } else {
+                const service = SERVICES_LIST.find(s => s.id === serviceId);
+                countEl.textContent = `نماذج ${service ? service.name : serviceId}`;
+            }
+
+            renderFilteredModels();
+        }
+
+        function getFilteredModels() {
+            if (currentFilter === 'all') {
+                return models;
+            }
+            return models.filter(m => m.mainService === currentFilter);
+        }
+
+        function renderFilteredModels() {
+            const filtered = getFilteredModels();
+            renderModels(filtered);
         }
 
         // ============================================================
@@ -1648,15 +1673,6 @@
                 uploadArea.querySelector('h4').textContent = 'اسحب ملفك هنا أو انقر للاختيار';
                 uploadArea.querySelector('p').textContent = 'يدعم الملفات التالية: PDF, Word, Excel, PowerPoint, صور';
             }
-            const subSelect = document.getElementById('subService');
-            while (subSelect.options.length > 0) {
-                subSelect.remove(0);
-            }
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'اختر الخدمة الرئيسية أولاً';
-            subSelect.appendChild(defaultOption);
-            subSelect.disabled = true;
         }
 
         // ============================================================
@@ -1672,12 +1688,11 @@
 
             const title = document.getElementById('modelTitle').value.trim();
             const mainService = document.getElementById('mainService').value;
-            const subService = document.getElementById('subService').value;
             const category = document.getElementById('modelCategory').value;
             const desc = document.getElementById('modelDesc').value.trim();
             const file = fileInput.files[0];
 
-            if (!title || !mainService || !subService || !category || !file) {
+            if (!title || !mainService || !category || !file) {
                 showAlert('❌ يرجى ملء جميع الحقول المطلوبة واختيار ملف', 'danger');
                 return;
             }
@@ -1692,7 +1707,7 @@
                 const fileData = event.target.result;
 
                 try {
-                    const response = await fetch('https://draseh-platform-1.onrender.com/api/models', {
+                    const response = await fetch('https://irteqa-eduhub.onrender.com/api/models', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${currentToken}`,
@@ -1701,7 +1716,7 @@
                         body: JSON.stringify({
                             title,
                             mainService,
-                            subService,
+                            subService: '',
                             category,
                             description: desc || '',
                             fileName: file.name,
@@ -1746,14 +1761,14 @@
 
             try {
                 console.log('🔄 جاري جلب النماذج...');
-                const response = await fetch('https://draseh-platform-1.onrender.com/api/models');
+                const response = await fetch('https://irteqa-eduhub.onrender.com/api/models');
                 const data = await response.json();
                 console.log('📦 الرد من الخادم:', data);
 
                 if (data.success) {
                     models = data.data;
                     console.log('✅ تم جلب النماذج، العدد:', models.length);
-                    renderModels();
+                    renderFilteredModels();
                 } else {
                     showAlert('❌ خطأ في جلب النماذج: ' + data.message, 'danger');
                 }
@@ -1773,7 +1788,7 @@
         // ============================================================
         // عرض النماذج
         // ============================================================
-        function renderModels() {
+        function renderModels(data) {
             const grid = document.getElementById('modelsGrid');
             const countEl = document.getElementById('modelsCount');
 
@@ -1782,15 +1797,16 @@
                 return;
             }
 
-            console.log('📊 عدد النماذج:', models.length);
-            countEl.textContent = `${models.length} نموذج`;
+            const displayData = data || getFilteredModels();
+            console.log('📊 عدد النماذج المعروضة:', displayData.length);
+            countEl.textContent = `${displayData.length} نموذج`;
 
-            if (models.length === 0) {
+            if (displayData.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-models">
                         <i class="fas fa-file-alt"></i>
                         <h3>لا توجد نماذج</h3>
-                        <p>سيتم إضافة النماذج قريباً</p>
+                        <p>${currentFilter === 'all' ? 'سيتم إضافة النماذج قريباً' : 'لا توجد نماذج لهذه الخدمة'}</p>
                         ${isAdmin() ? '<p style="font-size:0.9rem; color:var(--primary);">📤 استخدم نموذج الرفع أعلاه لإضافة نموذج جديد</p>' : ''}
                     </div>
                 `;
@@ -1798,22 +1814,22 @@
             }
 
             try {
-                grid.innerHTML = models.map((model, index) => {
-                    const mainServiceName = SERVICES_DATA[model.mainService]?.name || model.mainService || 'خدمة';
-                    const subServiceName = model.subService || 'خدمة فرعية';
+                grid.innerHTML = displayData.map((model, index) => {
+                    const service = SERVICES_LIST.find(s => s.id === model.mainService);
+                    const serviceName = service ? service.name : model.mainService || 'خدمة';
+                    const serviceIcon = service ? service.icon : 'fa-tag';
                     const categoryLabel = getCategoryLabel(model.category);
 
                     return `
-                        <div class="model-card" data-aos="fade-up" data-aos-delay="${index * 50}">
+                        <div class="model-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 500)}">
                             <div class="model-icon">
                                 <i class="fas fa-file-pdf"></i>
                             </div>
                             <div class="model-title">${model.title || 'بدون عنوان'}</div>
                             <div class="model-desc">${model.description || 'لا يوجد وصف'}</div>
                             <div class="model-tags">
-                                <span class="tag service-tag"><i class="fas ${SERVICES_DATA[model.mainService]?.icon || 'fa-tag'}"></i> ${mainServiceName}</span>
-                                <span class="tag sub-service-tag"><i class="fas fa-caret-left"></i> ${subServiceName}</span>
-                                <span class="tag">${categoryLabel}</span>
+                                <span class="tag service-tag"><i class="fas ${serviceIcon}"></i> ${serviceName}</span>
+                                <span class="tag category-tag">${categoryLabel}</span>
                             </div>
                             <div class="model-meta">
                                 <span class="size"><i class="fas fa-weight-hanging"></i> ${model.fileSize}</span>
@@ -1849,71 +1865,6 @@
         }
 
         // ============================================================
-        // مودال عرض النماذج حسب الخدمة (للاستدعاء من dashboard.html)
-        // ============================================================
-        let modalCallback = null;
-
-        function openModelsModalByService(mainServiceId, serviceName) {
-            const modal = document.getElementById('modelsModal');
-            const title = document.getElementById('modalTitle');
-            const subtitle = document.getElementById('modalSubtitle');
-            const list = document.getElementById('modalModelsList');
-
-            title.textContent = `📄 نماذج ${serviceName || 'الخدمة'}`;
-            subtitle.textContent = 'نماذج سابقة مرتبطة بهذه الخدمة';
-
-            // فلترة النماذج حسب الخدمة الرئيسية
-            const filteredModels = models.filter(m => m.mainService === mainServiceId);
-
-            if (filteredModels.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-models-modal">
-                        <i class="fas fa-file-alt"></i>
-                        <p>لا توجد نماذج سابقة لهذه الخدمة</p>
-                        <p style="font-size:0.85rem; color:var(--text-muted);">يمكنك طلب الخدمة للحصول على نموذج جديد</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = filteredModels.map(model => `
-                    <div class="model-item">
-                        <div class="model-info">
-                            <i class="fas fa-file-pdf"></i>
-                            <div>
-                                <div class="model-name">${model.title}</div>
-                                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
-                                    <span class="tag-sm">${model.subService || 'خدمة فرعية'}</span>
-                                    <span class="tag-sm" style="background:rgba(245,158,11,0.15); color:var(--accent);">${getCategoryLabel(model.category)}</span>
-                                    <span style="font-size:0.75rem; color:var(--text-muted);">📅 ${new Date(model.uploadDate || model.createdAt).toLocaleDateString('ar-SA')}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn-view-model-modal" onclick="viewModel('${model._id}')">
-                            <i class="fas fa-eye"></i> عرض
-                        </button>
-                    </div>
-                `).join('');
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModelsModal() {
-            document.getElementById('modelsModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // إغلاق المودال عند الضغط خارج المحتوى
-        document.getElementById('modelsModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModelsModal();
-        });
-
-        // إغلاق المودال بالضغط على Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeModelsModal();
-        });
-
-        // ============================================================
         // دوال مساعدة
         // ============================================================
         function getCategoryLabel(category) {
@@ -1938,7 +1889,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/api/models/${id}`);
+                const response = await fetch(`https://irteqa-eduhub.onrender.com/api/models/${id}`);
                 const data = await response.json();
 
                 if (data.success && data.data.fileData) {
@@ -1961,7 +1912,7 @@
         // ============================================================
         async function viewModel(id) {
             try {
-                const response = await fetch(`http://localhost:5000/api/models/${id}`);
+                const response = await fetch(`https://irteqa-eduhub.onrender.com/api/models/${id}`);
                 const data = await response.json();
 
                 if (data.success && data.data.fileData) {
@@ -1987,7 +1938,7 @@
             if (!confirm('⚠️ هل أنت متأكد من حذف هذا النموذج؟')) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/models/${id}`, {
+                const response = await fetch(`https://irteqa-eduhub.onrender.com/api/models/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${currentToken}`
@@ -2038,17 +1989,17 @@
         // ============================================================
         // جعل الدوال متاحة عالمياً للاستدعاء من dashboard.html
         // ============================================================
-        window.openModelsModalByService = openModelsModalByService;
-        window.closeModelsModal = closeModelsModal;
         window.viewModel = viewModel;
         window.downloadModel = downloadModel;
         window.deleteModel = deleteModel;
+        window.filterModelsByService = filterModelsByService;
 
         // ============================================================
         // تشغيل التطبيق
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 بدء تحميل صفحة النماذج...');
+            populateServiceSelects();
             loadModelsFromAPI();
             updateAuthButton();
             updateUIForRole();
