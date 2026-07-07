@@ -1,56 +1,21 @@
-// backend/models/Model.js
 const mongoose = require('mongoose');
 
-const ModelSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
+const modelSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    mainService: { 
+        type: String, 
+        required: true 
+        // ✅ تم حذف enum بالكامل - يقبل أي قيمة
     },
-    category: {
-        type: String,
-        required: true,
-        enum: ['proposal', 'thesis', 'survey', 'statistics', 'publication', 'other']
-    },
-    description: {
-        type: String,
-        default: ''
-    },
-    fileName: {
-        type: String,
-        required: true
-    },
-    fileSize: {
-        type: String,
-        default: '0 KB'
-    },
-    fileType: {
-        type: String,
-        default: 'application/octet-stream'
-    },
-    fileData: {
-        type: String,
-        required: true
-    },
-    // ✅ أضف هذه الحقول الجديدة
-    mainService: {
-        type: String,
-        required: true,
-        enum: ['statistics', 'proposal', 'literature', 'publication', 'design', 'video', 'consulting', 'tutoring', 'other']
-    },
-    subService: {
-        type: String,
-        default: 'خدمة فرعية'
-    },
-    uploadedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-}, {
-    timestamps: true
+    subService: { type: String, default: '' },
+    category: { type: String, required: true },
+    description: { type: String, default: '' },
+    fileName: { type: String, required: true },
+    fileSize: { type: String, required: true },
+    fileType: { type: String, required: true },
+    fileData: { type: String, required: true },
+    uploadDate: { type: Date, default: Date.now },
+    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
-module.exports = mongoose.model('Model', ModelSchema);
+module.exports = mongoose.model('Model', modelSchema);

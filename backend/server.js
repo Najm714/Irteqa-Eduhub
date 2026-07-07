@@ -492,7 +492,7 @@ app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
 });
 
 // ============================================================
-// 3. مسارات النماذج (MODELS)
+// 3. مسارات النماذج (MODELS) - تم التعديل لدعم الخدمات الجديدة
 // ============================================================
 
 // جلب جميع النماذج
@@ -532,18 +532,36 @@ app.get('/api/models/:id', async (req, res) => {
     }
 });
 
-// رفع نموذج جديد
+// رفع نموذج جديد - ✅ تم التعديل لإزالة التحقق من mainService
 app.post('/api/models', protect, authorize('admin'), async (req, res) => {
     try {
-        const { title, category, description, fileName, fileSize, fileType, fileData, mainService, subService } = req.body;
+        const { 
+            title, 
+            category, 
+            description, 
+            fileName, 
+            fileSize, 
+            fileType, 
+            fileData, 
+            mainService, 
+            subService 
+        } = req.body;
 
+        // التحقق من الحقول المطلوبة
         if (!title || !category || !fileName || !fileData || !mainService) {
             return res.status(400).json({
                 success: false,
-                message: 'يرجى إدخال جميع البيانات المطلوبة (بما في ذلك الخدمة الرئيسية)'
+                message: 'يرجى إدخال جميع البيانات المطلوبة (العنوان، التصنيف، اسم الملف، بيانات الملف، والخدمة الرئيسية)'
             });
         }
 
+        console.log('📦 رفع نموذج جديد:');
+        console.log('  - العنوان:', title);
+        console.log('  - الخدمة الرئيسية:', mainService);
+        console.log('  - الخدمة الفرعية:', subService || 'غير محددة');
+        console.log('  - التصنيف:', category);
+
+        // إنشاء نموذج جديد - ✅ بدون التحقق من enum
         const model = new Model({
             title,
             category,
@@ -552,11 +570,13 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
             fileSize: fileSize || '0 KB',
             fileType: fileType || 'application/octet-stream',
             fileData,
-            mainService,
+            mainService: mainService, // ✅ يقبل أي قيمة
             subService: subService || 'خدمة فرعية'
         });
 
         await model.save();
+
+        console.log('✅ تم رفع النموذج بنجاح:', model.title);
 
         res.status(201).json({
             success: true,
@@ -565,7 +585,11 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
         });
     } catch (error) {
         console.error('❌ خطأ في رفع النموذج:', error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            details: error.errors || {}
+        });
     }
 });
 
