@@ -1,3 +1,4 @@
+// backend/models/Summary.js
 const mongoose = require('mongoose');
 
 const summarySchema = new mongoose.Schema({
@@ -11,7 +12,8 @@ const summarySchema = new mongoose.Schema({
     fileData: { type: String, required: true },
     date: { type: String, default: () => new Date().toISOString().split('T')[0] },
     downloads: { type: Number, default: 0 },
-    uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    price: { type: Number, default: 49 } // ✅ سعر الاشتراك
 }, { timestamps: true });
 
 module.exports = mongoose.model('Summary', summarySchema);

@@ -1,3 +1,4 @@
+// backend/models/ExplanationMaterial.js
 const mongoose = require('mongoose');
 
 const explanationMaterialSchema = new mongoose.Schema({
@@ -8,7 +9,8 @@ const explanationMaterialSchema = new mongoose.Schema({
     icon: { type: String, default: 'fa-book' },
     videos: { type: Number, default: 0 },
     description: { type: String, default: '' },
-    isFeatured: { type: Boolean, default: false }
+    isFeatured: { type: Boolean, default: false },
+    price: { type: Number, default: 99 } // ✅ سعر الاشتراك
 }, { timestamps: true });
 
 module.exports = mongoose.model('ExplanationMaterial', explanationMaterialSchema);

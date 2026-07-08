@@ -4,9 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>📚 الشروحات الأكاديمية - منصة ارتقاء</title>
+
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+    <!-- AOS Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
     <style>
         /* ============================================================
            المتغيرات - نفس ألوان الصفحة الرئيسية
@@ -497,9 +502,10 @@
             margin-left: 4px;
         }
 
-        .material-card .material-footer .material-stats .video-count {
-            color: var(--secondary);
-            font-weight: 600;
+        .material-card .material-footer .material-price {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         .material-card .btn-subscribe {
@@ -658,7 +664,13 @@
             margin-left: 4px;
         }
 
-        .summary-card .btn-download-summary {
+        .summary-card .summary-footer .summary-price {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .summary-card .btn-subscribe-summary {
             background: var(--gradient-secondary);
             color: #fff;
             border: none;
@@ -674,151 +686,9 @@
             gap: 6px;
         }
 
-        .summary-card .btn-download-summary:hover {
+        .summary-card .btn-subscribe-summary:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
-        }
-
-        /* ============================================================
-           مودال الاشتراك
-           ============================================================ */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--bg-card);
-            max-width: 500px;
-            width: 100%;
-            border-radius: var(--radius);
-            padding: 35px 30px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
-            position: relative;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 1.8rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .modal-close:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        .modal-box .modal-icon {
-            font-size: 3rem;
-            text-align: center;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .modal-box h2 {
-            text-align: center;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .modal-box .modal-subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        .modal-box .modal-price {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .modal-box .modal-features {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-        .modal-box .modal-features li {
-            padding: 8px 0;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-box .modal-features li i {
-            color: var(--success);
-            font-size: 1.1rem;
-        }
-
-        .modal-box .btn-subscribe-now {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            background: var(--gradient-main);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .modal-box .btn-subscribe-now:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
-        }
-
-        .modal-box .modal-note {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 12px;
         }
 
         /* ============================================================
@@ -927,12 +797,6 @@
             .back-to-top {
                 bottom: 75px;
             }
-            .modal-box {
-                padding: 25px 20px;
-            }
-            .modal-box .modal-price {
-                font-size: 2rem;
-            }
         }
 
         @media (max-width: 480px) {
@@ -956,7 +820,7 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            .summary-card .btn-download-summary {
+            .summary-card .btn-subscribe-summary {
                 justify-content: center;
             }
         }
@@ -1068,31 +932,6 @@
     </div>
 
     <!-- ============================================================
-    مودال الاشتراك
-    ============================================================ -->
-    <div class="modal-overlay" id="subscribeModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="closeSubscribeModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <span class="modal-icon">📚</span>
-            <h2 id="modalTitle">اشتراك في المادة</h2>
-            <p class="modal-subtitle" id="modalSubtitle">احصل على وصول كامل لجميع شروحات هذه المادة</p>
-            <div class="modal-price" id="modalPrice">99 ريال</div>
-            <ul class="modal-features">
-                <li><i class="fas fa-check-circle"></i> وصول غير محدود لجميع الفيديوهات</li>
-                <li><i class="fas fa-check-circle"></i> تحديثات دورية للمحتوى</li>
-                <li><i class="fas fa-check-circle"></i> دعم فني على مدار الساعة</li>
-                <li><i class="fas fa-check-circle"></i> شهادة إتمام معتمدة</li>
-            </ul>
-            <button class="btn-subscribe-now" onclick="proceedToPayment()">
-                <i class="fas fa-credit-card"></i> اشترك الآن
-            </button>
-            <p class="modal-note">🔒 مدفوعات آمنة ومشفرة بالكامل</p>
-        </div>
-    </div>
-
-    <!-- ============================================================
     ====== جافا سكريبت ======
     ============================================================ -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js">
@@ -1112,7 +951,6 @@
         let materials = [];
         let summaries = [];
         let currentMaterialTab = 'latest';
-        let currentSelectedMaterial = null;
 
         // ============================================================
         // 3. جلب الجامعات من الخادم
@@ -1203,7 +1041,7 @@
         }
 
         // ============================================================
-        // 7. عرض المواد حسب التبويب
+        // 7. عرض المواد حسب التبويب - مع عرض السعر
         // ============================================================
         function renderMaterials(tab) {
             const grid = document.getElementById('materialsGrid');
@@ -1254,8 +1092,9 @@
 
             grid.innerHTML = filtered.map(m => {
                 const uni = universities.find(u => u._id === m.universityId);
+                const price = m.price || 99;
                 return `
-                    <div class="material-card" onclick="openSubscribeModal('${m._id}')">
+                    <div class="material-card" onclick="openSubscription('${m._id}', 'material')">
                         ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
                         <div class="material-header">
                             <span class="material-code">${m.code}</span>
@@ -1270,8 +1109,9 @@
                         <div class="material-footer">
                             <div class="material-stats">
                                 <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
+                                <span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>
                             </div>
-                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscribeModal('${m._id}')">
+                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
                                 <i class="fas fa-play"></i> اشتراك
                             </button>
                         </div>
@@ -1281,7 +1121,7 @@
         }
 
         // ============================================================
-        // 8. عرض الملخصات
+        // 8. عرض الملخصات - مع عرض السعر
         // ============================================================
         function renderSummaries() {
             const grid = document.getElementById('summariesGrid');
@@ -1304,30 +1144,33 @@
 
             countEl.textContent = summaries.length;
 
-            grid.innerHTML = summaries.map(s => `
-                <div class="summary-card" onclick="downloadSummary('${s._id}')">
-                    <div class="summary-header">
-                        <span class="summary-type"><i class="fas fa-file-pdf"></i> PDF</span>
-                        <span class="summary-icon"><i class="fas fa-file-pdf"></i></span>
-                    </div>
-                    <div class="summary-title">${s.title}</div>
-                    <div class="summary-meta">
-                        <i class="fas fa-book"></i> ${s.subject} 
-                        <i class="fas fa-file-alt" style="margin-right:10px;"></i> ${s.pages} صفحة
-                    </div>
-                    <div class="summary-desc">ملخص شامل ومكثف لمادة ${s.subject} مع شرح النقاط الرئيسية.</div>
-                    <div class="summary-footer">
-                        <div class="summary-stats">
-                            <span><i class="fas fa-download"></i> ${s.downloads || 0}</span>
-                            <span><i class="fas fa-weight-hanging"></i> ${s.size}</span>
-                            <span><i class="fas fa-calendar-alt"></i> ${s.date || 'غير محدد'}</span>
+            grid.innerHTML = summaries.map(s => {
+                const price = s.price || 49;
+                return `
+                    <div class="summary-card" onclick="openSubscription('${s._id}', 'summary')">
+                        <div class="summary-header">
+                            <span class="summary-type"><i class="fas fa-file-pdf"></i> PDF</span>
+                            <span class="summary-icon"><i class="fas fa-file-pdf"></i></span>
                         </div>
-                        <button class="btn-download-summary" onclick="event.stopPropagation(); downloadSummary('${s._id}')">
-                            <i class="fas fa-download"></i> تحميل
-                        </button>
+                        <div class="summary-title">${s.title}</div>
+                        <div class="summary-meta">
+                            <i class="fas fa-book"></i> ${s.subject} 
+                            <i class="fas fa-file-alt" style="margin-right:10px;"></i> ${s.pages} صفحة
+                        </div>
+                        <div class="summary-desc">ملخص شامل ومكثف لمادة ${s.subject} مع شرح النقاط الرئيسية.</div>
+                        <div class="summary-footer">
+                            <div class="summary-stats">
+                                <span><i class="fas fa-download"></i> ${s.downloads || 0}</span>
+                                <span><i class="fas fa-weight-hanging"></i> ${s.size}</span>
+                                <span class="summary-price"><i class="fas fa-tag"></i> ${price} ريال</span>
+                            </div>
+                            <button class="btn-subscribe-summary" onclick="event.stopPropagation(); openSubscription('${s._id}', 'summary')">
+                                <i class="fas fa-download"></i> اشتراك
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // ============================================================
@@ -1367,8 +1210,9 @@
             countEl.textContent = filtered.length;
 
             grid.innerHTML = filtered.map(m => {
+                const price = m.price || 99;
                 return `
-                    <div class="material-card" onclick="openSubscribeModal('${m._id}')">
+                    <div class="material-card" onclick="openSubscription('${m._id}', 'material')">
                         ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
                         <div class="material-header">
                             <span class="material-code">${m.code}</span>
@@ -1383,8 +1227,9 @@
                         <div class="material-footer">
                             <div class="material-stats">
                                 <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
+                                <span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>
                             </div>
-                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscribeModal('${m._id}')">
+                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
                                 <i class="fas fa-play"></i> اشتراك
                             </button>
                         </div>
@@ -1396,71 +1241,49 @@
         }
 
         // ============================================================
-        // 11. تحميل الملخص
+        // 11. فتح صفحة الاشتراك
         // ============================================================
-        async function downloadSummary(id) {
-            try {
-                const response = await fetch(`${API_URL}/api/summaries/download/${id}`);
-                const data = await response.json();
+        function openSubscription(id, type) {
+            let title = '';
+            let code = '';
+            let instructor = '';
+            let university = '';
+            let description = '';
+            let price = '99';
 
-                if (data.success && data.data.fileData) {
-                    const link = document.createElement('a');
-                    link.href = data.data.fileData;
-                    link.download = data.data.fileName || 'ملخص.pdf';
-                    link.click();
-                } else {
-                    alert('❌ تعذر تحميل الملخص');
+            if (type === 'material') {
+                const material = materials.find(m => m._id === id);
+                if (material) {
+                    title = material.title;
+                    code = material.code;
+                    instructor = material.instructor;
+                    const uni = universities.find(u => u._id === material.universityId);
+                    university = uni ? uni.name : 'جامعة';
+                    description = material.description || '';
+                    price = material.price || 99;
                 }
-            } catch (error) {
-                console.error('❌ خطأ:', error);
-                alert('❌ حدث خطأ في تحميل الملخص');
+            } else if (type === 'summary') {
+                const summary = summaries.find(s => s._id === id);
+                if (summary) {
+                    title = summary.title;
+                    description = `ملخص شامل لمادة ${summary.subject}`;
+                    university = summary.subject;
+                    price = summary.price || 49;
+                }
             }
+
+            const encodedTitle = encodeURIComponent(title);
+            const encodedCode = encodeURIComponent(code || '');
+            const encodedInstructor = encodeURIComponent(instructor);
+            const encodedUniversity = encodeURIComponent(university);
+            const encodedDescription = encodeURIComponent(description);
+
+            window.location.href =
+                `subscription.html?id=${id}&type=${type}&title=${encodedTitle}&code=${encodedCode}&instructor=${encodedInstructor}&university=${encodedUniversity}&description=${encodedDescription}&price=${price}`;
         }
 
         // ============================================================
-        // 12. مودال الاشتراك
-        // ============================================================
-        function openSubscribeModal(materialId) {
-            const material = materials.find(m => m._id === materialId);
-            if (!material) return;
-
-            currentSelectedMaterial = material;
-
-            document.getElementById('modalTitle').textContent = `اشتراك في ${material.title}`;
-            document.getElementById('modalSubtitle').textContent = `احصل على وصول كامل لجميع شروحات ${material.title}`;
-            document.getElementById('modalPrice').textContent = '99 ريال';
-
-            document.getElementById('subscribeModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSubscribeModal() {
-            document.getElementById('subscribeModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        document.getElementById('subscribeModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSubscribeModal();
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeSubscribeModal();
-        });
-
-        // ============================================================
-        // 13. التوجه للدفع
-        // ============================================================
-        function proceedToPayment() {
-            if (currentSelectedMaterial) {
-                window.location.href =
-                    `payment.html?service=subscription&material=${encodeURIComponent(currentSelectedMaterial.title)}&price=99`;
-            } else {
-                window.location.href = 'payment.html';
-            }
-        }
-
-        // ============================================================
-        // 14. تبديل الوضع (Dark/Light)
+        // 12. تبديل الوضع (Dark/Light)
         // ============================================================
         let isDark = false;
 
@@ -1479,7 +1302,7 @@
         }
 
         // ============================================================
-        // 15. زر العودة للأعلى
+        // 13. زر العودة للأعلى
         // ============================================================
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
@@ -1491,7 +1314,7 @@
         });
 
         // ============================================================
-        // 16. تفعيل AOS
+        // 14. تفعيل AOS
         // ============================================================
         if (typeof AOS !== 'undefined') {
             AOS.init({
@@ -1502,7 +1325,7 @@
         }
 
         // ============================================================
-        // 17. التشغيل الابتدائي - جلب جميع البيانات
+        // 15. التشغيل الابتدائي - جلب جميع البيانات
         // ============================================================
         async function init() {
             await fetchUniversities();
