@@ -132,6 +132,8 @@ const Video = require('./models/Video');
 const Model = require('./models/Model');
 const Order = require('./models/Order');
 const User = require('./models/User');
+const University = require('./models/University');           // ✅ تم الإضافة
+const ExplanationMaterial = require('./models/ExplanationMaterial'); // ✅ تم الإضافة
 const Summary = require('./models/Summary'); // ✅ إضافة نموذج الملخصات
 
 // ============================================================
