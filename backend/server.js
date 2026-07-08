@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 const uploadsDir = path.join(__dirname, 'uploads');
 const videosDir = path.join(uploadsDir, 'videos');
 const ordersDir = path.join(uploadsDir, 'orders');
+const summariesDir = path.join(uploadsDir, 'summaries');
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -43,9 +44,14 @@ if (!fs.existsSync(ordersDir)) {
     fs.mkdirSync(ordersDir, { recursive: true });
     console.log('📁 تم إنشاء مجلد orders');
 }
+if (!fs.existsSync(summariesDir)) {
+    fs.mkdirSync(summariesDir, { recursive: true });
+    console.log('📁 تم إنشاء مجلد summaries');
+}
 
 console.log('📁 مسار uploads:', uploadsDir);
 console.log('📁 مسار videos:', videosDir);
+console.log('📁 مسار summaries:', summariesDir);
 
 // ============================================================
 // خدمة الملفات الثابتة (Uploads)
@@ -53,6 +59,7 @@ console.log('📁 مسار videos:', videosDir);
 app.use('/uploads', express.static(uploadsDir));
 app.use('/uploads/videos', express.static(videosDir));
 app.use('/uploads/orders', express.static(ordersDir));
+app.use('/uploads/summaries', express.static(summariesDir));
 
 // ============================================================
 // مسار مباشر للفيديوهات (حل بديل)
@@ -125,6 +132,7 @@ const Video = require('./models/Video');
 const Model = require('./models/Model');
 const Order = require('./models/Order');
 const User = require('./models/User');
+const Summary = require('./models/Summary'); // ✅ إضافة نموذج الملخصات
 
 // ============================================================
 // استيراد الميدل وير
@@ -147,6 +155,7 @@ app.get('/', (req, res) => {
             videos: '/api/videos',
             models: '/api/models',
             users: '/api/users',
+            summaries: '/api/summaries',
             health: '/api/health'
         },
         status: {
@@ -1430,7 +1439,342 @@ app.delete('/api/users/:id', protect, authorize('admin'), async (req, res) => {
 });
 
 // ============================================================
-// 6. معالجة 404
+// 6. مسارات الجامعات (UNIVERSITIES)
+// ============================================================
+
+// جلب جميع الجامعات
+app.get('/api/universities', async (req, res) => {
+    try {
+        const universities = await University.find().sort({ name: 1 });
+        res.status(200).json({
+            success: true,
+            data: universities
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الجامعات:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// إضافة جامعة جديدة
+app.post('/api/universities', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { name, icon, count } = req.body;
+        if (!name) {
+            return res.status(400).json({ success: false, message: 'اسم الجامعة مطلوب' });
+        }
+        
+        // التحقق من عدم وجود جامعة بنفس الاسم
+        const existing = await University.findOne({ name });
+        if (existing) {
+            return res.status(400).json({ success: false, message: 'هذه الجامعة موجودة بالفعل' });
+        }
+        
+        const university = new University({ 
+            name, 
+            icon: icon || 'fa-university', 
+            count: count || 0 
+        });
+        await university.save();
+        
+        res.status(201).json({
+            success: true,
+            message: 'تم إضافة الجامعة بنجاح',
+            data: university
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إضافة الجامعة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// حذف جامعة
+app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const university = await University.findById(req.params.id);
+        if (!university) {
+            return res.status(404).json({ success: false, message: 'الجامعة غير موجودة' });
+        }
+        
+        // حذف جميع المواد المرتبطة بهذه الجامعة
+        await ExplanationMaterial.deleteMany({ universityId: req.params.id });
+        
+        await university.deleteOne();
+        
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف الجامعة والمواد المرتبطة بها بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف الجامعة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// ============================================================
+// 7. مسارات المواد التعليمية (EXPLANATIONS MATERIALS)
+// ============================================================
+
+// جلب جميع المواد
+app.get('/api/explanations/materials', async (req, res) => {
+    try {
+        const materials = await ExplanationMaterial.find().sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: materials
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب المواد:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// إضافة مادة جديدة
+app.post('/api/explanations/materials', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { title, code, instructor, universityId, icon, videos, description, isFeatured } = req.body;
+        
+        if (!title || !code || !instructor || !universityId) {
+            return res.status(400).json({ success: false, message: 'جميع الحقول المطلوبة غير مكتملة' });
+        }
+        
+        // التحقق من وجود الجامعة
+        const university = await University.findById(universityId);
+        if (!university) {
+            return res.status(404).json({ success: false, message: 'الجامعة غير موجودة' });
+        }
+        
+        const material = new ExplanationMaterial({
+            title,
+            code,
+            instructor,
+            universityId,
+            icon: icon || 'fa-book',
+            videos: videos || 0,
+            description: description || '',
+            isFeatured: isFeatured || false
+        });
+        await material.save();
+
+        // تحديث عدد المواد في الجامعة
+        await University.findByIdAndUpdate(universityId, { $inc: { count: 1 } });
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إضافة المادة بنجاح',
+            data: material
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إضافة المادة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// حذف مادة
+app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const material = await ExplanationMaterial.findById(req.params.id);
+        if (!material) {
+            return res.status(404).json({ success: false, message: 'المادة غير موجودة' });
+        }
+        
+        await material.deleteOne();
+        
+        // تحديث عدد المواد في الجامعة
+        await University.findByIdAndUpdate(material.universityId, { $inc: { count: -1 } });
+        
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف المادة بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف المادة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// ============================================================
+// 8. مسارات الملخصات (SUMMARIES)
+// ============================================================
+
+// جلب جميع الملخصات
+app.get('/api/summaries/all', async (req, res) => {
+    try {
+        const summaries = await Summary.find()
+            .populate('uploader', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            count: summaries.length,
+            data: summaries
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الملخصات:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// جلب ملخص محدد
+app.get('/api/summaries/:id', async (req, res) => {
+    try {
+        const summary = await Summary.findById(req.params.id);
+        if (!summary) {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: summary
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الملخص:', error);
+        if (error.name === 'CastError' || error.kind === 'ObjectId') {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// رفع ملخص جديد (للمدير فقط)
+app.post('/api/summaries/upload', protect, authorize('admin'), async (req, res) => {
+    try {
+        const {
+            title,
+            subject,
+            pages,
+            size,
+            fileName,
+            fileSize,
+            fileType,
+            fileData,
+            date
+        } = req.body;
+
+        // التحقق من الحقول المطلوبة
+        if (!title || !subject || !pages || !size || !fileName || !fileData) {
+            return res.status(400).json({
+                success: false,
+                message: 'يرجى إدخال جميع البيانات المطلوبة'
+            });
+        }
+
+        // إنشاء ملخص جديد
+        const summary = new Summary({
+            title,
+            subject,
+            pages: parseInt(pages),
+            size,
+            fileName,
+            fileSize: fileSize || (fileData.length / 1024).toFixed(2) + ' KB',
+            fileType: fileType || 'application/pdf',
+            fileData,
+            date: date || new Date().toISOString().split('T')[0],
+            downloads: 0,
+            uploader: req.user.id
+        });
+
+        await summary.save();
+
+        console.log('✅ تم رفع الملخص:', summary.title);
+
+        res.status(201).json({
+            success: true,
+            message: 'تم رفع الملخص بنجاح',
+            data: summary
+        });
+    } catch (error) {
+        console.error('❌ خطأ في رفع الملخص:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// تحميل ملف الملخص
+app.get('/api/summaries/download/:id', async (req, res) => {
+    try {
+        const summary = await Summary.findById(req.params.id);
+        if (!summary) {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+
+        if (!summary.fileData) {
+            return res.status(404).json({
+                success: false,
+                message: 'الملف غير موجود'
+            });
+        }
+
+        // تحديث عدد مرات التحميل
+        summary.downloads = (summary.downloads || 0) + 1;
+        await summary.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'تم تحميل الملف بنجاح',
+            data: {
+                fileData: summary.fileData,
+                fileName: summary.fileName || 'ملخص.pdf'
+            }
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحميل الملخص:', error);
+        if (error.name === 'CastError' || error.kind === 'ObjectId') {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// حذف ملخص (للمدير فقط)
+app.delete('/api/summaries/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const summary = await Summary.findById(req.params.id);
+        if (!summary) {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+
+        await summary.deleteOne();
+        console.log('🗑️ تم حذف الملخص:', summary.title);
+
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف الملخص بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف الملخص:', error);
+        if (error.name === 'CastError' || error.kind === 'ObjectId') {
+            return res.status(404).json({
+                success: false,
+                message: 'الملخص غير موجود'
+            });
+        }
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+// ============================================================
+// 7. معالجة 404
 // ============================================================
 app.use((req, res) => {
     res.status(404).json({
@@ -1441,7 +1785,7 @@ app.use((req, res) => {
 });
 
 // ============================================================
-// 7. معالجة الأخطاء العامة
+// 8. معالجة الأخطاء العامة
 // ============================================================
 app.use((err, req, res, next) => {
     console.error('❌ خطأ:', err.stack);
@@ -1458,5 +1802,6 @@ app.listen(PORT, () => {
     console.log(`✅ الخادم يعمل على http://localhost:${PORT}`);
     console.log(`📁 مجلد الفيديوهات: ${videosDir}`);
     console.log(`📁 مجلد الطلبات: ${ordersDir}`);
+    console.log(`📁 مجلد الملخصات: ${summariesDir}`);
     console.log(`🌐 بيئة التشغيل: ${process.env.NODE_ENV || 'development'}`);
 });
