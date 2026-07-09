@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 لوحة تحكم المدير - منصة ارتقاء</title>
+    <title>📋 إدارة الاشتراكات - منصة ارتقاء</title>
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -43,6 +43,8 @@
             --gradient-main: linear-gradient(135deg, #7C3AED, #EC4899);
             --gradient-secondary: linear-gradient(135deg, #F59E0B, #EC4899);
             --gold: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
         }
 
         /* ============================================================
@@ -206,15 +208,6 @@
             animation: logoFloat 3s ease-in-out infinite;
         }
 
-        .admin-header .badge-admin {
-            background: var(--gradient-secondary);
-            padding: 2px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
         @keyframes logoFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-5px) rotate(-5deg); }
@@ -294,6 +287,15 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: #fff;
+        }
+
+        .admin-header .badge-count {
+            background: #EF4444;
+            color: #fff;
+            padding: 0 8px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            margin-right: 4px;
         }
 
         /* ============================================================
@@ -454,7 +456,7 @@
         }
 
         /* ============================================================
-           لوحة التحكم
+           المحتوى الرئيسي
            ============================================================ */
         .dashboard-content {
             padding: 30px 0 60px;
@@ -471,7 +473,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .dashboard-title {
+        .page-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -480,18 +482,18 @@
             gap: 15px;
         }
 
-        .dashboard-title h1 {
+        .page-title h1 {
             font-size: 2.2rem;
             font-weight: 900;
             color: var(--text-color);
         }
-        .dashboard-title h1 span {
+        .page-title h1 span {
             background: var(--gradient-main);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .dashboard-title .welcome-badge {
+        .page-title .welcome-badge {
             background: var(--bg-card);
             padding: 10px 25px;
             border-radius: 50px;
@@ -501,7 +503,7 @@
             box-shadow: var(--shadow);
         }
 
-        .dashboard-title .welcome-badge i {
+        .page-title .welcome-badge i {
             color: var(--primary);
             margin-left: 8px;
         }
@@ -571,20 +573,16 @@
         .stat-box.pending .stat-icon { color: var(--accent); }
         .stat-box.pending .number { color: var(--accent); }
 
-        .stat-box.in-progress::before { background: #3B82F6; }
-        .stat-box.in-progress .stat-icon { color: #3B82F6; }
-        .stat-box.in-progress .number { color: #3B82F6; }
+        .stat-box.active::before { background: var(--success); }
+        .stat-box.active .stat-icon { color: var(--success); }
+        .stat-box.active .number { color: var(--success); }
 
-        .stat-box.completed::before { background: #10B981; }
-        .stat-box.completed .stat-icon { color: #10B981; }
-        .stat-box.completed .number { color: #10B981; }
-
-        .stat-box.cancelled::before { background: #EF4444; }
-        .stat-box.cancelled .stat-icon { color: #EF4444; }
-        .stat-box.cancelled .number { color: #EF4444; }
+        .stat-box.cancelled::before { background: var(--danger); }
+        .stat-box.cancelled .stat-icon { color: var(--danger); }
+        .stat-box.cancelled .number { color: var(--danger); }
 
         /* ============================================================
-           الفلتر
+           فلتر
            ============================================================ */
         .filter-section {
             background: var(--bg-card);
@@ -671,7 +669,7 @@
         }
 
         /* ============================================================
-           جدول الطلبات
+           جدول طلبات الاشتراك
            ============================================================ */
         .orders-table-wrapper {
             background: var(--bg-card);
@@ -725,9 +723,7 @@
         }
 
         .status-pending { background: var(--accent); }
-        .status-in-progress { background: #3B82F6; }
-        .status-completed { background: #10B981; }
-        .status-revision { background: #EF4444; }
+        .status-active { background: var(--success); }
         .status-cancelled { background: #6B7280; }
 
         .orders-table .actions {
@@ -756,98 +752,31 @@
         }
 
         .btn-approve {
-            background: #10B981;
+            background: var(--success);
             color: #fff;
         }
         .btn-approve:hover { background: #059669; }
 
         .btn-reject {
-            background: #EF4444;
+            background: var(--danger);
             color: #fff;
         }
         .btn-reject:hover { background: #DC2626; }
 
-        .btn-complete {
-            background: #3B82F6;
-            color: #fff;
-        }
-        .btn-complete:hover { background: #2563EB; }
-
-        .btn-assign {
-            background: var(--primary);
-            color: #fff;
-        }
-        .btn-assign:hover { background: var(--primary-dark); }
-
         .btn-delete {
-            background: #EF4444;
+            background: var(--danger);
             color: #fff;
         }
         .btn-delete:hover { background: #DC2626; }
 
-        /* الملفات */
-        .files-container {
-            margin-top: 8px;
-            padding: 8px 12px;
-            background: var(--bg-body);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .files-container .files-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
-        }
-
-        .files-container .files-header i {
-            color: var(--primary);
-        }
-
-        .files-container .files-header strong {
-            color: var(--text-color);
-            font-size: 0.8rem;
-        }
-
-        .files-container .files-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .file-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--bg-card);
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            font-size: 0.7rem;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .file-item:hover {
+        .btn-view {
             background: var(--primary);
             color: #fff;
-            border-color: var(--primary);
-            transform: translateY(-1px);
         }
-
-        .file-item .download-icon {
-            color: var(--primary);
-            font-size: 0.65rem;
-        }
-
-        .file-item:hover .download-icon {
-            color: #fff;
-        }
+        .btn-view:hover { background: var(--primary-dark); }
 
         /* ============================================================
-           نافذة تعيين خبير
+           نافذة عرض تفاصيل الاشتراك
            ============================================================ */
         .modal {
             display: none;
@@ -872,7 +801,7 @@
             background: var(--bg-card);
             padding: 40px;
             border-radius: var(--radius);
-            max-width: 520px;
+            max-width: 550px;
             width: 100%;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
@@ -907,45 +836,25 @@
             margin-bottom: 20px;
         }
 
-        .modal-content .form-group {
-            margin-bottom: 18px;
+        .modal-content .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .modal-content .form-group label {
-            display: block;
+        .modal-content .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-content .detail-row .label {
+            color: var(--text-muted);
             font-weight: 600;
-            margin-bottom: 5px;
+        }
+
+        .modal-content .detail-row .value {
             color: var(--text-color);
-        }
-
-        .modal-content .form-group label i {
-            color: var(--primary);
-            margin-left: 6px;
-        }
-
-        .modal-content .form-group input,
-        .modal-content .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 1rem;
-            background: var(--bg-body);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .modal-content .form-group input:focus,
-        .modal-content .form-group select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
-        }
-
-        .modal-content .form-group input[readonly] {
-            background: var(--border-color);
-            cursor: not-allowed;
+            font-weight: 600;
         }
 
         .modal-content .modal-actions {
@@ -968,199 +877,15 @@
             justify-content: center;
         }
 
-        .modal-content .modal-actions .btn-save {
-            background: var(--gradient-main);
-            color: #fff;
-            flex: 1;
-        }
-        .modal-content .modal-actions .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
-        }
-
-        .modal-content .modal-actions .btn-cancel {
+        .modal-content .modal-actions .btn-close-modal {
             background: var(--bg-body);
             color: var(--text-color);
             border: 2px solid var(--border-color);
+            flex: 1;
         }
-        .modal-content .modal-actions .btn-cancel:hover {
+        .modal-content .modal-actions .btn-close-modal:hover {
             background: var(--border-color);
             transform: translateY(-2px);
-        }
-
-        /* ============================================================
-           قسم النماذج (للمدير)
-           ============================================================ */
-        .models-section {
-            padding: 40px 0 0;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .section-header h2 {
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--text-color);
-        }
-
-        .section-header h2 span {
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .section-header .link-models {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .section-header .link-models:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .models-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .model-card {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .model-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-secondary);
-        }
-
-        .model-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .model-card .model-icon {
-            font-size: 2.5rem;
-            color: var(--secondary);
-            margin-bottom: 12px;
-        }
-
-        .model-card h4 {
-            color: var(--text-color);
-            font-size: 1.05rem;
-            margin-bottom: 5px;
-        }
-
-        .model-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .model-card .model-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .model-card .model-meta .category {
-            background: rgba(124, 58, 237, 0.1);
-            color: var(--primary);
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .model-card .model-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .model-card .model-actions button {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 600;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 0.85rem;
-        }
-
-        .model-card .model-actions .btn-download {
-            background: var(--primary);
-            color: #fff;
-        }
-        .model-card .model-actions .btn-download:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .model-card .model-actions .btn-view {
-            background: var(--gradient-secondary);
-            color: #fff;
-        }
-        .model-card .model-actions .btn-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
-        }
-
-        .model-card .model-actions .btn-delete-model {
-            background: #EF4444;
-            color: #fff;
-        }
-        .model-card .model-actions .btn-delete-model:hover {
-            background: #DC2626;
-            transform: translateY(-2px);
-        }
-
-        .empty-models {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            grid-column: 1 / -1;
-        }
-
-        .empty-models i {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 10px;
-            opacity: 0.3;
         }
 
         /* ============================================================
@@ -1188,6 +913,12 @@
             background: #FEE2E2;
             color: #991B1B;
             border: 1px solid #FCA5A5;
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
         }
 
         .loading-text {
@@ -1218,7 +949,7 @@
         }
 
         @media (max-width: 768px) {
-            .dashboard-title {
+            .page-title {
                 flex-direction: column;
                 text-align: center;
             }
@@ -1267,18 +998,12 @@
             .stats-overview {
                 grid-template-columns: 1fr;
             }
-            .dashboard-title h1 {
+            .page-title h1 {
                 font-size: 1.6rem;
             }
             .login-container {
                 margin: 40px 15px;
                 padding: 30px 20px;
-            }
-            .models-grid {
-                grid-template-columns: 1fr;
-            }
-            .modal-content .modal-actions {
-                flex-direction: column;
             }
         }
     </style>
@@ -1287,60 +1012,51 @@
 
     <!-- ====== زر تبديل الوضع ====== -->
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="تبديل الوضع">
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(211, 168, 211)" d="M0 256c0-141.4 114.6-256 256-256 33 0 64.6 6.3 93.6 17.7 7.4 2.9 11.5 10.7 9.8 18.4s-8.8 13-16.7 12.4c-4.8-.3-9.7-.5-14.6-.5-114.9 0-208 93.1-208 208s93.1 208 208 208c4.9 0 9.8-.2 14.6-.5 7.9-.5 15 4.7 16.7 12.4s-2.4 15.5-9.8 18.4C320.6 505.7 289 512 256 512 114.6 512 0 397.4 0 256zM375.4 137.4c3.5-7.1 13.7-7.1 17.2 0l31.5 63.8c1.4 2.8 4.1 4.8 7.2 5.3l70.4 10.2c7.9 1.1 11 10.8 5.3 16.4l-50.9 49.6c-2.3 2.2-3.3 5.4-2.8 8.5l12 70.1c1.3 7.8-6.9 13.8-13.9 10.1l-63-33.1c-2.8-1.5-6.1-1.5-8.9 0l-63 33.1c-7 3.7-15.3-2.3-13.9-10.1l12-70.1c.5-3.1-.5-6.3-2.8-8.5L261 233.1c-5.7-5.6-2.6-15.2 5.3-16.4l70.4-10.2c3.1-.5 5.8-2.4 7.2-5.3l31.5-63.8z"/></svg>
+        <i class="fas fa-moon"></i>
     </button>
 
     <!-- ====== زر العودة للأعلى ====== -->
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(211, 168, 211)" d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM377 271c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-87-87-87 87c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 167c9.4-9.4 24.6-9.4 33.9 0L377 271z"/></svg>
+        <i class="fas fa-chevron-up"></i>
     </button>
 
-   <!-- ============================================================
+    <!-- ============================================================
     الهيدر
     ============================================================ -->
-<header class="admin-header" id="adminHeader" style="display:none;">
-    <div class="container">
-        <a href="index.html" class="logo">
-            <i class="fas fa-rocket"></i>
-            منصة <span>ارتقاء</span>
-            <span class="badge-admin">مدير</span>
-        </a>
-        <div class="header-actions">
-            <a href="index.html" class="btn-back">
-                <i class="fas fa-arrow-right"></i> العودة للرئيسية
+    <header class="admin-header" id="adminHeader" style="display:none;">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-rocket"></i>
+                منصة <span>ارتقاء</span>
+                <span class="badge-admin" style="background:var(--gradient-secondary); padding:2px 14px; border-radius:50px; font-size:0.7rem; font-weight:700; color:#fff;">مدير</span>
             </a>
-            
-            <!-- ✅ طلبات الخدمات -->
-            <a href="admin-dashboard.html" class="btn-experts" style="background:rgba(124,58,237,0.2); border-color:rgba(124,58,237,0.2);">
-                <i class="fas fa-tasks"></i> الطلبات
-            </a>
-            
-            <!-- ✅ طلبات الاشتراك -->
-            <a href="admin-subscriptions.html" class="btn-experts" style="background:rgba(16,185,129,0.2); border-color:rgba(16,185,129,0.2);">
-                <i class="fas fa-file-invoice"></i> الاشتراكات
-                <span class="badge-count" id="subscriptionsCount" style="background:#EF4444; color:#fff; padding:0 8px; border-radius:50%; font-size:0.7rem; margin-right:4px;">0</span>
-            </a>
-            
-            <!-- ✅ الخبراء -->
-            <a href="admin-experts.html" class="btn-experts">
-                <i class="fas fa-user-tie"></i> الخبراء
-            </a>
-            
-            <!-- ✅ النماذج -->
-            <a href="models-page.html" class="btn-experts" style="background:rgba(245,158,11,0.2); border-color:rgba(245,158,11,0.2);">
-                <i class="fas fa-file-alt"></i> النماذج
-            </a>
-            
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">أ</div>
-                <span id="userName" style="font-weight:600;">المدير</span>
+            <div class="header-actions">
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                </a>
+                <a href="admin-dashboard.html" class="btn-experts" style="background:rgba(124,58,237,0.2); border-color:rgba(124,58,237,0.2);">
+                    <i class="fas fa-tasks"></i> الطلبات
+                </a>
+                <a href="admin-subscriptions.html" class="btn-experts" style="background:rgba(16,185,129,0.2); border-color:rgba(16,185,129,0.2);">
+                    <i class="fas fa-file-invoice"></i> الاشتراكات
+                    <span class="badge-count" id="headerBadge">0</span>
+                </a>
+                <a href="admin-experts.html" class="btn-experts">
+                    <i class="fas fa-user-tie"></i> الخبراء
+                </a>
+                <a href="models-page.html" class="btn-experts" style="background:rgba(245,158,11,0.2); border-color:rgba(245,158,11,0.2);">
+                    <i class="fas fa-file-alt"></i> النماذج
+                </a>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">أ</div>
+                    <span id="userName" style="font-weight:600;">المدير</span>
+                </div>
+                <button onclick="logout()" class="btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
             </div>
-            <button onclick="logout()" class="btn-danger">
-                <i class="fas fa-sign-out-alt"></i> خروج
-            </button>
         </div>
-    </div>
-</header>
+    </header>
 
     <!-- ============================================================
     صفحة تسجيل الدخول
@@ -1378,13 +1094,13 @@
         <div class="container">
 
             <!-- العنوان -->
-            <div class="dashboard-title">
+            <div class="page-title">
                 <div>
-                    <h1>👑 <span>لوحة تحكم المدير</span></h1>
+                    <h1>📋 <span>إدارة الاشتراكات</span></h1>
                 </div>
                 <div class="welcome-badge">
                     <i class="fas fa-user-cog"></i>
-                    مرحباً بك في لوحة التحكم
+                    إدارة طلبات اشتراك المواد والملخصات
                 </div>
             </div>
 
@@ -1403,17 +1119,12 @@
                     <span class="number" id="pendingOrders">0</span>
                     <span class="label">⏳ قيد الانتظار</span>
                 </div>
-                <div class="stat-box in-progress" data-aos="fade-up" data-aos-delay="200">
-                    <span class="stat-icon"><i class="fas fa-play-circle"></i></span>
-                    <span class="number" id="inProgressOrders">0</span>
-                    <span class="label">⚡ قيد التنفيذ</span>
-                </div>
-                <div class="stat-box completed" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-box active" data-aos="fade-up" data-aos-delay="200">
                     <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
-                    <span class="number" id="completedOrders">0</span>
-                    <span class="label">✅ مكتملة</span>
+                    <span class="number" id="activeOrders">0</span>
+                    <span class="label">✅ مفعلة</span>
                 </div>
-                <div class="stat-box cancelled" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-box cancelled" data-aos="fade-up" data-aos-delay="300">
                     <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
                     <span class="number" id="cancelledOrders">0</span>
                     <span class="label">❌ ملغية</span>
@@ -1422,37 +1133,42 @@
 
             <!-- فلتر -->
             <div class="filter-section">
-                <label for="filterStatus"><i class="fas fa-filter"></i> حالة الطلب:</label>
-                <select id="filterStatus">
+                <label for="filterStatus"><i class="fas fa-filter"></i> الحالة:</label>
+                <select id="filterStatus" onchange="filterSubscriptions()">
                     <option value="all">جميع الطلبات</option>
                     <option value="pending">⏳ قيد الانتظار</option>
-                    <option value="in-progress">⚡ قيد التنفيذ</option>
-                    <option value="completed">✅ مكتمل</option>
-                    <option value="revision">🔄 مراجعة</option>
-                    <option value="cancelled">❌ ملغي</option>
+                    <option value="active">✅ مفعلة</option>
+                    <option value="cancelled">❌ ملغية</option>
+                </select>
+
+                <label for="filterType"><i class="fas fa-tag"></i> النوع:</label>
+                <select id="filterType" onchange="filterSubscriptions()">
+                    <option value="all">الكل</option>
+                    <option value="material">📚 مواد</option>
+                    <option value="summary">📄 ملخصات</option>
                 </select>
 
                 <label for="filterSearch"><i class="fas fa-search"></i> بحث:</label>
-                <input type="text" id="filterSearch" placeholder="عنوان أو بريد..." style="min-width:200px;">
+                <input type="text" id="filterSearch" placeholder="عنوان أو بريد..." onkeyup="filterSubscriptions()" style="min-width:200px;">
 
-                <button class="btn-filter" onclick="applyFilters()">
-                    <i class="fas fa-search"></i> بحث
+                <button class="btn-filter" onclick="loadSubscriptions()">
+                    <i class="fas fa-sync"></i> تحديث
                 </button>
                 <button class="btn-reset" onclick="resetFilters()">
                     <i class="fas fa-undo"></i> إعادة تعيين
                 </button>
             </div>
 
-            <!-- جدول الطلبات -->
+            <!-- جدول طلبات الاشتراك -->
             <div class="orders-table-wrapper">
                 <table class="orders-table">
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>العميل</th>
-                            <th>الخدمة</th>
+                            <th>نوع الاشتراك</th>
                             <th>العنوان</th>
-                            <th>الميزانية</th>
+                            <th>المبلغ</th>
                             <th>الحالة</th>
                             <th>تاريخ الطلب</th>
                             <th>الإجراءات</th>
@@ -1463,7 +1179,7 @@
                             <td colspan="8">
                                 <div class="loading-text">
                                     <i class="fas fa-spinner fa-spin"></i>
-                                    جاري تحميل الطلبات...
+                                    جاري تحميل طلبات الاشتراك...
                                 </div>
                             </td>
                         </tr>
@@ -1471,59 +1187,24 @@
                 </table>
             </div>
 
-            <!-- ============================================================
-            قسم النماذج (للمدير)
-            ============================================================ -->
-            <div class="models-section">
-                <div class="section-header">
-                    <h2>📄 <span>النماذج الأكاديمية</span></h2>
-                    <a href="models-page.html" class="link-models">
-                        <i class="fas fa-arrow-left"></i> إدارة النماذج
-                    </a>
-                </div>
-
-                <div class="models-grid" id="adminModelsGrid">
-                    <div class="empty-models">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>جاري تحميل النماذج...</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <!-- ============================================================
-    نافذة تعيين خبير
+    نافذة عرض تفاصيل الاشتراك
     ============================================================ -->
-    <div class="modal" id="assignModal">
+    <div class="modal" id="subscriptionModal">
         <div class="modal-content">
-            <h3><i class="fas fa-user-tie" style="color:var(--primary);"></i> تعيين خبير</h3>
-            <p class="modal-subtitle">اختر خبيراً لتعيينه على هذا الطلب</p>
-            <form id="assignForm">
-                <div class="form-group">
-                    <label><i class="fas fa-hashtag"></i> معرف الطلب</label>
-                    <input type="text" id="assignOrderId" readonly>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-user-graduate"></i> اختر الخبير <span style="color:#EF4444;">*</span></label>
-                    <select id="assignExpertSelect" required>
-                        <option value="">-- جاري تحميل الخبراء... --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-sticky-note"></i> ملاحظات (اختياري)</label>
-                    <textarea id="assignNotes" style="width:100%; padding:12px 15px; border:2px solid var(--border-color); border-radius:12px; font-family:'Cairo',sans-serif; background:var(--bg-body); color:var(--text-color); min-height:80px; resize:vertical;" placeholder="ملاحظات إضافية..."></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-check"></i> تعيين
-                    </button>
-                    <button type="button" class="btn-cancel" onclick="closeAssignModal()">
-                        <i class="fas fa-times"></i> إلغاء
-                    </button>
-                </div>
-            </form>
+            <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الاشتراك</h3>
+            <p class="modal-subtitle">معلومات طلب الاشتراك</p>
+            <div id="subscriptionDetails">
+                <!-- سيتم تعبئتها بواسطة JavaScript -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn-close-modal" onclick="closeSubscriptionModal()">
+                    <i class="fas fa-times"></i> إغلاق
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1534,7 +1215,7 @@
     </script>
     <script>
         // ============================================================
-        // تعريف الرابط الأساسي للـ API حسب البيئة - ✅ الإصلاح الرئيسي
+        // 1. تعريف الرابط الأساسي للـ API
         // ============================================================
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:5000' 
@@ -1543,7 +1224,7 @@
         console.log('🌐 API_URL:', API_URL);
 
         // ============================================================
-        // تفعيل AOS
+        // 2. تفعيل AOS
         // ============================================================
         AOS.init({
             duration: 600,
@@ -1552,7 +1233,7 @@
         });
 
         // ============================================================
-        // تبديل الوضع (Dark/Light)
+        // 3. تبديل الوضع (Dark/Light)
         // ============================================================
         let isDark = false;
 
@@ -1571,7 +1252,7 @@
         }
 
         // ============================================================
-        // زر العودة للأعلى
+        // 4. زر العودة للأعلى
         // ============================================================
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
@@ -1583,15 +1264,14 @@
         });
 
         // ============================================================
-        // المتغيرات العامة
+        // 5. المتغيرات العامة
         // ============================================================
         let currentToken = localStorage.getItem('token') || '';
         let currentUser = null;
-        let allOrders = [];
-        let currentAssignOrderId = null;
+        let allSubscriptions = [];
 
         // ============================================================
-        // التحقق من تسجيل الدخول والصلاحيات
+        // 6. التحقق من تسجيل الدخول والصلاحيات
         // ============================================================
         function checkAuth() {
             const token = localStorage.getItem('token');
@@ -1637,8 +1317,7 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('dashboardContent').classList.add('show');
             document.getElementById('adminHeader').style.display = 'block';
-            fetchAllOrders();
-            loadModelsForAdmin();
+            loadSubscriptions();
         }
 
         function logout() {
@@ -1651,7 +1330,7 @@
         }
 
         // ============================================================
-        // عرض رسائل التنبيه
+        // 7. عرض رسائل التنبيه
         // ============================================================
         function showAlert(message, type = 'success') {
             const alertEl = document.getElementById('alertMessage');
@@ -1663,7 +1342,7 @@
         }
 
         // ============================================================
-        // معالجة تسجيل الدخول
+        // 8. معالجة تسجيل الدخول
         // ============================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1727,16 +1406,16 @@
         });
 
         // ============================================================
-        // جلب جميع الطلبات (للمدير) - ✅ استخدام API_URL
+        // 9. جلب طلبات الاشتراك من الخادم
         // ============================================================
-        async function fetchAllOrders() {
+        async function loadSubscriptions() {
             const tbody = document.getElementById('ordersTableBody');
             tbody.innerHTML = `
                 <tr>
                     <td colspan="8">
                         <div class="loading-text">
                             <i class="fas fa-spinner fa-spin"></i>
-                            جاري تحميل الطلبات...
+                            جاري تحميل طلبات الاشتراك...
                         </div>
                     </td>
                 </tr>
@@ -1744,13 +1423,12 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/orders/admin/all`, {
+                const response = await fetch(`${API_URL}/api/subscriptions`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
-                // إذا كان التوكن غير صالح
                 if (response.status === 401) {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
@@ -1762,9 +1440,10 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    allOrders = data.data;
+                    allSubscriptions = data.data || [];
                     updateStats();
-                    renderOrders(allOrders);
+                    updateHeaderBadge();
+                    filterSubscriptions();
                 } else {
                     showAlert('❌ خطأ في جلب الطلبات: ' + data.message, 'danger');
                     tbody.innerHTML = `
@@ -1791,117 +1470,146 @@
         }
 
         // ============================================================
-        // تحديث الإحصائيات
+        // 10. تحديث الإحصائيات
         // ============================================================
         function updateStats() {
-            const total = allOrders.length;
-            const pending = allOrders.filter(o => o.status === 'pending').length;
-            const inProgress = allOrders.filter(o => o.status === 'in-progress').length;
-            const completed = allOrders.filter(o => o.status === 'completed').length;
-            const cancelled = allOrders.filter(o => o.status === 'cancelled').length;
+            const total = allSubscriptions.length;
+            const pending = allSubscriptions.filter(s => s.status === 'pending').length;
+            const active = allSubscriptions.filter(s => s.status === 'active').length;
+            const cancelled = allSubscriptions.filter(s => s.status === 'cancelled').length;
 
             document.getElementById('totalOrders').textContent = total;
             document.getElementById('pendingOrders').textContent = pending;
-            document.getElementById('inProgressOrders').textContent = inProgress;
-            document.getElementById('completedOrders').textContent = completed;
+            document.getElementById('activeOrders').textContent = active;
             document.getElementById('cancelledOrders').textContent = cancelled;
         }
 
         // ============================================================
-        // عرض الطلبات في الجدول - مع التعامل مع user: null
+        // 11. تحديث العداد في الهيدر
         // ============================================================
-        function renderOrders(orders) {
+        function updateHeaderBadge() {
+            const pending = allSubscriptions.filter(s => s.status === 'pending').length;
+            document.getElementById('headerBadge').textContent = pending;
+        }
+
+        // ============================================================
+        // 12. فلترة الطلبات
+        // ============================================================
+        function filterSubscriptions() {
+            const status = document.getElementById('filterStatus').value;
+            const type = document.getElementById('filterType').value;
+            const search = document.getElementById('filterSearch').value.toLowerCase().trim();
+
+            let filtered = allSubscriptions;
+
+            if (status !== 'all') {
+                filtered = filtered.filter(s => s.status === status);
+            }
+
+            if (type !== 'all') {
+                filtered = filtered.filter(s => s.subscriptionType === type);
+            }
+
+            if (search) {
+                filtered = filtered.filter(s =>
+                    (s.title || '').toLowerCase().includes(search) ||
+                    (s.user?.name || '').toLowerCase().includes(search) ||
+                    (s.user?.email || '').toLowerCase().includes(search)
+                );
+            }
+
+            renderSubscriptions(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filterStatus').value = 'all';
+            document.getElementById('filterType').value = 'all';
+            document.getElementById('filterSearch').value = '';
+            filterSubscriptions();
+        }
+
+        // ============================================================
+        // 13. عرض الطلبات في الجدول
+        // ============================================================
+        function renderSubscriptions(subscriptions) {
             const tbody = document.getElementById('ordersTableBody');
 
-            if (!orders || orders.length === 0) {
+            if (!subscriptions || subscriptions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">
                             <i class="fas fa-inbox" style="font-size:2.5rem; display:block; margin-bottom:10px; opacity:0.3;"></i>
-                            <h4 style="color:var(--text-color);">لا توجد طلبات</h4>
-                            <p style="font-size:0.9rem;">جميع الطلبات ستظهر هنا</p>
+                            <h4 style="color:var(--text-color);">لا توجد طلبات اشتراك</h4>
+                            <p style="font-size:0.9rem;">جميع طلبات الاشتراك ستظهر هنا</p>
                         </td>
                     </tr>
                 `;
                 return;
             }
 
-            tbody.innerHTML = orders.map((order, index) => `
+            tbody.innerHTML = subscriptions.map((sub, index) => `
                 <tr data-aos="fade-up" data-aos-delay="${Math.min(index * 20, 300)}">
                     <td>${index + 1}</td>
                     <td>
-                        <strong>${order.user?.name || '👤 مستخدم غير مسجل'}</strong>
+                        <strong>${sub.user?.name || '👤 مستخدم غير مسجل'}</strong>
                         <br>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">${order.user?.email || 'لا يوجد بريد'}</small>
-                        ${!order.user ? '<span style="color:#EF4444; font-size:0.7rem;">⚠️ بدون مستخدم</span>' : ''}
+                        <small style="color:var(--text-muted); font-size:0.75rem;">${sub.user?.email || 'لا يوجد بريد'}</small>
                     </td>
                     <td>
                         <span style="background:rgba(124,58,237,0.1); color:var(--primary); padding:2px 12px; border-radius:12px; font-size:0.8rem; font-weight:600;">
-                            ${order.serviceType || 'خدمة'}
+                            ${sub.subscriptionType === 'summary' ? '📄 ملخص' : '📚 مادة'}
                         </span>
                     </td>
-                    <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${order.title || ''}">
-                        ${order.title || 'بدون عنوان'}
+                    <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${sub.title || ''}">
+                        ${sub.title || 'بدون عنوان'}
                     </td>
-                    <td style="font-weight:600; color:var(--primary);">${order.budget || 0} ريال</td>
+                    <td style="font-weight:600; color:var(--primary);">${sub.price || 0} ريال</td>
                     <td>
-                        <span class="status status-${order.status}">${getStatusText(order.status)}</span>
+                        <span class="status status-${sub.status}">${getStatusText(sub.status)}</span>
                     </td>
                     <td style="font-size:0.85rem; color:var(--text-muted);">
                         <i class="fas fa-calendar-alt" style="color:var(--primary);"></i>
-                        ${new Date(order.createdAt).toLocaleDateString('ar-SA')}
+                        ${new Date(sub.createdAt).toLocaleDateString('ar-SA')}
                     </td>
                     <td>
                         <div class="actions">
-                            ${order.status === 'pending' ? `
-                                <button class="btn-approve" onclick="updateOrderStatus('${order._id}', 'in-progress')">
-                                    <i class="fas fa-check"></i> تأكيد
+                            ${sub.status === 'pending' ? `
+                                <button class="btn-approve" onclick="updateSubscriptionStatus('${sub._id}', 'active')">
+                                    <i class="fas fa-check"></i> تفعيل
                                 </button>
-                                <button class="btn-reject" onclick="updateOrderStatus('${order._id}', 'cancelled')">
+                                <button class="btn-reject" onclick="updateSubscriptionStatus('${sub._id}', 'cancelled')">
                                     <i class="fas fa-times"></i> رفض
                                 </button>
                             ` : ''}
-                            ${order.status === 'in-progress' ? `
-                                <button class="btn-complete" onclick="updateOrderStatus('${order._id}', 'completed')">
-                                    <i class="fas fa-check-double"></i> إكمال
+                            ${sub.status === 'active' ? `
+                                <button class="btn-view" onclick="viewSubscriptionDetails('${sub._id}')">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                                <button class="btn-reject" onclick="updateSubscriptionStatus('${sub._id}', 'cancelled')">
+                                    <i class="fas fa-times"></i> إلغاء
                                 </button>
                             ` : ''}
-                            <button class="btn-assign" onclick="openAssignModal('${order._id}')">
-                                <i class="fas fa-user-tie"></i> تعيين
-                            </button>
-                            <button class="btn-delete" onclick="deleteOrder('${order._id}')">
+                            ${sub.status === 'cancelled' ? `
+                                <button class="btn-view" onclick="viewSubscriptionDetails('${sub._id}')">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                            ` : ''}
+                            <button class="btn-delete" onclick="deleteSubscription('${sub._id}')">
                                 <i class="fas fa-trash"></i> حذف
                             </button>
                         </div>
-                        ${order.files && order.files.length > 0 ? `
-                            <div class="files-container">
-                                <div class="files-header">
-                                    <i class="fas fa-paperclip"></i>
-                                    <strong>الملفات (${order.files.length}):</strong>
-                                </div>
-                                <div class="files-list">
-                                    ${order.files.map((file, idx) => `
-                                        <span class="file-item" onclick="downloadFile('${order._id}', ${idx})" title="تحميل الملف">
-                                            <i class="fas fa-file"></i>
-                                            ${file.filename || 'ملف'}
-                                            <i class="fas fa-download download-icon"></i>
-                                        </span>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
                     </td>
                 </tr>
             `).join('');
         }
 
         // ============================================================
-        // تحديث حالة الطلب - ✅ الدالة المفقودة (تمت إضافتها)
+        // 14. تحديث حالة الاشتراك
         // ============================================================
-        async function updateOrderStatus(orderId, newStatus) {
+        async function updateSubscriptionStatus(subId, newStatus) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+                const response = await fetch(`${API_URL}/api/subscriptions/${subId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1910,7 +1618,6 @@
                     body: JSON.stringify({ status: newStatus })
                 });
 
-                // إذا كان التوكن غير صالح
                 if (response.status === 401) {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
@@ -1923,8 +1630,8 @@
 
                 if (data.success) {
                     const statusText = getStatusText(newStatus);
-                    showAlert(`✅ تم تحديث حالة الطلب إلى: ${statusText}`, 'success');
-                    fetchAllOrders(); // إعادة تحميل الطلبات
+                    showAlert(`✅ تم تحديث حالة الاشتراك إلى: ${statusText}`, 'success');
+                    loadSubscriptions();
                 } else {
                     showAlert('❌ خطأ في تحديث الحالة: ' + data.message, 'danger');
                 }
@@ -1935,69 +1642,14 @@
         }
 
         // ============================================================
-        // تحميل ملف مرفق - ✅ استخدام API_URL بدلاً من localhost الثابت
+        // 15. حذف طلب اشتراك
         // ============================================================
-        async function downloadFile(orderId, fileIndex) {
-            try {
-                const token = localStorage.getItem('token');
-                console.log('📥 تحميل ملف:', orderId, fileIndex);
-                
-                const response = await fetch(`${API_URL}/api/orders/${orderId}/files/${fileIndex}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                // إذا كان التوكن غير صالح
-                if (response.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    showLoginPage();
-                    showAlert('⚠️ انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً', 'danger');
-                    return;
-                }
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'فشل تحميل الملف');
-                }
-
-                // تحويل الاستجابة إلى blob
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                
-                // استخراج اسم الملف من رأس الاستجابة
-                const contentDisposition = response.headers.get('content-disposition');
-                let filename = 'ملف';
-                if (contentDisposition) {
-                    const match = contentDisposition.match(/filename="(.+)"/);
-                    if (match) filename = match[1];
-                }
-                
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                
-                showAlert('✅ تم تحميل الملف بنجاح', 'success');
-            } catch (error) {
-                console.error('❌ خطأ في تحميل الملف:', error);
-                showAlert('❌ ' + (error.message || 'حدث خطأ في تحميل الملف'), 'danger');
-            }
-        }
-
-        // ============================================================
-        // حذف طلب - ✅ استخدام API_URL
-        // ============================================================
-        async function deleteOrder(orderId) {
+        async function deleteSubscription(subId) {
             if (!confirm('⚠️ هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.')) return;
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
+                const response = await fetch(`${API_URL}/api/subscriptions/${subId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -2016,7 +1668,7 @@
 
                 if (data.success) {
                     showAlert('✅ تم حذف الطلب بنجاح', 'success');
-                    fetchAllOrders();
+                    loadSubscriptions();
                 } else {
                     showAlert('❌ خطأ: ' + data.message, 'danger');
                 }
@@ -2027,308 +1679,97 @@
         }
 
         // ============================================================
-        // نافذة تعيين خبير - ✅ استخدام API_URL
+        // 16. عرض تفاصيل الاشتراك
         // ============================================================
-        async function openAssignModal(orderId) {
-            currentAssignOrderId = orderId;
-            document.getElementById('assignOrderId').value = orderId;
-
-            const select = document.getElementById('assignExpertSelect');
-            select.innerHTML = '<option value="">-- جاري تحميل الخبراء... --</option>';
-
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/users/experts`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    showLoginPage();
-                    showAlert('⚠️ انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً', 'danger');
-                    closeAssignModal();
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (data.success && data.data.length > 0) {
-                    select.innerHTML = '<option value="">-- اختر خبيراً --</option>';
-                    data.data.forEach(expert => {
-                        const option = document.createElement('option');
-                        option.value = expert._id;
-                        const expertiseText = expert.expertise && expert.expertise.length > 0 ?
-                            ` (${expert.expertise.join('، ')})` : '';
-                        option.textContent = `${expert.name} - ${expert.email}${expertiseText}`;
-                        select.appendChild(option);
-                    });
-                } else {
-                    select.innerHTML = '<option value="">-- لا يوجد خبراء متاحون --</option>';
-                    showAlert('⚠️ لا يوجد خبراء متاحون للتعيين.', 'danger');
-                }
-            } catch (error) {
-                console.error('❌ خطأ في جلب الخبراء:', error);
-                select.innerHTML = '<option value="">-- حدث خطأ في تحميل الخبراء --</option>';
-                showAlert('❌ حدث خطأ في جلب قائمة الخبراء', 'danger');
-            }
-
-            document.getElementById('assignModal').classList.add('show');
-        }
-
-        function closeAssignModal() {
-            document.getElementById('assignModal').classList.remove('show');
-            currentAssignOrderId = null;
-        }
-
-        document.getElementById('assignForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const expertId = document.getElementById('assignExpertSelect').value;
-            const notes = document.getElementById('assignNotes')?.value || '';
-
-            if (!expertId) {
-                showAlert('❌ يرجى اختيار خبير', 'danger');
+        function viewSubscriptionDetails(subId) {
+            const sub = allSubscriptions.find(s => s._id === subId);
+            if (!sub) {
+                showAlert('❌ الطلب غير موجود', 'danger');
                 return;
             }
 
-            const btn = this.querySelector('.btn-save');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التعيين...';
-            btn.disabled = true;
+            const detailsContainer = document.getElementById('subscriptionDetails');
+            detailsContainer.innerHTML = `
+                <div class="detail-row">
+                    <span class="label">نوع الاشتراك</span>
+                    <span class="value">${sub.subscriptionType === 'summary' ? '📄 ملخص' : '📚 مادة'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">العنوان</span>
+                    <span class="value">${sub.title}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">العميل</span>
+                    <span class="value">${sub.user?.name || 'غير معروف'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">البريد الإلكتروني</span>
+                    <span class="value">${sub.user?.email || 'غير معروف'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">رقم الجوال</span>
+                    <span class="value">${sub.phone || 'غير معروف'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">المبلغ</span>
+                    <span class="value" style="color:var(--primary); font-weight:700;">${sub.price || 0} ريال</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">طريقة الدفع</span>
+                    <span class="value">${sub.paymentMethod || 'غير محددة'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">الحالة</span>
+                    <span class="value"><span class="status status-${sub.status}">${getStatusText(sub.status)}</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">تاريخ الطلب</span>
+                    <span class="value">${new Date(sub.createdAt).toLocaleDateString('ar-SA')}</span>
+                </div>
+                ${sub.notes ? `
+                    <div class="detail-row">
+                        <span class="label">ملاحظات</span>
+                        <span class="value">${sub.notes}</span>
+                    </div>
+                ` : ''}
+            `;
 
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/orders/${currentAssignOrderId}/assign-expert`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        expertId: expertId,
-                        notes: notes
-                    })
-                });
+            document.getElementById('subscriptionModal').classList.add('show');
+        }
 
-                if (response.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    showLoginPage();
-                    showAlert('⚠️ انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً', 'danger');
-                    closeAssignModal();
-                    return;
-                }
+        function closeSubscriptionModal() {
+            document.getElementById('subscriptionModal').classList.remove('show');
+        }
 
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert(`✅ تم تعيين الخبير بنجاح!`, 'success');
-                    closeAssignModal();
-                    fetchAllOrders();
-                } else {
-                    showAlert('❌ خطأ: ' + (data.message || 'غير معروف'), 'danger');
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تعيين الخبير:', error);
-                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+        // ============================================================
+        // 17. إغلاق المودال عند الضغط خارجها
+        // ============================================================
+        document.getElementById('subscriptionModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSubscriptionModal();
         });
 
         // ============================================================
-        // فلترة الطلبات
-        // ============================================================
-        function applyFilters() {
-            const status = document.getElementById('filterStatus').value;
-            const search = document.getElementById('filterSearch').value.toLowerCase().trim();
-
-            let filtered = allOrders;
-
-            if (status !== 'all') {
-                filtered = filtered.filter(o => o.status === status);
-            }
-
-            if (search) {
-                filtered = filtered.filter(o =>
-                    (o.title || '').toLowerCase().includes(search) ||
-                    (o.user?.name || '').toLowerCase().includes(search) ||
-                    (o.user?.email || '').toLowerCase().includes(search)
-                );
-            }
-
-            renderOrders(filtered);
-        }
-
-        function resetFilters() {
-            document.getElementById('filterStatus').value = 'all';
-            document.getElementById('filterSearch').value = '';
-            renderOrders(allOrders);
-        }
-
-        // ============================================================
-        // جلب النماذج من قاعدة البيانات (للمدير) - ✅ استخدام API_URL
-        // ============================================================
-        async function loadModelsForAdmin() {
-            const grid = document.getElementById('adminModelsGrid');
-            if (!grid) return;
-
-            try {
-                const response = await fetch(`${API_URL}/api/models`);
-                const data = await response.json();
-
-                if (!data.success || data.data.length === 0) {
-                    grid.innerHTML = `
-                        <div class="empty-models">
-                            <i class="fas fa-file-alt"></i>
-                            <p>لا توجد نماذج متاحة حالياً</p>
-                            <p style="font-size:0.9rem;">يمكنك رفع نماذج جديدة من <a href="models-page.html" style="color:var(--primary);">صفحة النماذج</a></p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                grid.innerHTML = data.data.map((model, index) => `
-                    <div class="model-card" data-aos="fade-up" data-aos-delay="${index * 50}">
-                        <div class="model-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h4>${model.title}</h4>
-                        <p>${model.description || 'لا يوجد وصف'}</p>
-                        <div class="model-meta">
-                            <span class="category">${getCategoryLabel(model.category)}</span>
-                            <span><i class="fas fa-weight-hanging"></i> ${model.fileSize}</span>
-                            <span><i class="fas fa-calendar-alt"></i> ${new Date(model.uploadDate || model.createdAt).toLocaleDateString('ar-SA')}</span>
-                        </div>
-                        <div class="model-actions">
-                            <button class="btn-download" onclick="downloadModelFromAdmin('${model._id}')">
-                                <i class="fas fa-download"></i> تحميل
-                            </button>
-                            <button class="btn-view" onclick="viewModelFromAdmin('${model._id}')">
-                                <i class="fas fa-eye"></i> عرض
-                            </button>
-                            <button class="btn-delete-model" onclick="deleteModelFromAdmin('${model._id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('خطأ في جلب النماذج:', error);
-                grid.innerHTML = `
-                    <div class="empty-models">
-                        <i class="fas fa-exclamation-circle" style="color:#EF4444;"></i>
-                        <p style="color:#EF4444;">❌ حدث خطأ في تحميل النماذج</p>
-                    </div>
-                `;
-            }
-        }
-
-        // ============================================================
-        // دوال مساعدة للنماذج (للمدير) - ✅ استخدام API_URL
-        // ============================================================
-        function getCategoryLabel(category) {
-            const labels = {
-                'proposal': 'مقترحات بحثية',
-                'thesis': 'رسائل علمية',
-                'survey': 'استبيانات',
-                'statistics': 'تحليل إحصائي',
-                'publication': 'نشر علمي',
-                'other': 'أخرى'
-            };
-            return labels[category] || category;
-        }
-
-        async function downloadModelFromAdmin(id) {
-            try {
-                const response = await fetch(`${API_URL}/api/models/${id}`);
-                const data = await response.json();
-                if (data.success && data.data.fileData) {
-                    const link = document.createElement('a');
-                    link.href = data.data.fileData;
-                    link.download = data.data.fileName || 'نموذج';
-                    link.click();
-                    showAlert('✅ بدء تحميل "' + data.data.title + '"', 'success');
-                } else {
-                    showAlert('❌ تعذر تحميل النموذج', 'danger');
-                }
-            } catch (error) {
-                console.error(error);
-                showAlert('❌ حدث خطأ في تحميل النموذج', 'danger');
-            }
-        }
-
-        async function viewModelFromAdmin(id) {
-            try {
-                const response = await fetch(`${API_URL}/api/models/${id}`);
-                const data = await response.json();
-                if (data.success && data.data.fileData) {
-                    window.open(data.data.fileData, '_blank');
-                } else {
-                    showAlert('❌ تعذر عرض النموذج', 'danger');
-                }
-            } catch (error) {
-                console.error(error);
-                showAlert('❌ حدث خطأ في عرض النموذج', 'danger');
-            }
-        }
-
-        async function deleteModelFromAdmin(id) {
-            if (!confirm('⚠️ هل أنت متأكد من حذف هذا النموذج؟')) return;
-
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/api/models/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showAlert('✅ تم حذف النموذج بنجاح', 'success');
-                    loadModelsForAdmin();
-                } else {
-                    showAlert('❌ خطأ: ' + data.message, 'danger');
-                }
-            } catch (error) {
-                console.error(error);
-                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
-            }
-        }
-
-        // ============================================================
-        // دوال مساعدة
+        // 18. دوال مساعدة
         // ============================================================
         function getStatusText(status) {
             const map = {
                 'pending': '⏳ قيد الانتظار',
-                'in-progress': '⚡ قيد التنفيذ',
-                'completed': '✅ مكتمل',
-                'revision': '🔄 مراجعة',
+                'active': '✅ مفعل',
                 'cancelled': '❌ ملغي'
             };
             return map[status] || status;
         }
 
         // ============================================================
-        // تشغيل التطبيق
+        // 19. تشغيل التطبيق
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
         });
 
-        // إغلاق النافذة المنبثقة عند الضغط خارجها
-        document.getElementById('assignModal').addEventListener('click', function(e) {
-            if (e.target === this) closeAssignModal();
-        });
-
-        console.log('🚀 تم تحميل لوحة تحكم المدير بنجاح');
+        console.log('🚀 تم تحميل صفحة إدارة الاشتراكات بنجاح');
         console.log('🌐 API_URL:', API_URL);
+        console.log('📋 نظام إدارة اشتراكات المواد والملخصات جاهز');
     </script>
 
 </body>
