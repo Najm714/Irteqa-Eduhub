@@ -317,8 +317,7 @@ app.get('/api/auth/me', protect, async (req, res) => {
 // ============================================================
 // 2. مسارات الفيديوهات (VIDEOS)
 // ============================================================
-
-// رفع فيديو جديد (للمدير فقط)
+// في server.js - مسار رفع الفيديو
 app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('video'), async (req, res) => {
     try {
         console.log('📁 استلام فيديو:', req.file);
@@ -340,15 +339,31 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
             });
         }
 
+        // ✅ استخدام ffprobe للحصول على مدة الفيديو
+        let duration = '00:00';
+        try {
+            const ffprobe = require('ffprobe');
+            const ffprobeStatic = require('ffprobe-static');
+            const videoPath = req.file.path;
+            
+            const probeResult = await ffprobe(videoPath, { path: ffprobeStatic.path });
+            const durationSeconds = probeResult.streams[0]?.duration || 0;
+            
+            if (durationSeconds > 0) {
+                const minutes = Math.floor(durationSeconds / 60);
+                const seconds = Math.floor(durationSeconds % 60);
+                duration = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        } catch (error) {
+            console.log('⚠️ تعذر الحصول على مدة الفيديو، سيتم استخدام القيمة الافتراضية');
+        }
+
         const fileName = req.file.filename;
         const publicPath = `/uploads/videos/${fileName}`;
 
-        console.log('📁 اسم الملف:', fileName);
-        console.log('📁 المسار العام:', publicPath);
-
         const video = new Video({
             title: title,
-            subjectId: parseInt(subjectId),
+            subjectId: String(subjectId), // ✅ حفظ كـ String
             subjectName: subjectName,
             specialtyName: specialtyName || '',
             universityName: universityName || '',
@@ -357,6 +372,7 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
             filePath: publicPath,
             fileSize: (req.file.size / (1024 * 1024)).toFixed(2) + ' MB',
             fileType: req.file.mimetype,
+            duration: duration,
             uploadDate: new Date(),
             views: 0
         });
@@ -364,7 +380,7 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
         await video.save();
 
         console.log('✅ تم رفع الفيديو:', video.title);
-        console.log('✅ المسار المخزن:', video.filePath);
+        console.log('✅ المدة:', video.duration);
 
         res.status(201).json({
             success: true,
@@ -379,7 +395,6 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
         });
     }
 });
-
 // جلب جميع الفيديوهات
 app.get('/api/videos/all', async (req, res) => {
     try {

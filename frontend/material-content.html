@@ -1228,172 +1228,171 @@
                     badge.innerHTML = '<i class="fas fa-check-circle"></i> مفعل';
             }
         }
+// ============================================================
+// جلب فيديوهات المادة من الخادم
+// ============================================================
+async function loadVideos() {
+    const grid = document.getElementById('videosGrid');
+    const countLabel = document.getElementById('videosCountLabel');
+    const countStat = document.getElementById('videosCount');
 
-        // ============================================================
-        // 9. جلب فيديوهات المادة من الخادم
-        // ============================================================
-        async function loadVideos() {
-            const grid = document.getElementById('videosGrid');
-            const countLabel = document.getElementById('videosCountLabel');
-            const countStat = document.getElementById('videosCount');
+    grid.innerHTML = `
+        <div class="loading-center">
+            <i class="fas fa-spinner fa-spin"></i>
+            جاري تحميل الفيديوهات...
+        </div>
+    `;
 
-            // إظهار حالة التحميل
+    try {
+        console.log('🔍 جلب فيديوهات للمادة ID:', currentMaterialId);
+
+        // ✅ جلب جميع الفيديوهات ثم فلترتها حسب subjectId
+        const response = await fetch(`${API_URL}/api/videos/all`);
+        const data = await response.json();
+
+        console.log('📦 جميع الفيديوهات:', data);
+
+        if (data.success) {
+            // ✅ فلترة الفيديوهات حسب معرف المادة
+            const allVideos = data.data || [];
+            videos = allVideos.filter(v => String(v.subjectId) === String(currentMaterialId));
+            
+            console.log('📽️ الفيديوهات المفلترة:', videos);
+            
+            countStat.textContent = videos.length;
+            countLabel.textContent = `${videos.length} فيديو`;
+            renderVideos(videos);
+        } else {
+            videos = [];
+            countStat.textContent = '0';
+            countLabel.textContent = '0 فيديو';
             grid.innerHTML = `
-                <div class="loading-center">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    جاري تحميل الفيديوهات...
+                <div class="no-videos">
+                    <i class="fas fa-video-slash"></i>
+                    <h3>لا توجد فيديوهات</h3>
+                    <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
                 </div>
             `;
-
-            try {
-                console.log('🔍 جلب فيديوهات للمادة ID:', currentMaterialId);
-
-                // جلب الفيديوهات من الخادم حسب معرف المادة
-                const response = await fetch(`${API_URL}/api/videos/subject/${currentMaterialId || 1}`);
-                const data = await response.json();
-
-                console.log('📦 الرد من الخادم:', data);
-
-                if (data.success && data.data && data.data.length > 0) {
-                    videos = data.data;
-                    countStat.textContent = videos.length;
-                    countLabel.textContent = `${videos.length} فيديو`;
-                    renderVideos(videos);
-                } else {
-                    // لا توجد فيديوهات
-                    videos = [];
-                    countStat.textContent = '0';
-                    countLabel.textContent = '0 فيديو';
-                    grid.innerHTML = `
-                        <div class="no-videos">
-                            <i class="fas fa-video-slash"></i>
-                            <h3>لا توجد فيديوهات</h3>
-                            <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('❌ خطأ في جلب الفيديوهات:', error);
-                showAlert('❌ حدث خطأ في تحميل الفيديوهات', 'danger');
-                grid.innerHTML = `
-                    <div class="no-videos">
-                        <i class="fas fa-exclamation-circle" style="color:#EF4444;"></i>
-                        <h3 style="color:#EF4444;">حدث خطأ</h3>
-                        <p>تعذر تحميل الفيديوهات</p>
-                    </div>
-                `;
-            }
         }
+    } catch (error) {
+        console.error('❌ خطأ في جلب الفيديوهات:', error);
+        showAlert('❌ حدث خطأ في تحميل الفيديوهات', 'danger');
+        grid.innerHTML = `
+            <div class="no-videos">
+                <i class="fas fa-exclamation-circle" style="color:#EF4444;"></i>
+                <h3 style="color:#EF4444;">حدث خطأ</h3>
+                <p>تعذر تحميل الفيديوهات</p>
+            </div>
+        `;
+    }
+}
+// ============================================================
+// عرض الفيديوهات
+// ============================================================
+function renderVideos(videosList) {
+    const grid = document.getElementById('videosGrid');
 
-        // ============================================================
-        // 10. عرض الفيديوهات
-        // ============================================================
-        function renderVideos(videosList) {
-            const grid = document.getElementById('videosGrid');
+    if (!videosList || videosList.length === 0) {
+        grid.innerHTML = `
+            <div class="no-videos">
+                <i class="fas fa-video-slash"></i>
+                <h3>لا توجد فيديوهات</h3>
+                <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+            </div>
+        `;
+        return;
+    }
 
-            if (!videosList || videosList.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-videos">
-                        <i class="fas fa-video-slash"></i>
-                        <h3>لا توجد فيديوهات</h3>
-                        <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+    grid.innerHTML = videosList.map((video, index) => {
+        const thumbnail = video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
+        return `
+            <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo('${video._id}')">
+                <div class="video-thumbnail">
+                    <img src="${thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'" />
+                    <div class="play-overlay"><i class="fas fa-play"></i></div>
+                    <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                    <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
+                </div>
+                <div class="video-body">
+                    <h3>${video.title}</h3>
+                    <div class="video-meta">
+                        <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                        <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
                     </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = videosList.map((video, index) => {
-                const thumbnail = video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
-                return `
-                    <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo('${video._id}')">
-                        <div class="video-thumbnail">
-                            <img src="${thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'" />
-                            <div class="play-overlay"><i class="fas fa-play"></i></div>
-                            <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                            <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
-                        </div>
-                        <div class="video-body">
-                            <h3>${video.title}</h3>
-                            <div class="video-meta">
-                                <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                                <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
-                            </div>
-                            <div class="video-tags">
-                                <span class="tag">#${video.subjectName || 'مادة'}</span>
-                                ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
-                            </div>
-                        </div>
+                    <div class="video-tags">
+                        <span class="tag">#${video.subjectName || 'مادة'}</span>
+                        ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
                     </div>
-                `;
-            }).join('');
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+// ============================================================
+// فتح الفيديو في المودال
+// ============================================================
+function openVideo(videoId) {
+    const video = videos.find(v => v._id === videoId);
+    if (!video) {
+        showAlert('❌ الفيديو غير موجود', 'danger');
+        return;
+    }
+
+    console.log('🎬 فتح الفيديو:', video);
+    console.log('📁 المسار المخزن:', video.filePath);
+    console.log('📁 اسم الملف:', video.fileName);
+
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    const title = document.getElementById('videoModalTitle');
+    const desc = document.getElementById('videoModalDesc');
+    const urlInfo = document.getElementById('videoUrlInfo');
+
+    title.textContent = video.title;
+    desc.textContent = video.description || 'لا يوجد وصف';
+
+    // ✅ بناء المسار الصحيح للفيديو
+    let videoUrl = null;
+
+    if (video.filePath) {
+        if (video.filePath.startsWith('http')) {
+            videoUrl = video.filePath;
+        } else if (video.filePath.startsWith('/uploads')) {
+            videoUrl = `${API_URL}${video.filePath}`;
+        } else {
+            videoUrl = `${API_URL}/uploads/videos/${video.fileName || video.filePath}`;
         }
+    } else if (video.fileName) {
+        videoUrl = `${API_URL}/uploads/videos/${video.fileName}`;
+    }
 
-        // ============================================================
-        // 11. فتح الفيديو في المودال - ✅ النسخة المحسنة
-        // ============================================================
-        function openVideo(videoId) {
-            const video = videos.find(v => v._id === videoId);
-            if (!video) {
-                showAlert('❌ الفيديو غير موجود', 'danger');
-                return;
-            }
+    console.log('🔗 الرابط النهائي:', videoUrl);
 
-            console.log('🎬 فتح الفيديو:', video);
-            console.log('📁 المسار المخزن:', video.filePath);
-            console.log('📁 اسم الملف:', video.fileName);
+    // عرض رابط الفيديو للمساعدة في التصحيح
+    urlInfo.textContent = `⏱️ ${video.duration || '00:00'} | 🔗 ${videoUrl || 'لا يوجد رابط'}`;
 
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            const title = document.getElementById('videoModalTitle');
-            const desc = document.getElementById('videoModalDesc');
-            const urlInfo = document.getElementById('videoUrlInfo');
+    if (videoUrl) {
+        player.innerHTML = `
+            <video controls autoplay style="width:100%; height:100%; object-fit:contain;" 
+                   onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-exclamation-circle error-icon\\'></i><p style=\\'color:#EF4444;\\'>❌ تعذر تحميل الفيديو</p><p style=\\'font-size:0.9rem; opacity:0.7;\\'>الملف غير موجود على الخادم</p><p style=\\'font-size:0.8rem; opacity:0.5; margin-top:10px;\\'>${videoUrl}</p></div>'">
+                <source src="${videoUrl}" type="video/mp4">
+                <source src="${videoUrl}" type="video/webm">
+                متصفحك لا يدعم تشغيل الفيديو
+            </video>
+        `;
+    } else {
+        player.innerHTML = `
+            <div class="placeholder">
+                <i class="fas fa-exclamation-circle error-icon"></i>
+                <p style="color:#EF4444;">❌ لا يوجد مسار للفيديو</p>
+                <p style="font-size:0.9rem; opacity:0.7;">يرجى التأكد من رفع الفيديو بشكل صحيح</p>
+            </div>
+        `;
+    }
 
-            title.textContent = video.title;
-            desc.textContent = video.description || 'لا يوجد وصف';
-
-            // ✅ بناء المسار الصحيح للفيديو
-            let videoUrl = null;
-
-            if (video.filePath) {
-                if (video.filePath.startsWith('http')) {
-                    videoUrl = video.filePath;
-                } else if (video.filePath.startsWith('/uploads')) {
-                    videoUrl = `${API_URL}${video.filePath}`;
-                } else {
-                    videoUrl = `${API_URL}/uploads/videos/${video.fileName || video.filePath}`;
-                }
-            } else if (video.fileName) {
-                videoUrl = `${API_URL}/uploads/videos/${video.fileName}`;
-            }
-
-            console.log('🔗 الرابط النهائي:', videoUrl);
-
-            // عرض رابط الفيديو للمساعدة في التصحيح
-            urlInfo.textContent = `🔗 ${videoUrl || 'لا يوجد رابط'}`;
-
-            if (videoUrl) {
-                // ✅ محاولة تشغيل الفيديو
-                player.innerHTML = `
-                    <video controls autoplay style="width:100%; height:100%; object-fit:contain;" 
-                           onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-exclamation-circle error-icon\\'></i><p style=\\'color:#EF4444;\\'>❌ تعذر تحميل الفيديو</p><p style=\\'font-size:0.9rem; opacity:0.7;\\'>الملف غير موجود على الخادم</p><p style=\\'font-size:0.8rem; opacity:0.5; margin-top:10px;\\'>${videoUrl}</p></div>'">
-                        <source src="${videoUrl}" type="video/mp4">
-                        <source src="${videoUrl}" type="video/webm">
-                        متصفحك لا يدعم تشغيل الفيديو
-                    </video>
-                `;
-            } else {
-                player.innerHTML = `
-                    <div class="placeholder">
-                        <i class="fas fa-exclamation-circle error-icon"></i>
-                        <p style="color:#EF4444;">❌ لا يوجد مسار للفيديو</p>
-                        <p style="font-size:0.9rem; opacity:0.7;">يرجى التأكد من رفع الفيديو بشكل صحيح</p>
-                    </div>
-                `;
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
         // ============================================================
         // 12. إغلاق مودال الفيديو

@@ -1748,60 +1748,61 @@
             if (typeof AOS !== 'undefined') AOS.refresh();
         }
 
-        // ============================================================
-        // 16. عرض الفيديوهات
-        // ============================================================
-        function renderVideos() {
-            const container = document.getElementById('videosList');
-            if (videos.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-video"></i>
-                        <h3>لا توجد فيديوهات</h3>
-                        <p>قم برفع فيديو جديد باستخدام النموذج أعلاه</p>
-                    </div>
-                `;
-                return;
-            }
+  // ============================================================
+  // 16. عرض الفيديوهات
+  // ============================================================
+ function renderVideos() {
+    const container = document.getElementById('videosList');
+    if (videos.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-video"></i>
+                <h3>لا توجد فيديوهات</h3>
+                <p>قم برفع فيديو جديد باستخدام النموذج أعلاه</p>
+            </div>
+        `;
+        return;
+    }
 
-            let html = `
-                <div class="content-list-header">
-                    <span>الفيديو</span>
-                    <span>المادة</span>
-                    <span>البيانات</span>
-                    <span>المشاهدات</span>
-                    <span>الإجراءات</span>
+    let html = `
+        <div class="content-list-header">
+            <span>الفيديو</span>
+            <span>المادة</span>
+            <span>البيانات</span>
+            <span>المشاهدات</span>
+            <span>الإجراءات</span>
+        </div>
+    `;
+
+    videos.forEach((video, index) => {
+        const material = materials.find(m => String(m._id) === String(video.subjectId));
+        html += `
+            <div class="content-list-item" data-aos="fade-up" data-aos-delay="${index * 50}">
+                <div>
+                    <div class="item-title"><i class="fas fa-video" style="color:#3B82F6;"></i> ${video.title}</div>
+                    <div style="font-size:0.8rem;color:var(--text-muted);">
+                        <i class="fas fa-clock"></i> ${video.duration || '00:00'}
+                    </div>
                 </div>
-            `;
+                <div style="font-size:0.9rem;color:var(--text-muted);">${material ? material.title : video.subjectName || 'غير محددة'}</div>
+                <div>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">
+                        <i class="fas fa-calendar-alt"></i> ${new Date(video.uploadDate || video.createdAt).toLocaleDateString('ar-SA')}
+                        <br><i class="fas fa-weight-hanging"></i> ${video.fileSize || 'غير معروف'}
+                    </span>
+                </div>
+                <div style="font-size:0.9rem;font-weight:600;color:#3B82F6;">${video.views || 0} 👁️</div>
+                <div class="item-actions">
+                    <button class="btn-view" onclick="viewVideo('${video._id}')"><i class="fas fa-eye"></i></button>
+                    <button class="btn-delete" onclick="deleteVideo('${video._id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `;
+    });
 
-            videos.forEach((video, index) => {
-                const material = materials.find(m => m._id === String(video.subjectId));
-                html += `
-                    <div class="content-list-item" data-aos="fade-up" data-aos-delay="${index * 50}">
-                        <div>
-                            <div class="item-title"><i class="fas fa-video" style="color:#3B82F6;"></i> ${video.title}</div>
-                            <div style="font-size:0.8rem;color:var(--text-muted);">${video.subjectName || 'غير محددة'}</div>
-                        </div>
-                        <div style="font-size:0.9rem;color:var(--text-muted);">${material ? material.title : video.subjectName || 'غير محددة'}</div>
-                        <div>
-                            <span style="font-size:0.85rem;color:var(--text-muted);">
-                                <i class="fas fa-calendar-alt"></i> ${new Date(video.uploadDate || video.createdAt).toLocaleDateString('ar-SA')}
-                                <br><i class="fas fa-weight-hanging"></i> ${video.fileSize || 'غير معروف'}
-                            </span>
-                        </div>
-                        <div style="font-size:0.9rem;font-weight:600;color:#3B82F6;">${video.views || 0} 👁️</div>
-                        <div class="item-actions">
-                            <button class="btn-view" onclick="viewVideo('${video._id}')"><i class="fas fa-eye"></i></button>
-                            <button class="btn-delete" onclick="deleteVideo('${video._id}')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-            if (typeof AOS !== 'undefined') AOS.refresh();
-        }
-
+    container.innerHTML = html;
+    if (typeof AOS !== 'undefined') AOS.refresh();
+}
         // ============================================================
         // 17. عرض الملخصات
         // ============================================================
