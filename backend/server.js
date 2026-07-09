@@ -132,9 +132,10 @@ const Video = require('./models/Video');
 const Model = require('./models/Model');
 const Order = require('./models/Order');
 const User = require('./models/User');
-const University = require('./models/University');           // ✅ تم الإضافة
-const ExplanationMaterial = require('./models/ExplanationMaterial'); // ✅ تم الإضافة
-const Summary = require('./models/Summary'); // ✅ إضافة نموذج الملخصات
+const University = require('./models/University');
+const ExplanationMaterial = require('./models/ExplanationMaterial');
+const Summary = require('./models/Summary');
+const Subscription = require('./models/Subscription');
 
 // ============================================================
 // استيراد الميدل وير
@@ -157,7 +158,10 @@ app.get('/', (req, res) => {
             videos: '/api/videos',
             models: '/api/models',
             users: '/api/users',
+            universities: '/api/universities',
+            explanations: '/api/explanations/materials',
             summaries: '/api/summaries',
+            subscriptions: '/api/subscriptions',
             health: '/api/health'
         },
         status: {
@@ -311,121 +315,11 @@ app.get('/api/auth/me', protect, async (req, res) => {
 });
 
 // ============================================================
-// مسارات الفيديوهات
-// ============================================================
-
-// رفع فيديو جديد
-app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('video'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: 'يرجى اختيار فيديو'
-            });
-        }
-
-        const { title, subjectId, subjectName, description } = req.body;
-
-        if (!title || !subjectId) {
-            return res.status(400).json({
-                success: false,
-                message: 'العنوان ومعرف المادة مطلوبان'
-            });
-        }
-
-        const fileName = req.file.filename;
-        const publicPath = `/uploads/videos/${fileName}`;
-
-        const video = new Video({
-            title: title,
-            subjectId: parseInt(subjectId),
-            subjectName: subjectName || '',
-            description: description || '',
-            fileName: fileName,
-            filePath: publicPath,
-            fileSize: (req.file.size / (1024 * 1024)).toFixed(2) + ' MB',
-            fileType: req.file.mimetype,
-            uploadDate: new Date(),
-            views: 0
-        });
-
-        await video.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'تم رفع الفيديو بنجاح',
-            data: video
-        });
-    } catch (error) {
-        console.error('❌ خطأ في رفع الفيديو:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// جلب جميع الفيديوهات
-app.get('/api/videos/all', async (req, res) => {
-    try {
-        const videos = await Video.find().sort({ uploadDate: -1 });
-        res.status(200).json({
-            success: true,
-            data: videos
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب الفيديوهات:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// جلب فيديوهات مادة معينة
-app.get('/api/videos/subject/:subjectId', async (req, res) => {
-    try {
-        const videos = await Video.find({ subjectId: parseInt(req.params.subjectId) });
-        res.status(200).json({
-            success: true,
-            data: videos
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب فيديوهات المادة:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// حذف فيديو
-app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
-    try {
-        const video = await Video.findById(req.params.id);
-        if (!video) {
-            return res.status(404).json({
-                success: false,
-                message: 'الفيديو غير موجود'
-            });
-        }
-
-        // حذف الملف من الخادم
-        if (video.fileName) {
-            const filePath = path.join(__dirname, '../uploads/videos', video.fileName);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-
-        await video.deleteOne();
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف الفيديو بنجاح'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في حذف الفيديو:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// ============================================================
 // 2. مسارات الفيديوهات (VIDEOS)
 // ============================================================
 
-// رفع فيديو جديد
-app.post('/api/videos/upload', uploadVideo.single('video'), async (req, res) => {
+// رفع فيديو جديد (للمدير فقط)
+app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('video'), async (req, res) => {
     try {
         console.log('📁 استلام فيديو:', req.file);
         console.log('📦 بيانات:', req.body);
@@ -446,10 +340,7 @@ app.post('/api/videos/upload', uploadVideo.single('video'), async (req, res) => 
             });
         }
 
-        // استخراج اسم الملف فقط
         const fileName = req.file.filename;
-        
-        // بناء المسار العام
         const publicPath = `/uploads/videos/${fileName}`;
 
         console.log('📁 اسم الملف:', fileName);
@@ -586,7 +477,6 @@ app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
             });
         }
 
-        // حذف الملف من الخادم
         if (video.fileName) {
             const filePath = path.join(videosDir, video.fileName);
             if (fs.existsSync(filePath)) {
@@ -613,7 +503,7 @@ app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
 });
 
 // ============================================================
-// 3. مسارات النماذج (MODELS) - تم التعديل لدعم الخدمات الجديدة
+// 3. مسارات النماذج (MODELS)
 // ============================================================
 
 // جلب جميع النماذج
@@ -653,7 +543,7 @@ app.get('/api/models/:id', async (req, res) => {
     }
 });
 
-// رفع نموذج جديد - ✅ تم التعديل لإزالة التحقق من mainService
+// رفع نموذج جديد (للمدير فقط)
 app.post('/api/models', protect, authorize('admin'), async (req, res) => {
     try {
         const { 
@@ -668,7 +558,6 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
             subService 
         } = req.body;
 
-        // التحقق من الحقول المطلوبة
         if (!title || !category || !fileName || !fileData || !mainService) {
             return res.status(400).json({
                 success: false,
@@ -682,7 +571,6 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
         console.log('  - الخدمة الفرعية:', subService || 'غير محددة');
         console.log('  - التصنيف:', category);
 
-        // إنشاء نموذج جديد - ✅ بدون التحقق من enum
         const model = new Model({
             title,
             category,
@@ -691,7 +579,7 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
             fileSize: fileSize || '0 KB',
             fileType: fileType || 'application/octet-stream',
             fileData,
-            mainService: mainService, // ✅ يقبل أي قيمة
+            mainService: mainService,
             subService: subService || 'خدمة فرعية'
         });
 
@@ -714,7 +602,7 @@ app.post('/api/models', protect, authorize('admin'), async (req, res) => {
     }
 });
 
-// حذف نموذج
+// حذف نموذج (للمدير فقط)
 app.delete('/api/models/:id', protect, authorize('admin'), async (req, res) => {
     try {
         const model = await Model.findById(req.params.id);
@@ -739,7 +627,7 @@ app.delete('/api/models/:id', protect, authorize('admin'), async (req, res) => {
 // 4. مسارات الطلبات (ORDERS)
 // ============================================================
 
-// جلب جميع الطلبات للمدير - مع معالجة user: null
+// جلب جميع الطلبات للمدير
 app.get('/api/orders/admin/all', protect, authorize('admin'), async (req, res) => {
     try {
         const orders = await Order.find()
@@ -786,7 +674,7 @@ app.get('/api/orders/admin/all', protect, authorize('admin'), async (req, res) =
     }
 });
 
-// جلب طلبات الخبير - مع معالجة user: null
+// جلب طلبات الخبير
 app.get('/api/orders/expert', protect, authorize('expert'), async (req, res) => {
     try {
         const orders = await Order.find({ assignedExpert: req.user.id })
@@ -1157,9 +1045,6 @@ app.get('/api/orders/:orderId/files/:fileIndex', protect, async (req, res) => {
             possiblePaths.push(file.filePath);
         }
         
-        const uploadsDir = path.join(__dirname, 'uploads');
-        const ordersUploadsDir = path.join(__dirname, 'uploads', 'orders');
-        
         const possibleNames = [
             file.filename,
             file.fileId,
@@ -1179,12 +1064,12 @@ app.get('/api/orders/:orderId/files/:fileIndex', protect, async (req, res) => {
             }
         }
         
-        if (fs.existsSync(ordersUploadsDir)) {
-            const files = fs.readdirSync(ordersUploadsDir);
+        if (fs.existsSync(ordersDir)) {
+            const files = fs.readdirSync(ordersDir);
             for (const f of files) {
                 for (const name of possibleNames) {
                     if (f.includes(name) || name.includes(f)) {
-                        possiblePaths.push(path.join(ordersUploadsDir, f));
+                        possiblePaths.push(path.join(ordersDir, f));
                         break;
                     }
                 }
@@ -1442,175 +1327,10 @@ app.put('/api/orders/:id/assign-expert', protect, authorize('admin'), async (req
 });
 
 // ============================================================
-// نموذج الاشتراك (Subscription)
-// ============================================================
-const Subscription = require('./models/Subscription');
-
-// ============================================================
-// مسارات الاشتراكات
-// ============================================================
-
-// 1. إنشاء طلب اشتراك جديد (للعميل)
-app.post('/api/subscriptions', async (req, res) => {
-    try {
-        const { name, email, phone, subscriptionType, materialId, title, price, paymentMethod, notes, userName, userEmail } = req.body;
-
-        // التحقق من البيانات المطلوبة
-        if (!name || !email || !phone || !subscriptionType || !materialId || !title || !price) {
-            return res.status(400).json({
-                success: false,
-                message: 'جميع الحقول المطلوبة غير مكتملة'
-            });
-        }
-
-        // البحث عن المستخدم أو إنشاؤه
-        let user = await User.findOne({ email });
-        if (!user) {
-            // إنشاء مستخدم جديد
-            const bcrypt = require('bcryptjs');
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash('password123', salt);
-            
-            user = new User({
-                name: name,
-                email: email,
-                password: hashedPassword,
-                role: 'user',
-                isActive: true
-            });
-            await user.save();
-        }
-
-        // إنشاء طلب اشتراك جديد
-        const subscription = new Subscription({
-            user: user._id,
-            subscriptionType: subscriptionType,
-            materialId: materialId,
-            title: title,
-            price: price,
-            phone: phone,
-            paymentMethod: paymentMethod || 'card',
-            status: 'pending',
-            notes: notes || '',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await subscription.save();
-
-        console.log('✅ تم إنشاء طلب اشتراك جديد:', subscription.title);
-
-        res.status(201).json({
-            success: true,
-            message: 'تم إرسال طلب الاشتراك بنجاح',
-            data: subscription
-        });
-    } catch (error) {
-        console.error('❌ خطأ في إنشاء طلب الاشتراك:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// 2. جلب جميع طلبات الاشتراك (للمدير فقط)
-app.get('/api/subscriptions', protect, authorize('admin'), async (req, res) => {
-    try {
-        const subscriptions = await Subscription.find()
-            .populate('user', 'name email')
-            .sort({ createdAt: -1 });
-        res.status(200).json({
-            success: true,
-            data: subscriptions
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات الاشتراك:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// 3. تحديث حالة الاشتراك (للمدير فقط)
-app.put('/api/subscriptions/:id/status', protect, authorize('admin'), async (req, res) => {
-    try {
-        const { status } = req.body;
-        const validStatuses = ['pending', 'active', 'cancelled'];
-        
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'حالة غير صالحة. الحالات المتاحة: pending, active, cancelled'
-            });
-        }
-
-        const subscription = await Subscription.findByIdAndUpdate(
-            req.params.id,
-            { status, updatedAt: new Date() },
-            { new: true }
-        ).populate('user', 'name email');
-
-        if (!subscription) {
-            return res.status(404).json({
-                success: false,
-                message: 'طلب الاشتراك غير موجود'
-            });
-        }
-
-        // إذا تم التفعيل، يمكن إرسال إشعار للعميل هنا
-        if (status === 'active') {
-            console.log(`✅ تم تفعيل اشتراك "${subscription.title}" للمستخدم ${subscription.user?.name}`);
-            // يمكن إضافة كود لإرسال إيميل أو إشعار
-        }
-
-        res.status(200).json({
-            success: true,
-            message: `تم تحديث حالة الاشتراك إلى ${status}`,
-            data: subscription
-        });
-    } catch (error) {
-        console.error('❌ خطأ في تحديث حالة الاشتراك:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// 4. حذف طلب اشتراك (للمدير فقط)
-app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, res) => {
-    try {
-        const subscription = await Subscription.findById(req.params.id);
-        if (!subscription) {
-            return res.status(404).json({
-                success: false,
-                message: 'طلب الاشتراك غير موجود'
-            });
-        }
-
-        await subscription.deleteOne();
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف طلب الاشتراك بنجاح'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في حذف طلب الاشتراك:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// 5. جلب طلبات اشتراك المستخدم الحالي
-app.get('/api/subscriptions/my', protect, async (req, res) => {
-    try {
-        const subscriptions = await Subscription.find({ user: req.user.id })
-            .sort({ createdAt: -1 });
-        res.status(200).json({
-            success: true,
-            data: subscriptions
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات اشتراك المستخدم:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-// ============================================================
 // 5. مسارات المستخدمين (USERS)
 // ============================================================
 
-// جلب جميع المستخدمين
+// جلب جميع المستخدمين (للمدير فقط)
 app.get('/api/users', protect, authorize('admin'), async (req, res) => {
     try {
         const users = await User.find()
@@ -1627,7 +1347,7 @@ app.get('/api/users', protect, authorize('admin'), async (req, res) => {
     }
 });
 
-// جلب جميع الخبراء
+// جلب جميع الخبراء (للمدير فقط)
 app.get('/api/users/experts', protect, authorize('admin'), async (req, res) => {
     try {
         const experts = await User.find({ role: 'expert' })
@@ -1663,7 +1383,7 @@ app.get('/api/users/:id', protect, async (req, res) => {
     }
 });
 
-// تحديث مستخدم
+// تحديث مستخدم (للمدير فقط)
 app.put('/api/users/:id', protect, authorize('admin'), async (req, res) => {
     try {
         const { isActive, expertise, bio, role } = req.body;
@@ -1695,7 +1415,7 @@ app.put('/api/users/:id', protect, authorize('admin'), async (req, res) => {
     }
 });
 
-// حذف مستخدم
+// حذف مستخدم (للمدير فقط)
 app.delete('/api/users/:id', protect, authorize('admin'), async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
@@ -1733,7 +1453,7 @@ app.get('/api/universities', async (req, res) => {
     }
 });
 
-// إضافة جامعة جديدة
+// إضافة جامعة جديدة (للمدير فقط)
 app.post('/api/universities', protect, authorize('admin'), async (req, res) => {
     try {
         const { name, icon, count } = req.body;
@@ -1741,7 +1461,6 @@ app.post('/api/universities', protect, authorize('admin'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'اسم الجامعة مطلوب' });
         }
         
-        // التحقق من عدم وجود جامعة بنفس الاسم
         const existing = await University.findOne({ name });
         if (existing) {
             return res.status(400).json({ success: false, message: 'هذه الجامعة موجودة بالفعل' });
@@ -1765,7 +1484,7 @@ app.post('/api/universities', protect, authorize('admin'), async (req, res) => {
     }
 });
 
-// حذف جامعة
+// حذف جامعة (للمدير فقط)
 app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res) => {
     try {
         const university = await University.findById(req.params.id);
@@ -1773,9 +1492,7 @@ app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res
             return res.status(404).json({ success: false, message: 'الجامعة غير موجودة' });
         }
         
-        // حذف جميع المواد المرتبطة بهذه الجامعة
         await ExplanationMaterial.deleteMany({ universityId: req.params.id });
-        
         await university.deleteOne();
         
         res.status(200).json({
@@ -1806,16 +1523,15 @@ app.get('/api/explanations/materials', async (req, res) => {
     }
 });
 
-// إضافة مادة جديدة
+// إضافة مادة جديدة (للمدير فقط)
 app.post('/api/explanations/materials', protect, authorize('admin'), async (req, res) => {
     try {
-        const { title, code, instructor, universityId, icon, videos, description, isFeatured } = req.body;
+        const { title, code, instructor, universityId, icon, videos, description, isFeatured, price } = req.body;
         
         if (!title || !code || !instructor || !universityId) {
             return res.status(400).json({ success: false, message: 'جميع الحقول المطلوبة غير مكتملة' });
         }
         
-        // التحقق من وجود الجامعة
         const university = await University.findById(universityId);
         if (!university) {
             return res.status(404).json({ success: false, message: 'الجامعة غير موجودة' });
@@ -1829,11 +1545,11 @@ app.post('/api/explanations/materials', protect, authorize('admin'), async (req,
             icon: icon || 'fa-book',
             videos: videos || 0,
             description: description || '',
-            isFeatured: isFeatured || false
+            isFeatured: isFeatured || false,
+            price: price || 99
         });
         await material.save();
 
-        // تحديث عدد المواد في الجامعة
         await University.findByIdAndUpdate(universityId, { $inc: { count: 1 } });
 
         res.status(201).json({
@@ -1847,7 +1563,7 @@ app.post('/api/explanations/materials', protect, authorize('admin'), async (req,
     }
 });
 
-// حذف مادة
+// حذف مادة (للمدير فقط)
 app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async (req, res) => {
     try {
         const material = await ExplanationMaterial.findById(req.params.id);
@@ -1856,8 +1572,6 @@ app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async
         }
         
         await material.deleteOne();
-        
-        // تحديث عدد المواد في الجامعة
         await University.findByIdAndUpdate(material.universityId, { $inc: { count: -1 } });
         
         res.status(200).json({
@@ -1932,10 +1646,10 @@ app.post('/api/summaries/upload', protect, authorize('admin'), async (req, res) 
             fileSize,
             fileType,
             fileData,
-            date
+            date,
+            price
         } = req.body;
 
-        // التحقق من الحقول المطلوبة
         if (!title || !subject || !pages || !size || !fileName || !fileData) {
             return res.status(400).json({
                 success: false,
@@ -1943,7 +1657,6 @@ app.post('/api/summaries/upload', protect, authorize('admin'), async (req, res) 
             });
         }
 
-        // إنشاء ملخص جديد
         const summary = new Summary({
             title,
             subject,
@@ -1955,6 +1668,7 @@ app.post('/api/summaries/upload', protect, authorize('admin'), async (req, res) 
             fileData,
             date: date || new Date().toISOString().split('T')[0],
             downloads: 0,
+            price: price || 49,
             uploader: req.user.id
         });
 
@@ -1994,7 +1708,6 @@ app.get('/api/summaries/download/:id', async (req, res) => {
             });
         }
 
-        // تحديث عدد مرات التحميل
         summary.downloads = (summary.downloads || 0) + 1;
         await summary.save();
 
@@ -2050,8 +1763,165 @@ app.delete('/api/summaries/:id', protect, authorize('admin'), async (req, res) =
         res.status(500).json({ success: false, message: error.message });
     }
 });
+
 // ============================================================
-// 7. معالجة 404
+// 9. مسارات الاشتراكات (SUBSCRIPTIONS)
+// ============================================================
+
+// إنشاء طلب اشتراك جديد (للعميل)
+app.post('/api/subscriptions', async (req, res) => {
+    try {
+        const { name, email, phone, subscriptionType, materialId, title, price, paymentMethod, notes } = req.body;
+
+        if (!name || !email || !phone || !subscriptionType || !materialId || !title || !price) {
+            return res.status(400).json({
+                success: false,
+                message: 'جميع الحقول المطلوبة غير مكتملة'
+            });
+        }
+
+        // البحث عن المستخدم أو إنشاؤه
+        let user = await User.findOne({ email });
+        if (!user) {
+            const bcrypt = require('bcryptjs');
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('password123', salt);
+            
+            user = new User({
+                name: name,
+                email: email,
+                password: hashedPassword,
+                role: 'user',
+                isActive: true
+            });
+            await user.save();
+        }
+
+        const subscription = new Subscription({
+            user: user._id,
+            subscriptionType: subscriptionType,
+            materialId: materialId,
+            title: title,
+            price: price,
+            phone: phone,
+            paymentMethod: paymentMethod || 'card',
+            status: 'pending',
+            notes: notes || '',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        await subscription.save();
+
+        console.log('✅ تم إنشاء طلب اشتراك جديد:', subscription.title);
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إرسال طلب الاشتراك بنجاح',
+            data: subscription
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء طلب الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// جلب جميع طلبات الاشتراك (للمدير فقط)
+app.get('/api/subscriptions', protect, authorize('admin'), async (req, res) => {
+    try {
+        const subscriptions = await Subscription.find()
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: subscriptions
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب طلبات الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// جلب طلبات اشتراك المستخدم الحالي
+app.get('/api/subscriptions/my', protect, async (req, res) => {
+    try {
+        const subscriptions = await Subscription.find({ user: req.user.id })
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: subscriptions
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب طلبات اشتراك المستخدم:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// تحديث حالة الاشتراك (للمدير فقط)
+app.put('/api/subscriptions/:id/status', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['pending', 'active', 'cancelled'];
+        
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'حالة غير صالحة. الحالات المتاحة: pending, active, cancelled'
+            });
+        }
+
+        const subscription = await Subscription.findByIdAndUpdate(
+            req.params.id,
+            { status, updatedAt: new Date() },
+            { new: true }
+        ).populate('user', 'name email');
+
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: 'طلب الاشتراك غير موجود'
+            });
+        }
+
+        if (status === 'active') {
+            console.log(`✅ تم تفعيل اشتراك "${subscription.title}" للمستخدم ${subscription.user?.name}`);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `تم تحديث حالة الاشتراك إلى ${status}`,
+            data: subscription
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحديث حالة الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// حذف طلب اشتراك (للمدير فقط)
+app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const subscription = await Subscription.findById(req.params.id);
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: 'طلب الاشتراك غير موجود'
+            });
+        }
+
+        await subscription.deleteOne();
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف طلب الاشتراك بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف طلب الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// ============================================================
+// 10. معالجة 404
 // ============================================================
 app.use((req, res) => {
     res.status(404).json({
@@ -2062,7 +1932,7 @@ app.use((req, res) => {
 });
 
 // ============================================================
-// 8. معالجة الأخطاء العامة
+// 11. معالجة الأخطاء العامة
 // ============================================================
 app.use((err, req, res, next) => {
     console.error('❌ خطأ:', err.stack);
