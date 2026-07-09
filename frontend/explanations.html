@@ -409,7 +409,7 @@
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
             transition: var(--transition);
-            cursor: pointer;
+            cursor: default;
             position: relative;
             overflow: hidden;
         }
@@ -774,6 +774,58 @@
         }
 
         /* ============================================================
+           رسائل التنبيه
+           ============================================================ */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) translateX(-50%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translateX(-50%);
+            }
+        }
+
+        /* ============================================================
            التجاوب
            ============================================================ */
         @media (max-width: 768px) {
@@ -828,6 +880,11 @@
             .back-to-top {
                 bottom: 75px;
             }
+            .alert {
+                min-width: 250px;
+                top: 80px;
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -854,6 +911,12 @@
             }
             .summary-card .btn-subscribe-summary {
                 justify-content: center;
+            }
+            .alert {
+                min-width: 200px;
+                top: 70px;
+                font-size: 0.8rem;
+                padding: 10px 15px;
             }
         }
     </style>
@@ -892,6 +955,9 @@
                 </a>
             </div>
         </header>
+
+        <!-- رسائل التنبيه -->
+        <div id="alertMessage" class="alert"></div>
 
         <!-- ============================================================
         1. قسم أبرز الجامعات
@@ -984,9 +1050,22 @@
         let summaries = [];
         let currentMaterialTab = 'latest';
         let userSubscriptions = [];
+        let isDataLoaded = false;
 
         // ============================================================
-        // 3. جلب الجامعات من الخادم
+        // 3. عرض رسائل التنبيه
+        // ============================================================
+        function showAlert(message, type = 'success') {
+            const alertEl = document.getElementById('alertMessage');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert-${type} show`;
+            setTimeout(() => {
+                alertEl.classList.remove('show');
+            }, 5000);
+        }
+
+        // ============================================================
+        // 4. جلب الجامعات من الخادم
         // ============================================================
         async function fetchUniversities() {
             try {
@@ -1004,7 +1083,7 @@
         }
 
         // ============================================================
-        // 4. جلب المواد من الخادم
+        // 5. جلب المواد من الخادم
         // ============================================================
         async function fetchMaterials() {
             try {
@@ -1022,7 +1101,7 @@
         }
 
         // ============================================================
-        // 5. جلب الملخصات من الخادم
+        // 6. جلب الملخصات من الخادم
         // ============================================================
         async function fetchSummaries() {
             try {
@@ -1040,12 +1119,15 @@
         }
 
         // ============================================================
-        // 6. جلب اشتراكات المستخدم
+        // 7. جلب اشتراكات المستخدم - ✅ النسخة المحسنة
         // ============================================================
         async function fetchUserSubscriptions() {
             try {
                 const token = localStorage.getItem('token');
+                console.log('🔑 التوكن:', token ? 'موجود ✅' : 'غير موجود ❌');
+
                 if (!token) {
+                    console.log('⚠️ لا يوجد توكن، المستخدم غير مسجل');
                     userSubscriptions = [];
                     return;
                 }
@@ -1056,15 +1138,31 @@
                     }
                 });
 
+                console.log('📡 حالة الاستجابة:', response.status);
+
                 if (response.status === 401) {
+                    console.log('⚠️ انتهت صلاحية التوكن');
                     userSubscriptions = [];
                     return;
                 }
 
                 const data = await response.json();
+                console.log('📦 بيانات الاشتراكات من الخادم:', data);
+
                 if (data.success) {
                     userSubscriptions = data.data || [];
-                    console.log('📋 اشتراكات المستخدم:', userSubscriptions);
+                    console.log('✅ تم جلب الاشتراكات بنجاح، العدد:', userSubscriptions.length);
+                    
+                    // طباعة تفاصيل الاشتراكات
+                    userSubscriptions.forEach((sub, index) => {
+                        console.log(`  ${index + 1}. المادة: ${sub.title}, ID: ${sub.materialId}, الحالة: ${sub.status}`);
+                    });
+                    
+                    // ✅ تحديث واجهة المستخدم بعد جلب الاشتراكات
+                    renderMaterials(currentMaterialTab);
+                } else {
+                    console.error('❌ فشل في جلب الاشتراكات:', data.message);
+                    userSubscriptions = [];
                 }
             } catch (error) {
                 console.error('❌ خطأ في جلب اشتراكات المستخدم:', error);
@@ -1073,26 +1171,51 @@
         }
 
         // ============================================================
-        // 7. التحقق من اشتراك المستخدم في مادة معينة
+        // 8. التحقق من اشتراك المستخدم في مادة معينة - ✅ النسخة المحسنة
         // ============================================================
         function isUserSubscribed(materialId) {
-            if (!userSubscriptions || userSubscriptions.length === 0) return false;
-            return userSubscriptions.some(sub => 
-                String(sub.materialId) === String(materialId) && 
-                sub.status === 'active'
-            );
+            if (!userSubscriptions || userSubscriptions.length === 0) {
+                return false;
+            }
+
+            const materialIdStr = String(materialId);
+
+            const found = userSubscriptions.some(sub => {
+                const subMaterialId = String(sub.materialId);
+                const isActive = sub.status === 'active';
+                return subMaterialId === materialIdStr && isActive;
+            });
+
+            return found;
         }
 
         // ============================================================
-        // 8. فتح صفحة محتوى المادة (للمشتركين)
+        // 9. فتح صفحة محتوى المادة (للمشتركين) - ✅ النسخة المحسنة
         // ============================================================
         function openMaterialContent(materialId) {
+            console.log('📂 محاولة فتح المادة:', materialId);
+
+            // البحث عن المادة في قائمة المواد
             const material = materials.find(m => m._id === materialId);
             if (!material) {
                 console.error('❌ المادة غير موجودة');
+                showAlert('❌ المادة غير موجودة', 'danger');
                 return;
             }
 
+            console.log('📚 المادة التي تم العثور عليها:', material);
+
+            // التحقق من الاشتراك مرة أخرى
+            const isSubscribed = isUserSubscribed(materialId);
+            console.log('✅ حالة الاشتراك:', isSubscribed);
+
+            if (!isSubscribed) {
+                console.error('❌ المستخدم غير مشترك في هذه المادة');
+                showAlert('❌ أنت غير مشترك في هذه المادة', 'danger');
+                return;
+            }
+
+            // تجهيز البيانات للانتقال
             const uni = universities.find(u => u._id === material.universityId);
             const encodedTitle = encodeURIComponent(material.title);
             const encodedCode = encodeURIComponent(material.code || '');
@@ -1100,11 +1223,18 @@
             const encodedDescription = encodeURIComponent(material.description || '');
             const encodedUniversity = encodeURIComponent(uni ? uni.name : '');
 
-            window.location.href = `material-content.html?id=${materialId}&title=${encodedTitle}&code=${encodedCode}&instructor=${encodedInstructor}&description=${encodedDescription}&university=${encodedUniversity}&status=active`;
+            // بناء الرابط
+            const url =
+                `material-content.html?id=${materialId}&title=${encodedTitle}&code=${encodedCode}&instructor=${encodedInstructor}&description=${encodedDescription}&university=${encodedUniversity}&status=active`;
+
+            console.log('🔗 الانتقال إلى الرابط:', url);
+
+            // ✅ الانتقال إلى صفحة المحتوى
+            window.location.href = url;
         }
 
         // ============================================================
-        // 9. عرض الجامعات
+        // 10. عرض الجامعات
         // ============================================================
         function renderUniversities() {
             const grid = document.getElementById('universitiesGrid');
@@ -1138,7 +1268,7 @@
         }
 
         // ============================================================
-        // 10. عرض المواد حسب التبويب - مع التحقق من الاشتراك
+        // 11. عرض المواد حسب التبويب - مع التحقق من الاشتراك - ✅ النسخة المحسنة
         // ============================================================
         function renderMaterials(tab) {
             const grid = document.getElementById('materialsGrid');
@@ -1192,8 +1322,11 @@
                 const price = m.price || 99;
                 const isSubscribed = isUserSubscribed(m._id);
 
+                // ✅ سجل حالة الاشتراك لكل مادة
+                console.log(`📌 المادة: ${m.title}, ID: ${m._id}, مشترك: ${isSubscribed}`);
+
                 return `
-                    <div class="material-card" onclick="${isSubscribed ? `openMaterialContent('${m._id}')` : `openSubscription('${m._id}', 'material')`}">
+                    <div class="material-card">
                         ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
                         <div class="material-header">
                             <span class="material-code">${m.code}</span>
@@ -1211,11 +1344,11 @@
                                 ${!isSubscribed ? `<span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>` : ''}
                             </div>
                             ${isSubscribed ? `
-                                <button class="btn-open-material" onclick="event.stopPropagation(); openMaterialContent('${m._id}')">
+                                <button class="btn-open-material" onclick="openMaterialContent('${m._id}')">
                                     <i class="fas fa-play"></i> فتح المادة
                                 </button>
                             ` : `
-                                <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
+                                <button class="btn-subscribe" onclick="openSubscription('${m._id}', 'material')">
                                     <i class="fas fa-play"></i> اشتراك
                                 </button>
                             `}
@@ -1227,7 +1360,7 @@
         }
 
         // ============================================================
-        // 11. عرض الملخصات - مع عرض السعر
+        // 12. عرض الملخصات
         // ============================================================
         function renderSummaries() {
             const grid = document.getElementById('summariesGrid');
@@ -1280,7 +1413,7 @@
         }
 
         // ============================================================
-        // 12. تبديل تبويبات المواد
+        // 13. تبديل تبويبات المواد
         // ============================================================
         function switchMaterialTab(tab) {
             currentMaterialTab = tab;
@@ -1291,7 +1424,7 @@
         }
 
         // ============================================================
-        // 13. فلترة المواد حسب الجامعة
+        // 14. فلترة المواد حسب الجامعة
         // ============================================================
         function filterMaterialsByUniversity(universityId) {
             const filtered = materials.filter(m => m.universityId === universityId);
@@ -1320,7 +1453,7 @@
                 const isSubscribed = isUserSubscribed(m._id);
 
                 return `
-                    <div class="material-card" onclick="${isSubscribed ? `openMaterialContent('${m._id}')` : `openSubscription('${m._id}', 'material')`}">
+                    <div class="material-card">
                         ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
                         <div class="material-header">
                             <span class="material-code">${m.code}</span>
@@ -1338,11 +1471,11 @@
                                 ${!isSubscribed ? `<span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>` : ''}
                             </div>
                             ${isSubscribed ? `
-                                <button class="btn-open-material" onclick="event.stopPropagation(); openMaterialContent('${m._id}')">
+                                <button class="btn-open-material" onclick="openMaterialContent('${m._id}')">
                                     <i class="fas fa-play"></i> فتح المادة
                                 </button>
                             ` : `
-                                <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
+                                <button class="btn-subscribe" onclick="openSubscription('${m._id}', 'material')">
                                     <i class="fas fa-play"></i> اشتراك
                                 </button>
                             `}
@@ -1356,7 +1489,7 @@
         }
 
         // ============================================================
-        // 14. فتح صفحة الاشتراك
+        // 15. فتح صفحة الاشتراك
         // ============================================================
         function openSubscription(id, type) {
             let title = '';
@@ -1398,7 +1531,7 @@
         }
 
         // ============================================================
-        // 15. تبديل الوضع (Dark/Light)
+        // 16. تبديل الوضع (Dark/Light)
         // ============================================================
         let isDark = false;
 
@@ -1417,7 +1550,7 @@
         }
 
         // ============================================================
-        // 16. زر العودة للأعلى
+        // 17. زر العودة للأعلى
         // ============================================================
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
@@ -1429,7 +1562,7 @@
         });
 
         // ============================================================
-        // 17. تفعيل AOS
+        // 18. تفعيل AOS
         // ============================================================
         if (typeof AOS !== 'undefined') {
             AOS.init({
@@ -1440,22 +1573,64 @@
         }
 
         // ============================================================
-        // 18. التشغيل الابتدائي - جلب جميع البيانات
+        // 19. التشغيل الابتدائي - جلب جميع البيانات بالترتيب الصحيح
         // ============================================================
         async function init() {
+            console.log('🚀 بدء تحميل صفحة الشروحات...');
+
+            // ✅ جلب البيانات بالترتيب الصحيح
             await fetchUniversities();
             await fetchMaterials();
             await fetchSummaries();
-            await fetchUserSubscriptions(); // ✅ جلب اشتراكات المستخدم
+
+            // ✅ جلب اشتراكات المستخدم بعد تحميل المواد
+            await fetchUserSubscriptions();
+
+            // ✅ إعادة عرض المواد بعد جلب الاشتراكات
+            renderMaterials(currentMaterialTab);
 
             console.log('📚 تم تحميل صفحة الشروحات بنجاح!');
             console.log('🏛️ عدد الجامعات:', universities.length);
             console.log('📚 عدد المواد:', materials.length);
             console.log('📄 عدد الملخصات:', summaries.length);
             console.log('📋 عدد الاشتراكات:', userSubscriptions.length);
+            
+            isDataLoaded = true;
         }
 
+        // ============================================================
+        // 20. زر اختبار سريع للتأكد من عمل الاشتراكات
+        // ============================================================
+        function testSubscription() {
+            console.log('🧪 اختبار الاشتراكات...');
+            console.log('📋 الاشتراكات:', userSubscriptions);
+            console.log('📚 المواد:', materials);
+
+            const subscribedIds = userSubscriptions
+                .filter(sub => sub.status === 'active')
+                .map(sub => String(sub.materialId));
+
+            console.log('🔑 معرفات المواد المشترك فيها:', subscribedIds);
+
+            const firstSubscribed = materials.find(m =>
+                subscribedIds.includes(String(m._id))
+            );
+
+            if (firstSubscribed) {
+                console.log('✅ تم العثور على مادة مشترك فيها:', firstSubscribed);
+                showAlert(`✅ فتح المادة: ${firstSubscribed.title}`, 'success');
+                openMaterialContent(firstSubscribed._id);
+            } else {
+                console.log('❌ لا توجد مواد مشترك فيها');
+                showAlert('❌ لا توجد مواد مشترك فيها. تأكد من أن المدير قام بتفعيل الاشتراك.', 'danger');
+            }
+        }
+
+        // بدء التطبيق
         init();
+
+        // إضافة زر اختبار في console
+        console.log('🧪 للاختبار: اكتب testSubscription() في console');
     </script>
 
 </body>
