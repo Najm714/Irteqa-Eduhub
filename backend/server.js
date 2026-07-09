@@ -1332,6 +1332,171 @@ app.put('/api/orders/:id/assign-expert', protect, authorize('admin'), async (req
 });
 
 // ============================================================
+// نموذج الاشتراك (Subscription)
+// ============================================================
+const Subscription = require('./models/Subscription');
+
+// ============================================================
+// مسارات الاشتراكات
+// ============================================================
+
+// 1. إنشاء طلب اشتراك جديد (للعميل)
+app.post('/api/subscriptions', async (req, res) => {
+    try {
+        const { name, email, phone, subscriptionType, materialId, title, price, paymentMethod, notes, userName, userEmail } = req.body;
+
+        // التحقق من البيانات المطلوبة
+        if (!name || !email || !phone || !subscriptionType || !materialId || !title || !price) {
+            return res.status(400).json({
+                success: false,
+                message: 'جميع الحقول المطلوبة غير مكتملة'
+            });
+        }
+
+        // البحث عن المستخدم أو إنشاؤه
+        let user = await User.findOne({ email });
+        if (!user) {
+            // إنشاء مستخدم جديد
+            const bcrypt = require('bcryptjs');
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('password123', salt);
+            
+            user = new User({
+                name: name,
+                email: email,
+                password: hashedPassword,
+                role: 'user',
+                isActive: true
+            });
+            await user.save();
+        }
+
+        // إنشاء طلب اشتراك جديد
+        const subscription = new Subscription({
+            user: user._id,
+            subscriptionType: subscriptionType,
+            materialId: materialId,
+            title: title,
+            price: price,
+            phone: phone,
+            paymentMethod: paymentMethod || 'card',
+            status: 'pending',
+            notes: notes || '',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        await subscription.save();
+
+        console.log('✅ تم إنشاء طلب اشتراك جديد:', subscription.title);
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إرسال طلب الاشتراك بنجاح',
+            data: subscription
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء طلب الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 2. جلب جميع طلبات الاشتراك (للمدير فقط)
+app.get('/api/subscriptions', protect, authorize('admin'), async (req, res) => {
+    try {
+        const subscriptions = await Subscription.find()
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: subscriptions
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب طلبات الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 3. تحديث حالة الاشتراك (للمدير فقط)
+app.put('/api/subscriptions/:id/status', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['pending', 'active', 'cancelled'];
+        
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'حالة غير صالحة. الحالات المتاحة: pending, active, cancelled'
+            });
+        }
+
+        const subscription = await Subscription.findByIdAndUpdate(
+            req.params.id,
+            { status, updatedAt: new Date() },
+            { new: true }
+        ).populate('user', 'name email');
+
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: 'طلب الاشتراك غير موجود'
+            });
+        }
+
+        // إذا تم التفعيل، يمكن إرسال إشعار للعميل هنا
+        if (status === 'active') {
+            console.log(`✅ تم تفعيل اشتراك "${subscription.title}" للمستخدم ${subscription.user?.name}`);
+            // يمكن إضافة كود لإرسال إيميل أو إشعار
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `تم تحديث حالة الاشتراك إلى ${status}`,
+            data: subscription
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحديث حالة الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 4. حذف طلب اشتراك (للمدير فقط)
+app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const subscription = await Subscription.findById(req.params.id);
+        if (!subscription) {
+            return res.status(404).json({
+                success: false,
+                message: 'طلب الاشتراك غير موجود'
+            });
+        }
+
+        await subscription.deleteOne();
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف طلب الاشتراك بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف طلب الاشتراك:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 5. جلب طلبات اشتراك المستخدم الحالي
+app.get('/api/subscriptions/my', protect, async (req, res) => {
+    try {
+        const subscriptions = await Subscription.find({ user: req.user.id })
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: subscriptions
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب طلبات اشتراك المستخدم:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+// ============================================================
 // 5. مسارات المستخدمين (USERS)
 // ============================================================
 
