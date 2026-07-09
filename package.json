@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ffprobe": "^1.1.2",
+    "ffprobe-static": "^3.1.0"
+  }
+}
