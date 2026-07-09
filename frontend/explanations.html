@@ -1039,87 +1039,94 @@
                 </div>
             `).join('');
         }
+// ============================================================
+// عرض المواد - مع التحقق من الاشتراك
+// ============================================================
+function renderMaterials(tab) {
+    const grid = document.getElementById('materialsGrid');
+    const countEl = document.getElementById('materialCount');
 
-        // ============================================================
-        // 7. عرض المواد حسب التبويب - مع عرض السعر
-        // ============================================================
-        function renderMaterials(tab) {
-            const grid = document.getElementById('materialsGrid');
-            const countEl = document.getElementById('materialCount');
+    if (!materials || materials.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-book-open"></i>
+                <h3>لا توجد مواد</h3>
+                <p>لم يتم إضافة أي مادة بعد</p>
+                <a href="admin-explanations.html" class="btn-admin-link">
+                    <i class="fas fa-plus-circle"></i> أضف مادة الآن
+                </a>
+            </div>
+        `;
+        countEl.textContent = '0';
+        return;
+    }
 
-            if (!materials || materials.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-book-open"></i>
-                        <h3>لا توجد مواد</h3>
-                        <p>لم يتم إضافة أي مادة بعد</p>
-                        <a href="admin-explanations.html" class="btn-admin-link">
-                            <i class="fas fa-plus-circle"></i> أضف مادة الآن
-                        </a>
+    let filtered = [];
+
+    switch (tab) {
+        case 'latest':
+            filtered = [...materials].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            break;
+        case 'featured':
+            filtered = materials.filter(m => m.isFeatured);
+            break;
+        case 'all-universities':
+        default:
+            filtered = [...materials];
+            break;
+    }
+
+    countEl.textContent = filtered.length;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>لا توجد مواد</h3>
+                <p>لا توجد مواد في هذا التصنيف</p>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(m => {
+        const uni = universities.find(u => u._id === m.universityId);
+        const price = m.price || 99;
+        const isSubscribed = isUserSubscribed(m._id);
+        
+        return `
+            <div class="material-card" onclick="${isSubscribed ? `openMaterialContent('${m._id}')` : `openSubscription('${m._id}', 'material')`}">
+                ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
+                <div class="material-header">
+                    <span class="material-code">${m.code}</span>
+                    <span class="material-icon"><i class="fas ${m.icon || 'fa-book'}"></i></span>
+                </div>
+                <div class="material-title">${m.title}</div>
+                <div class="material-instructor">
+                    <i class="fas fa-user-graduate"></i> ${m.instructor}
+                </div>
+                <div class="material-desc">${m.description || 'لا يوجد وصف'}</div>
+                <span class="university-tag"><i class="fas fa-university"></i> ${uni ? uni.name : 'جامعة'}</span>
+                <div class="material-footer">
+                    <div class="material-stats">
+                        <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
+                        ${!isSubscribed ? `<span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>` : ''}
                     </div>
-                `;
-                countEl.textContent = '0';
-                return;
-            }
-
-            let filtered = [];
-
-            switch (tab) {
-                case 'latest':
-                    filtered = [...materials].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-                    break;
-                case 'featured':
-                    filtered = materials.filter(m => m.isFeatured);
-                    break;
-                case 'all-universities':
-                default:
-                    filtered = [...materials];
-                    break;
-            }
-
-            countEl.textContent = filtered.length;
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>لا توجد مواد</h3>
-                        <p>لا توجد مواد في هذا التصنيف</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(m => {
-                const uni = universities.find(u => u._id === m.universityId);
-                const price = m.price || 99;
-                return `
-                    <div class="material-card" onclick="openSubscription('${m._id}', 'material')">
-                        ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
-                        <div class="material-header">
-                            <span class="material-code">${m.code}</span>
-                            <span class="material-icon"><i class="fas ${m.icon || 'fa-book'}"></i></span>
-                        </div>
-                        <div class="material-title">${m.title}</div>
-                        <div class="material-instructor">
-                            <i class="fas fa-user-graduate"></i> ${m.instructor}
-                        </div>
-                        <div class="material-desc">${m.description || 'لا يوجد وصف'}</div>
-                        <span class="university-tag"><i class="fas fa-university"></i> ${uni ? uni.name : 'جامعة'}</span>
-                        <div class="material-footer">
-                            <div class="material-stats">
-                                <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
-                                <span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>
-                            </div>
-                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
-                                <i class="fas fa-play"></i> اشتراك
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
+                    ${isSubscribed ? `
+                        <button class="btn-subscribe" style="background:var(--success);" onclick="event.stopPropagation(); openMaterialContent('${m._id}')">
+                            <i class="fas fa-play"></i> فتح المادة
+                        </button>
+                    ` : `
+                        <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
+                            <i class="fas fa-play"></i> اشتراك
+                        </button>
+                    `}
+                </div>
+                ${isSubscribed ? '<div style="margin-top:8px; font-size:0.7rem; color:var(--success);"><i class="fas fa-check-circle"></i> مشترك</div>' : ''}
+            </div>
+        `;
+    }).join('');
+}
         // ============================================================
         // 8. عرض الملخصات - مع عرض السعر
         // ============================================================
@@ -1183,63 +1190,70 @@
             });
             renderMaterials(tab);
         }
+// ============================================================
+// فلترة المواد حسب الجامعة - مع التحقق من الاشتراك
+// ============================================================
+function filterMaterialsByUniversity(universityId) {
+    const filtered = materials.filter(m => m.universityId === universityId);
+    const grid = document.getElementById('materialsGrid');
+    const countEl = document.getElementById('materialCount');
 
-        // ============================================================
-        // 10. فلترة المواد حسب الجامعة
-        // ============================================================
-        function filterMaterialsByUniversity(universityId) {
-            const filtered = materials.filter(m => m.universityId === universityId);
-            const grid = document.getElementById('materialsGrid');
-            const countEl = document.getElementById('materialCount');
+    document.querySelectorAll('.materials-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
 
-            document.querySelectorAll('.materials-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-university"></i>
+                <h3>لا توجد مواد</h3>
+                <p>لا توجد مواد في هذه الجامعة حالياً</p>
+            </div>
+        `;
+        countEl.textContent = '0';
+        return;
+    }
 
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-university"></i>
-                        <h3>لا توجد مواد</h3>
-                        <p>لا توجد مواد في هذه الجامعة حالياً</p>
+    const uni = universities.find(u => u._id === universityId);
+    countEl.textContent = filtered.length;
+
+    grid.innerHTML = filtered.map(m => {
+        const price = m.price || 99;
+        const isSubscribed = isUserSubscribed(m._id);
+        
+        return `
+            <div class="material-card" onclick="${isSubscribed ? `openMaterialContent('${m._id}')` : `openSubscription('${m._id}', 'material')`}">
+                ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
+                <div class="material-header">
+                    <span class="material-code">${m.code}</span>
+                    <span class="material-icon"><i class="fas ${m.icon || 'fa-book'}"></i></span>
+                </div>
+                <div class="material-title">${m.title}</div>
+                <div class="material-instructor">
+                    <i class="fas fa-user-graduate"></i> ${m.instructor}
+                </div>
+                <div class="material-desc">${m.description || 'لا يوجد وصف'}</div>
+                <span class="university-tag"><i class="fas fa-university"></i> ${uni ? uni.name : 'جامعة'}</span>
+                <div class="material-footer">
+                    <div class="material-stats">
+                        <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
+                        ${!isSubscribed ? `<span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>` : ''}
                     </div>
-                `;
-                countEl.textContent = '0';
-                return;
-            }
+                    ${isSubscribed ? `
+                        <button class="btn-subscribe" style="background:var(--success);" onclick="event.stopPropagation(); openMaterialContent('${m._id}')">
+                            <i class="fas fa-play"></i> فتح المادة
+                        </button>
+                    ` : `
+                        <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
+                            <i class="fas fa-play"></i> اشتراك
+                        </button>
+                    `}
+                </div>
+                ${isSubscribed ? '<div style="margin-top:8px; font-size:0.7rem; color:var(--success);"><i class="fas fa-check-circle"></i> مشترك</div>' : ''}
+            </div>
+        `;
+    }).join('');
 
-            const uni = universities.find(u => u._id === universityId);
-            countEl.textContent = filtered.length;
-
-            grid.innerHTML = filtered.map(m => {
-                const price = m.price || 99;
-                return `
-                    <div class="material-card" onclick="openSubscription('${m._id}', 'material')">
-                        ${m.isFeatured ? '<span class="featured-badge"><i class="fas fa-star"></i> مميز</span>' : ''}
-                        <div class="material-header">
-                            <span class="material-code">${m.code}</span>
-                            <span class="material-icon"><i class="fas ${m.icon || 'fa-book'}"></i></span>
-                        </div>
-                        <div class="material-title">${m.title}</div>
-                        <div class="material-instructor">
-                            <i class="fas fa-user-graduate"></i> ${m.instructor}
-                        </div>
-                        <div class="material-desc">${m.description || 'لا يوجد وصف'}</div>
-                        <span class="university-tag"><i class="fas fa-university"></i> ${uni ? uni.name : 'جامعة'}</span>
-                        <div class="material-footer">
-                            <div class="material-stats">
-                                <span><i class="fas fa-video"></i> ${m.videos || 0}</span>
-                                <span class="material-price"><i class="fas fa-tag"></i> ${price} ريال</span>
-                            </div>
-                            <button class="btn-subscribe" onclick="event.stopPropagation(); openSubscription('${m._id}', 'material')">
-                                <i class="fas fa-play"></i> اشتراك
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.querySelector('.materials-section').scrollIntoView({ behavior: 'smooth' });
-        }
-
+    document.querySelector('.materials-section').scrollIntoView({ behavior: 'smooth' });
+}
         // ============================================================
         // 11. فتح صفحة الاشتراك
         // ============================================================
@@ -1323,22 +1337,139 @@
                 offset: 50
             });
         }
+// ============================================================
+// التشغيل الابتدائي - جلب جميع البيانات
+// ============================================================
+async function init() {
+    await fetchUniversities();
+    await fetchMaterials();
+    await fetchSummaries();
+    await fetchUserSubscriptions(); // ✅ جلب اشتراكات المستخدم
+    
+    console.log('📚 تم تحميل صفحة الشروحات بنجاح!');
+    console.log('🏛️ عدد الجامعات:', universities.length);
+    console.log('📚 عدد المواد:', materials.length);
+    console.log('📄 عدد الملخصات:', summaries.length);
+    console.log('📋 عدد الاشتراكات:', userSubscriptions.length);
+}
 
+init();
         // ============================================================
-        // 15. التشغيل الابتدائي - جلب جميع البيانات
-        // ============================================================
-        async function init() {
-            await fetchUniversities();
-            await fetchMaterials();
-            await fetchSummaries();
+// التحقق من اشتراكات المستخدم
+// ============================================================
+let userSubscriptions = [];
 
-            console.log('📚 تم تحميل صفحة الشروحات بنجاح!');
-            console.log('🏛️ عدد الجامعات:', universities.length);
-            console.log('📚 عدد المواد:', materials.length);
-            console.log('📄 عدد الملخصات:', summaries.length);
+async function fetchUserSubscriptions() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(`${API_URL}/api/subscriptions/my`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            userSubscriptions = data.data || [];
+            console.log('📋 اشتراكات المستخدم:', userSubscriptions);
+        }
+    } catch (error) {
+        console.error('❌ خطأ في جلب اشتراكات المستخدم:', error);
+    }
+}
+
+// ============================================================
+// التحقق مما إذا كان المستخدم مشتركاً في مادة معينة ومفعلة
+// ============================================================
+function isUserSubscribed(materialId) {
+    return userSubscriptions.some(sub => 
+        sub.materialId === materialId && 
+        sub.status === 'active'
+    );
+}
+
+// ============================================================
+// فتح صفحة محتوى المادة (للمشتركين)
+// ============================================================
+function openMaterialContent(materialId) {
+    const material = materials.find(m => m._id === materialId);
+    if (!material) return;
+
+    const uni = universities.find(u => u._id === material.universityId);
+    const encodedTitle = encodeURIComponent(material.title);
+    const encodedCode = encodeURIComponent(material.code || '');
+    const encodedInstructor = encodeURIComponent(material.instructor || '');
+    const encodedDescription = encodeURIComponent(material.description || '');
+    const encodedUniversity = encodeURIComponent(uni ? uni.name : '');
+
+    window.location.href = `material-content.html?id=${materialId}&title=${encodedTitle}&code=${encodedCode}&instructor=${encodedInstructor}&description=${encodedDescription}&university=${encodedUniversity}&status=active`;
+}
+// ============================================================
+// التحقق من اشتراكات المستخدم
+// ============================================================
+let userSubscriptions = [];
+
+async function fetchUserSubscriptions() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            userSubscriptions = [];
+            return;
         }
 
-        init();
+        const response = await fetch(`${API_URL}/api/subscriptions/my`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            userSubscriptions = [];
+            return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            userSubscriptions = data.data || [];
+            console.log('📋 اشتراكات المستخدم:', userSubscriptions);
+        }
+    } catch (error) {
+        console.error('❌ خطأ في جلب اشتراكات المستخدم:', error);
+        userSubscriptions = [];
+    }
+}
+
+// ============================================================
+// التحقق مما إذا كان المستخدم مشتركاً في مادة معينة ومفعلة
+// ============================================================
+function isUserSubscribed(materialId) {
+    return userSubscriptions.some(sub => 
+        String(sub.materialId) === String(materialId) && 
+        sub.status === 'active'
+    );
+}
+
+// ============================================================
+// فتح صفحة محتوى المادة (للمشتركين)
+// ============================================================
+function openMaterialContent(materialId) {
+    const material = materials.find(m => m._id === materialId);
+    if (!material) {
+        console.error('❌ المادة غير موجودة');
+        return;
+    }
+
+    const uni = universities.find(u => u._id === material.universityId);
+    const encodedTitle = encodeURIComponent(material.title);
+    const encodedCode = encodeURIComponent(material.code || '');
+    const encodedInstructor = encodeURIComponent(material.instructor || '');
+    const encodedDescription = encodeURIComponent(material.description || '');
+    const encodedUniversity = encodeURIComponent(uni ? uni.name : '');
+
+    window.location.href = `material-content.html?id=${materialId}&title=${encodedTitle}&code=${encodedCode}&instructor=${encodedInstructor}&description=${encodedDescription}&university=${encodedUniversity}&status=active`;
+}
     </script>
 
 </body>
