@@ -1789,21 +1789,28 @@
                 btn.disabled = false;
             }
         });
+// ============================================================
+// عرض فيديو - ✅ النسخة المحسنة
+// ============================================================
+function viewVideo(id) {
+    const video = videos.find(v => v._id === id);
+    if (!video) {
+        showAlert('❌ الفيديو غير موجود', 'danger');
+        return;
+    }
 
-        // ============================================================
-        // 18. عرض فيديو
-        // ============================================================
-        function viewVideo(id) {
-            const video = videos.find(v => v._id === id);
-            if (video) {
-                if (video.filePath) {
-                    window.open(video.filePath, '_blank');
-                } else {
-                    alert(`🎬 ${video.title}\n\n📝 ${video.description || 'لا يوجد وصف'}\n👁️ ${video.views || 0} مشاهدة`);
-                }
-            }
-        }
+    console.log('🎬 عرض الفيديو:', video);
+    console.log('📁 المسار:', video.filePath);
 
+    // ✅ استخدام المسار الصحيح
+    if (video.filePath) {
+        // فتح الفيديو في نافذة جديدة
+        window.open(video.filePath, '_blank');
+    } else {
+        // عرض معلومات الفيديو
+        alert(`🎬 ${video.title}\n\n📝 ${video.description || 'لا يوجد وصف'}\n👁️ ${video.views || 0} مشاهدة`);
+    }
+}
         // ============================================================
         // 19. حذف فيديو
         // ============================================================

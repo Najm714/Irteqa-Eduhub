@@ -1224,81 +1224,98 @@
                 videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
             }];
         }
+// ============================================================
+// عرض الفيديوهات - ✅ النسخة المحسنة
+// ============================================================
+function renderVideos(videosList) {
+    const grid = document.getElementById('videosGrid');
 
-        // ============================================================
-        // 10. عرض الفيديوهات
-        // ============================================================
-        function renderVideos(videosList) {
-            const grid = document.getElementById('videosGrid');
+    if (!videosList || videosList.length === 0) {
+        grid.innerHTML = `
+            <div class="no-videos">
+                <i class="fas fa-video-slash"></i>
+                <h3>لا توجد فيديوهات</h3>
+                <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+            </div>
+        `;
+        return;
+    }
 
-            if (!videosList || videosList.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-videos">
-                        <i class="fas fa-video-slash"></i>
-                        <h3>لا توجد فيديوهات</h3>
-                        <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+    grid.innerHTML = videosList.map((video, index) => {
+        // ✅ استخدام المسار الصحيح للفيديو
+        const videoUrl = video.filePath || '';
+        const thumbnail = video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
+        
+        return `
+            <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo('${video._id}')">
+                <div class="video-thumbnail">
+                    <img src="${thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'" />
+                    <div class="play-overlay"><i class="fas fa-play"></i></div>
+                    <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                    <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
+                </div>
+                <div class="video-body">
+                    <h3>${video.title}</h3>
+                    <div class="video-meta">
+                        <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                        <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
                     </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = videosList.map((video, index) => `
-                <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo(${video.id})">
-                    <div class="video-thumbnail">
-                        <img src="${video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'}" alt="${video.title}" loading="lazy" />
-                        <div class="play-overlay"><i class="fas fa-play"></i></div>
-                        <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                        <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
-                    </div>
-                    <div class="video-body">
-                        <h3>${video.title}</h3>
-                        <div class="video-meta">
-                            <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                            <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
-                        </div>
-                        <div class="video-tags">
-                            ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
-                        </div>
+                    <div class="video-tags">
+                        ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        `;
+    }).join('');
+}
 
-        // ============================================================
-        // 11. فتح الفيديو في المودال
-        // ============================================================
-        function openVideo(videoId) {
-            const video = videos.find(v => v.id === videoId);
-            if (!video) return;
+// ============================================================
+// فتح الفيديو - ✅ النسخة المحسنة
+// ============================================================
+function openVideo(videoId) {
+    const video = videos.find(v => v._id === videoId);
+    if (!video) {
+        showAlert('❌ الفيديو غير موجود', 'danger');
+        return;
+    }
 
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            const title = document.getElementById('videoModalTitle');
-            const desc = document.getElementById('videoModalDesc');
+    console.log('🎬 فتح الفيديو:', video);
+    console.log('📁 المسار:', video.filePath);
 
-            title.textContent = video.title;
-            desc.textContent = video.description || 'لا يوجد وصف';
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    const title = document.getElementById('videoModalTitle');
+    const desc = document.getElementById('videoModalDesc');
 
-            // عرض الفيديو
-            if (video.videoUrl) {
-                player.innerHTML = `
-                    <video controls autoplay>
-                        <source src="${video.videoUrl}" type="video/mp4">
-                        متصفحك لا يدعم تشغيل الفيديو
-                    </video>
-                `;
-            } else {
-                player.innerHTML = `
-                    <div class="placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>فيديو تجريبي</p>
-                    </div>
-                `;
-            }
+    title.textContent = video.title;
+    desc.textContent = video.description || 'لا يوجد وصف';
 
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+    // ✅ استخدام المسار الصحيح للفيديو
+    if (video.filePath) {
+        // استخدام المسار الكامل
+        const videoUrl = video.filePath.startsWith('http') 
+            ? video.filePath 
+            : video.filePath;
+        
+        player.innerHTML = `
+            <video controls autoplay style="width:100%; height:100%; object-fit:cover;">
+                <source src="${videoUrl}" type="video/mp4">
+                <source src="${videoUrl}" type="video/webm">
+                متصفحك لا يدعم تشغيل الفيديو
+            </video>
+        `;
+    } else {
+        player.innerHTML = `
+            <div class="placeholder">
+                <i class="fas fa-video"></i>
+                <p>الفيديو غير متوفر حالياً</p>
+            </div>
+        `;
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
         // ============================================================
         // 12. إغلاق مودال الفيديو
