@@ -311,6 +311,115 @@ app.get('/api/auth/me', protect, async (req, res) => {
 });
 
 // ============================================================
+// مسارات الفيديوهات
+// ============================================================
+
+// رفع فيديو جديد
+app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('video'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'يرجى اختيار فيديو'
+            });
+        }
+
+        const { title, subjectId, subjectName, description } = req.body;
+
+        if (!title || !subjectId) {
+            return res.status(400).json({
+                success: false,
+                message: 'العنوان ومعرف المادة مطلوبان'
+            });
+        }
+
+        const fileName = req.file.filename;
+        const publicPath = `/uploads/videos/${fileName}`;
+
+        const video = new Video({
+            title: title,
+            subjectId: parseInt(subjectId),
+            subjectName: subjectName || '',
+            description: description || '',
+            fileName: fileName,
+            filePath: publicPath,
+            fileSize: (req.file.size / (1024 * 1024)).toFixed(2) + ' MB',
+            fileType: req.file.mimetype,
+            uploadDate: new Date(),
+            views: 0
+        });
+
+        await video.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'تم رفع الفيديو بنجاح',
+            data: video
+        });
+    } catch (error) {
+        console.error('❌ خطأ في رفع الفيديو:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// جلب جميع الفيديوهات
+app.get('/api/videos/all', async (req, res) => {
+    try {
+        const videos = await Video.find().sort({ uploadDate: -1 });
+        res.status(200).json({
+            success: true,
+            data: videos
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الفيديوهات:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// جلب فيديوهات مادة معينة
+app.get('/api/videos/subject/:subjectId', async (req, res) => {
+    try {
+        const videos = await Video.find({ subjectId: parseInt(req.params.subjectId) });
+        res.status(200).json({
+            success: true,
+            data: videos
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب فيديوهات المادة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// حذف فيديو
+app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const video = await Video.findById(req.params.id);
+        if (!video) {
+            return res.status(404).json({
+                success: false,
+                message: 'الفيديو غير موجود'
+            });
+        }
+
+        // حذف الملف من الخادم
+        if (video.fileName) {
+            const filePath = path.join(__dirname, '../uploads/videos', video.fileName);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+
+        await video.deleteOne();
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف الفيديو بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف الفيديو:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+// ============================================================
 // 2. مسارات الفيديوهات (VIDEOS)
 // ============================================================
 

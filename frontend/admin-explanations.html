@@ -8,7 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <style>
-        /* نفس الأنماط السابقة - تم حذفها للاختصار */
+        /* ============================================================
+           المتغيرات
+           ============================================================ */
         :root {
             --primary: #7C3AED;
             --primary-dark: #6D28D9;
@@ -47,8 +49,14 @@
             --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Cairo', sans-serif;
             background: var(--bg-body);
@@ -57,12 +65,25 @@
             direction: rtl;
             overflow-x: hidden;
         }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px 25px; }
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-body); }
-        ::-webkit-scrollbar-thumb { background: var(--gradient-main); border-radius: 10px; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 25px;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-main);
+            border-radius: 10px;
+        }
 
-        /* الهيدر */
+        /* ============================================================
+           الهيدر
+           ============================================================ */
         .main-header {
             display: flex;
             justify-content: space-between;
@@ -79,7 +100,12 @@
             top: 0;
             z-index: 100;
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
         .logo-icon {
             background: var(--gradient-main);
             color: #fff;
@@ -92,9 +118,22 @@
             font-size: 26px;
             box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
         }
-        .logo-text { font-size: 26px; font-weight: 900; color: var(--text-color); }
-        .logo-text span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .logo-text {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--text-color);
+        }
+        .logo-text span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
         .header-actions .btn-back {
             background: var(--bg-body);
             color: var(--text-color);
@@ -105,7 +144,11 @@
             transition: var(--transition);
             border: 1px solid var(--border-color);
         }
-        .header-actions .btn-back:hover { background: var(--gradient-main); color: #fff; transform: translateY(-2px); }
+        .header-actions .btn-back:hover {
+            background: var(--gradient-main);
+            color: #fff;
+            transform: translateY(-2px);
+        }
         .header-actions .btn-admin {
             background: var(--gradient-secondary);
             color: #fff;
@@ -115,7 +158,10 @@
             font-weight: 600;
             transition: var(--transition);
         }
-        .header-actions .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3); }
+        .header-actions .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
+        }
 
         .theme-toggle {
             position: fixed;
@@ -137,7 +183,12 @@
             justify-content: center;
             border: 2px solid var(--primary);
         }
-        .theme-toggle:hover { transform: scale(1.1) rotate(20deg); box-shadow: var(--shadow-hover); background: var(--gradient-main); color: #fff; }
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(20deg);
+            box-shadow: var(--shadow-hover);
+            background: var(--gradient-main);
+            color: #fff;
+        }
         .back-to-top {
             position: fixed;
             bottom: 95px;
@@ -157,14 +208,41 @@
             align-items: center;
             justify-content: center;
         }
-        .back-to-top.visible { display: flex; }
-        .back-to-top:hover { transform: translateY(-5px) scale(1.05); box-shadow: var(--shadow-hover); }
+        .back-to-top.visible {
+            display: flex;
+        }
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
 
-        .page-title { font-size: 2rem; font-weight: 900; color: var(--text-color); margin-bottom: 5px; display: flex; align-items: center; gap: 12px; }
-        .page-title i { color: var(--primary); }
-        .page-subtitle { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 30px; }
+        /* ============================================================
+           التبويبات
+           ============================================================ */
+        .page-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title i {
+            color: var(--primary);
+        }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+        }
 
-        .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
         .admin-tabs .tab-btn {
             padding: 12px 28px;
             border: none;
@@ -181,9 +259,20 @@
             align-items: center;
             gap: 10px;
         }
-        .admin-tabs .tab-btn:hover { background: var(--border-color); transform: translateY(-2px); }
-        .admin-tabs .tab-btn.active { background: var(--gradient-main); color: #fff; border-color: transparent; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
+        .admin-tabs .tab-btn:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+        .admin-tabs .tab-btn.active {
+            background: var(--gradient-main);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
 
+        /* ============================================================
+           نموذج الإضافة
+           ============================================================ */
         .form-card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -193,16 +282,55 @@
             margin-bottom: 30px;
             display: none;
         }
-        .form-card.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .form-card .form-title { font-size: 1.2rem; font-weight: 700; color: var(--text-color); margin-bottom: 5px; }
-        .form-card .form-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 18px; }
-        .form-group.full-width { grid-column: span 2; }
-        .form-group label { display: block; font-weight: 600; color: var(--text-color); margin-bottom: 5px; font-size: 0.95rem; }
-        .form-group label .required { color: var(--danger); }
-        .form-group input, .form-group select, .form-group textarea {
+        .form-card.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .form-card .form-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        .form-card .form-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        .form-group label .required {
+            color: var(--danger);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid var(--border-color);
@@ -213,14 +341,110 @@
             color: var(--text-color);
             transition: var(--transition);
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
         }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-group .helper-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
-        .form-actions { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-body);
+            position: relative;
+        }
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+        .upload-area.dragover {
+            border-color: var(--secondary);
+            background: rgba(236, 72, 153, 0.05);
+        }
+        .upload-area .upload-icon {
+            font-size: 3rem;
+            display: block;
+            color: var(--primary);
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+        .upload-area h4 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        .upload-area p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-info {
+            display: none;
+            margin-top: 10px;
+            padding: 12px 18px;
+            background: var(--bg-body);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            align-items: center;
+            gap: 12px;
+        }
+        .file-info.show {
+            display: flex;
+        }
+        .file-info i {
+            font-size: 1.5rem;
+            color: var(--danger);
+        }
+        .file-info .file-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .file-info .file-size {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        .file-info .btn-remove-file {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-right: auto;
+            transition: var(--transition);
+        }
+        .file-info .btn-remove-file:hover {
+            transform: scale(1.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
         .btn-submit {
             background: var(--gradient-main);
             color: #fff;
@@ -236,7 +460,10 @@
             align-items: center;
             gap: 10px;
         }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3); }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
         .btn-submit-success {
             background: var(--success);
             color: #fff;
@@ -252,7 +479,10 @@
             align-items: center;
             gap: 10px;
         }
-        .btn-submit-success:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
+        .btn-submit-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
         .btn-reset {
             background: var(--bg-body);
             color: var(--text-color);
@@ -265,32 +495,13 @@
             transition: var(--transition);
             font-family: 'Cairo', sans-serif;
         }
-        .btn-reset:hover { background: var(--border-color); }
-
-        .upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 30px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--bg-body);
-            position: relative;
+        .btn-reset:hover {
+            background: var(--border-color);
         }
-        .upload-area:hover { border-color: var(--primary); background: rgba(124, 58, 237, 0.05); }
-        .upload-area.dragover { border-color: var(--secondary); background: rgba(236, 72, 153, 0.05); }
-        .upload-area .upload-icon { font-size: 3rem; display: block; color: var(--primary); opacity: 0.5; margin-bottom: 10px; }
-        .upload-area h4 { color: var(--text-color); margin-bottom: 5px; }
-        .upload-area p { color: var(--text-muted); font-size: 0.9rem; }
-        .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .file-info { display: none; margin-top: 10px; padding: 12px 18px; background: var(--bg-body); border-radius: 10px; border: 1px solid var(--border-color); align-items: center; gap: 12px; }
-        .file-info.show { display: flex; }
-        .file-info i { font-size: 1.5rem; color: var(--danger); }
-        .file-info .file-name { font-weight: 600; color: var(--text-color); }
-        .file-info .file-size { color: var(--text-muted); font-size: 0.9rem; margin-right: 10px; }
-        .file-info .btn-remove-file { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; margin-right: auto; transition: var(--transition); }
-        .file-info .btn-remove-file:hover { transform: scale(1.2); }
 
+        /* ============================================================
+           قائمة المحتوى
+           ============================================================ */
         .content-list {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -300,7 +511,7 @@
         }
         .content-list-header {
             display: grid;
-            grid-template-columns: 2.5fr 1.5fr 1.5fr 1.5fr 1fr;
+            grid-template-columns: 3fr 2fr 2fr 1.5fr 1fr;
             gap: 10px;
             padding: 15px 22px;
             background: var(--gradient-main);
@@ -310,17 +521,27 @@
         }
         .content-list-item {
             display: grid;
-            grid-template-columns: 2.5fr 1.5fr 1.5fr 1.5fr 1fr;
+            grid-template-columns: 3fr 2fr 2fr 1.5fr 1fr;
             gap: 10px;
             padding: 14px 22px;
             border-bottom: 1px solid var(--border-color);
             align-items: center;
             transition: var(--transition);
         }
-        .content-list-item:hover { background: rgba(124, 58, 237, 0.03); }
-        .content-list-item:last-child { border-bottom: none; }
-        .content-list-item .item-title { font-weight: 600; color: var(--text-color); }
-        .content-list-item .item-actions { display: flex; gap: 8px; }
+        .content-list-item:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .content-list-item:last-child {
+            border-bottom: none;
+        }
+        .content-list-item .item-title {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .content-list-item .item-actions {
+            display: flex;
+            gap: 8px;
+        }
         .content-list-item .item-actions button {
             padding: 6px 14px;
             border: none;
@@ -329,104 +550,337 @@
             cursor: pointer;
             transition: var(--transition);
             font-family: 'Cairo', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        .btn-edit { background: var(--accent); color: #fff; }
-        .btn-edit:hover { transform: scale(1.05); }
-        .btn-delete { background: var(--danger); color: #fff; }
-        .btn-delete:hover { transform: scale(1.05); }
-        .btn-view { background: var(--primary); color: #fff; }
-        .btn-view:hover { transform: scale(1.05); }
-        .btn-download-summary-admin { background: var(--success); color: #fff; }
-        .btn-download-summary-admin:hover { transform: scale(1.05); }
+        .btn-edit {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-edit:hover {
+            transform: scale(1.05);
+        }
+        .btn-delete {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-delete:hover {
+            transform: scale(1.05);
+        }
+        .btn-view {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-view:hover {
+            transform: scale(1.05);
+        }
+        .btn-download {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-download:hover {
+            transform: scale(1.05);
+        }
 
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-        .empty-state i { font-size: 3.5rem; display: block; margin-bottom: 15px; opacity: 0.3; }
-        .empty-state h3 { color: var(--text-color); font-size: 1.2rem; margin-bottom: 5px; }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        .empty-state h3 {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
 
-        .alert { padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; display: none; }
-        .alert.show { display: block; animation: slideDown 0.4s ease; }
-        .alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-        .alert-danger { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-        .loading-center { text-align: center; padding: 40px; color: var(--text-muted); }
-        .loading-center i { font-size: 2.5rem; display: block; margin-bottom: 15px; color: var(--primary); }
+        .loading-center {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        .loading-center i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
 
+        /* ============================================================
+           مودال إضافة فيديو
+           ============================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            border-radius: var(--radius);
+            padding: 35px 30px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            overflow-y: auto;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+        .modal-box h3 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+        .modal-box .modal-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* ============================================================
+           التجاوب
+           ============================================================ */
         @media (max-width: 768px) {
-            .container { padding: 12px 15px; }
-            .main-header { flex-direction: column; align-items: stretch; text-align: center; padding: 12px 15px; }
-            .logo-area { justify-content: center; }
-            .header-actions { justify-content: center; }
-            .logo-text { font-size: 20px; }
-            .logo-icon { width: 40px; height: 40px; font-size: 20px; }
-            .page-title { font-size: 1.6rem; }
-            .form-row { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
-            .content-list-header, .content-list-item {
+            .container {
+                padding: 12px 15px;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 12px 15px;
+            }
+            .logo-area {
+                justify-content: center;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+            .logo-text {
+                font-size: 20px;
+            }
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            .page-title {
+                font-size: 1.6rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .content-list-header,
+            .content-list-item {
                 grid-template-columns: 1fr;
                 gap: 8px;
                 padding: 12px 16px;
             }
-            .content-list-header { display: none; }
-            .content-list-item { border-bottom: 2px solid var(--border-color); }
-            .content-list-item .item-actions { justify-content: center; flex-wrap: wrap; }
-            .admin-tabs .tab-btn { font-size: 0.85rem; padding: 10px 18px; }
-            .theme-toggle, .back-to-top { width: 45px; height: 45px; font-size: 1.2rem; bottom: 20px; left: 20px; }
-            .back-to-top { bottom: 75px; }
-            .form-actions { flex-direction: column; }
-            .form-actions button { width: 100%; justify-content: center; }
-            .upload-area { padding: 20px 15px; }
-            .upload-area .upload-icon { font-size: 2.5rem; }
-            .file-info { flex-wrap: wrap; }
-            .file-info .btn-remove-file { margin-right: 0; }
+            .content-list-header {
+                display: none;
+            }
+            .content-list-item {
+                border-bottom: 2px solid var(--border-color);
+            }
+            .content-list-item .item-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .admin-tabs .tab-btn {
+                font-size: 0.85rem;
+                padding: 10px 18px;
+            }
+            .theme-toggle,
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+                bottom: 20px;
+                left: 20px;
+            }
+            .back-to-top {
+                bottom: 75px;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+            .upload-area {
+                padding: 20px 15px;
+            }
+            .upload-area .upload-icon {
+                font-size: 2.5rem;
+            }
+            .file-info {
+                flex-wrap: wrap;
+            }
+            .file-info .btn-remove-file {
+                margin-right: 0;
+            }
+            .modal-box {
+                padding: 25px 20px;
+            }
         }
         @media (max-width: 480px) {
-            .form-card { padding: 20px 15px; }
-            .admin-tabs .tab-btn { font-size: 0.75rem; padding: 8px 12px; }
-            .upload-area h4 { font-size: 1rem; }
-            .content-list-header, .content-list-item { grid-template-columns: 1fr; }
+            .form-card {
+                padding: 20px 15px;
+            }
+            .admin-tabs .tab-btn {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+            .upload-area h4 {
+                font-size: 1rem;
+            }
+            .content-list-header,
+            .content-list-item {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
     <button class="theme-toggle" onclick="toggleTheme()">
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(211, 168, 211)" d="M0 256c0-141.4 114.6-256 256-256 33 0 64.6 6.3 93.6 17.7 7.4 2.9 11.5 10.7 9.8 18.4s-8.8 13-16.7 12.4c-4.8-.3-9.7-.5-14.6-.5-114.9 0-208 93.1-208 208s93.1 208 208 208c4.9 0 9.8-.2 14.6-.5 7.9-.5 15 4.7 16.7 12.4s-2.4 15.5-9.8 18.4C320.6 505.7 289 512 256 512 114.6 512 0 397.4 0 256zM375.4 137.4c3.5-7.1 13.7-7.1 17.2 0l31.5 63.8c1.4 2.8 4.1 4.8 7.2 5.3l70.4 10.2c7.9 1.1 11 10.8 5.3 16.4l-50.9 49.6c-2.3 2.2-3.3 5.4-2.8 8.5l12 70.1c1.3 7.8-6.9 13.8-13.9 10.1l-63-33.1c-2.8-1.5-6.1-1.5-8.9 0l-63 33.1c-7 3.7-15.3-2.3-13.9-10.1l12-70.1c.5-3.1-.5-6.3-2.8-8.5L261 233.1c-5.7-5.6-2.6-15.2 5.3-16.4l70.4-10.2c3.1-.5 5.8-2.4 7.2-5.3l31.5-63.8z"/></svg>
+        <i class="fas fa-moon"></i>
     </button>
 
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-         <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(211, 168, 211)" d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM377 271c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-87-87-87 87c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 167c9.4-9.4 24.6-9.4 33.9 0L377 271z"/></svg>
+        <i class="fas fa-chevron-up"></i>
     </button>
 
     <div class="container">
 
+        <!-- ============================================================
+        الهيدر
+        ============================================================ -->
         <header class="main-header">
             <a href="index.html" class="logo-area">
-                <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" height="32" width="40" viewBox="0 0 640 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(220, 196, 220)" d="M493.9 295.6c-50.3 0-83.5-38.9-92.8-53.9 11.9-95.3 46.8-125.4 92.8-125.4 45.5 0 80.9 36.4 80.9 89.7s-35.4 89.7-80.9 89.7l0-.1zm0-237.8c-81.9 0-127.8 53.4-141 108.4-14.9-28-25.9-65.5-34.5-100.3l-113.2 0 0 141c0 51.1-23.3 89-68.8 89s-71.6-37.8-71.6-89l.5-141-65.3 0 0 141c0 41.1 13.3 78.4 37.6 105.1 25 27.5 59.2 41.8 98.8 41.8 78.8 0 133.8-60.4 133.8-146.9l0-94.8c8.2 31.2 27.8 91.1 65.3 143.6l-35 199.4 66.4 0 23.1-141.3c7.6 6.3 15.7 12 24.2 17 22.2 14 47.7 21.9 73.9 22.8 0 0 4 .2 6.1 .2 81.2 0 145.9-62.9 145.9-147.8S575.3 57.9 494.1 57.9l-.2-.1z"/></svg></div>
+                <div class="logo-icon"><i class="fas fa-rocket"></i></div>
                 <div class="logo-text">منصة <span>ارتقاء</span></div>
             </a>
             <div class="header-actions">
-                <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
-                <a href="explanations.html" class="btn-admin" style="background:var(--gradient-main);"><i class="fas fa-book-open"></i> عرض الشروحات</a>
-                <a href="dashboard.html" class="btn-admin" style="background:var(--gradient-main);"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                </a>
+                <a href="explanations.html" class="btn-admin" style="background:var(--gradient-main);">
+                    <i class="fas fa-book-open"></i> عرض الشروحات
+                </a>
+                <a href="dashboard.html" class="btn-admin" style="background:var(--gradient-main);">
+                    <i class="fas fa-tachometer-alt"></i> لوحة التحكم
+                </a>
             </div>
         </header>
 
-        <div class="page-title"><i class="fas fa-crown"></i> إدارة الشروحات الأكاديمية</div>
-        <p class="page-subtitle">أضف، عدّل، أو احذف المحتوى الأكاديمي في منصة ارتقاء</p>
+        <!-- ============================================================
+        العنوان
+        ============================================================ -->
+        <div class="page-title">
+            <i class="fas fa-crown"></i>
+            إدارة الشروحات الأكاديمية
+        </div>
+        <p class="page-subtitle">
+            أضف، عدّل، أو احذف المحتوى الأكاديمي في منصة ارتقاء
+        </p>
 
+        <!-- ============================================================
+        رسائل التنبيه
+        ============================================================ -->
         <div id="alertMessage" class="alert"></div>
 
+        <!-- ============================================================
+        تبويبات الإدارة
+        ============================================================ -->
         <div class="admin-tabs">
             <button class="tab-btn active" data-tab="universities" onclick="switchTab('universities')">
                 <i class="fas fa-university"></i> الجامعات
             </button>
             <button class="tab-btn" data-tab="materials" onclick="switchTab('materials')">
                 <i class="fas fa-book"></i> المواد
+            </button>
+            <button class="tab-btn" data-tab="videos" onclick="switchTab('videos')">
+                <i class="fas fa-video"></i> الفيديوهات
             </button>
             <button class="tab-btn" data-tab="summaries" onclick="switchTab('summaries')">
                 <i class="fas fa-file-pdf"></i> الملخصات
@@ -487,7 +941,7 @@
         </div>
 
         <!-- ============================================================
-        تبويب المواد - مع إضافة حقل السعر
+        تبويب المواد
         ============================================================ -->
         <div id="tab-materials" style="display:none;">
             <div class="form-card active" id="materialForm">
@@ -596,7 +1050,71 @@
         </div>
 
         <!-- ============================================================
-        تبويب الملخصات - مع إضافة حقل السعر
+        تبويب الفيديوهات - ✅ إضافة إدارة الفيديوهات
+        ============================================================ -->
+        <div id="tab-videos" style="display:none;">
+            <div class="form-card active" id="videoForm">
+                <div class="form-title"><i class="fas fa-plus-circle" style="color:#3B82F6;"></i> رفع فيديو جديد</div>
+                <div class="form-subtitle">أدخل بيانات الفيديو وارفع الملف لإضافته إلى المادة المختارة</div>
+                <form id="addVideoForm" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>عنوان الفيديو <span class="required">*</span></label>
+                            <input type="text" id="videoTitle" placeholder="مثال: مقدمة في التفاضل" required />
+                        </div>
+                        <div class="form-group">
+                            <label>المادة <span class="required">*</span></label>
+                            <select id="videoMaterial" required>
+                                <option value="">اختر المادة</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>وصف الفيديو</label>
+                        <textarea id="videoDescription" placeholder="وصف مختصر للفيديو..." rows="2"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>رفع ملف الفيديو <span class="required">*</span></label>
+                        <div class="upload-area" id="videoUploadArea">
+                            <span class="upload-icon"><i class="fas fa-video"></i></span>
+                            <h4>اسحب ملف الفيديو هنا أو انقر للاختيار</h4>
+                            <p>يدعم ملفات MP4, AVI, MOV, WEBM (الحد الأقصى 100MB)</p>
+                            <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.webm,.mkv" required />
+                        </div>
+                        <div class="file-info" id="videoFileInfo">
+                            <i class="fas fa-video"></i>
+                            <span class="file-name" id="videoFileName">ملف</span>
+                            <span class="file-size" id="videoFileSize">0 MB</span>
+                            <button type="button" class="btn-remove-file" onclick="removeVideoFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">يرجى اختيار ملف فيديو من جهازك</div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" style="background:#3B82F6;"><i class="fas fa-upload"></i> رفع الفيديو</button>
+                        <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="content-list" id="videosList">
+                <div class="content-list-header">
+                    <span>الفيديو</span>
+                    <span>المادة</span>
+                    <span>البيانات</span>
+                    <span>المشاهدات</span>
+                    <span>الإجراءات</span>
+                </div>
+                <div class="loading-center">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    جاري تحميل الفيديوهات...
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        تبويب الملخصات
         ============================================================ -->
         <div id="tab-summaries" style="display:none;">
             <div class="form-card active" id="summaryForm">
@@ -674,6 +1192,9 @@
 
     </div>
 
+    <!-- ============================================================
+    ====== جافا سكريبت ======
+    ============================================================ -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js">
     </script>
     <script>
@@ -689,7 +1210,9 @@
         // ============================================================
         let universities = [];
         let materials = [];
+        let videos = [];
         let summaries = [];
+        let uploadedVideoFile = null;
         let uploadedSummaryFile = null;
         let currentToken = localStorage.getItem('token') || '';
         let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
@@ -722,7 +1245,11 @@
             });
             document.getElementById('tab-universities').style.display = tab === 'universities' ? 'block' : 'none';
             document.getElementById('tab-materials').style.display = tab === 'materials' ? 'block' : 'none';
+            document.getElementById('tab-videos').style.display = tab === 'videos' ? 'block' : 'none';
             document.getElementById('tab-summaries').style.display = tab === 'summaries' ? 'block' : 'none';
+
+            if (tab === 'videos') fetchVideos();
+            if (tab === 'summaries') fetchSummaries();
         }
 
         // ============================================================
@@ -752,7 +1279,7 @@
                 if (data.success) {
                     materials = data.data;
                     renderMaterials();
-                    populateSubjectSelect();
+                    populateMaterialSelects();
                 }
             } catch (error) {
                 console.error('❌ خطأ:', error);
@@ -760,23 +1287,63 @@
         }
 
         // ============================================================
-        // 8. جلب الملخصات
+        // 8. جلب الفيديوهات
+        // ============================================================
+        async function fetchVideos() {
+            const container = document.getElementById('videosList');
+            container.innerHTML = `
+                <div class="loading-center">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    جاري تحميل الفيديوهات...
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_URL}/api/videos/all`);
+                const data = await response.json();
+
+                if (data.success) {
+                    videos = data.data || [];
+                    renderVideos();
+                } else {
+                    showAlert('❌ خطأ في جلب الفيديوهات: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
+            }
+        }
+
+        // ============================================================
+        // 9. جلب الملخصات
         // ============================================================
         async function fetchSummaries() {
+            const container = document.getElementById('summariesList');
+            container.innerHTML = `
+                <div class="loading-center">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    جاري تحميل الملخصات...
+                </div>
+            `;
+
             try {
                 const response = await fetch(`${API_URL}/api/summaries/all`);
                 const data = await response.json();
+
                 if (data.success) {
-                    summaries = data.data;
+                    summaries = data.data || [];
                     renderSummaries();
+                } else {
+                    showAlert('❌ خطأ في جلب الملخصات: ' + data.message, 'danger');
                 }
             } catch (error) {
                 console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
             }
         }
 
         // ============================================================
-        // 9. تعبئة القوائم
+        // 10. تعبئة القوائم المنسدلة
         // ============================================================
         function populateUniversitySelect() {
             const select = document.getElementById('matUniversity');
@@ -786,16 +1353,24 @@
             });
         }
 
-        function populateSubjectSelect() {
-            const select = document.getElementById('sumSubject');
-            select.innerHTML = '<option value="">اختر المادة</option>';
+        function populateMaterialSelects() {
+            // للمواد في نموذج الفيديو
+            const videoSelect = document.getElementById('videoMaterial');
+            videoSelect.innerHTML = '<option value="">اختر المادة</option>';
             materials.forEach(mat => {
-                select.innerHTML += `<option value="${mat.title}">${mat.title}</option>`;
+                videoSelect.innerHTML += `<option value="${mat._id}">${mat.title} (${mat.code})</option>`;
+            });
+
+            // للمواد في نموذج الملخص
+            const summarySelect = document.getElementById('sumSubject');
+            summarySelect.innerHTML = '<option value="">اختر المادة</option>';
+            materials.forEach(mat => {
+                summarySelect.innerHTML += `<option value="${mat.title}">${mat.title}</option>`;
             });
         }
 
         // ============================================================
-        // 10. عرض الجامعات
+        // 11. عرض الجامعات
         // ============================================================
         function renderUniversities() {
             const container = document.getElementById('universitiesList');
@@ -843,7 +1418,7 @@
         }
 
         // ============================================================
-        // 11. عرض المواد - مع عرض السعر
+        // 12. عرض المواد
         // ============================================================
         function renderMaterials() {
             const container = document.getElementById('materialsList');
@@ -882,7 +1457,7 @@
                         </div>
                         <div>
                             <span style="font-size:0.85rem;color:var(--text-muted);">
-                                <i class="fas fa-video"></i> ${mat.videos} فيديو
+                                <i class="fas fa-video"></i> ${mat.videos || 0} فيديو
                                 ${mat.isFeatured ? '<br><span style="color:var(--accent);"><i class="fas fa-star"></i> مميز</span>' : ''}
                             </span>
                         </div>
@@ -908,7 +1483,65 @@
         }
 
         // ============================================================
-        // 12. عرض الملخصات - مع عرض السعر
+        // 13. عرض الفيديوهات
+        // ============================================================
+        function renderVideos() {
+            const container = document.getElementById('videosList');
+            if (videos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-video"></i>
+                        <h3>لا توجد فيديوهات</h3>
+                        <p>قم برفع فيديو جديد باستخدام النموذج أعلاه</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="content-list-header">
+                    <span>الفيديو</span>
+                    <span>المادة</span>
+                    <span>البيانات</span>
+                    <span>المشاهدات</span>
+                    <span>الإجراءات</span>
+                </div>
+            `;
+
+            videos.forEach((video, index) => {
+                const material = materials.find(m => m._id === String(video.subjectId) || m._id === video
+                .subjectId);
+                html += `
+                    <div class="content-list-item" data-aos="fade-up" data-aos-delay="${index * 50}">
+                        <div>
+                            <div class="item-title"><i class="fas fa-video" style="color:#3B82F6;"></i> ${video.title}</div>
+                        </div>
+                        <div style="font-size:0.9rem;color:var(--text-muted);">${material ? material.title : video.subjectName || 'غير محددة'}</div>
+                        <div>
+                            <span style="font-size:0.85rem;color:var(--text-muted);">
+                                <i class="fas fa-calendar-alt"></i> ${new Date(video.uploadDate || video.createdAt).toLocaleDateString('ar-SA')}
+                                <br><i class="fas fa-weight-hanging"></i> ${video.fileSize || 'غير معروف'}
+                            </span>
+                        </div>
+                        <div style="font-size:0.9rem;font-weight:600;color:#3B82F6;">${video.views || 0} 👁️</div>
+                        <div class="item-actions">
+                            ${isAdmin() ? `
+                                <button class="btn-view" onclick="viewVideo('${video._id}')"><i class="fas fa-eye"></i></button>
+                                <button class="btn-delete" onclick="deleteVideo('${video._id}')"><i class="fas fa-trash"></i></button>
+                            ` : `
+                                <span style="font-size:0.7rem;color:var(--text-muted);">للإدارة فقط</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            if (typeof AOS !== 'undefined') AOS.refresh();
+        }
+
+        // ============================================================
+        // 14. عرض الملخصات
         // ============================================================
         function renderSummaries() {
             const container = document.getElementById('summariesList');
@@ -954,7 +1587,7 @@
                         </div>
                         <div class="item-actions">
                             ${isAdmin() ? `
-                                <button class="btn-download-summary-admin" onclick="downloadSummaryFile('${sum._id}')"><i class="fas fa-download"></i> تحميل</button>
+                                <button class="btn-download" onclick="downloadSummaryFile('${sum._id}')"><i class="fas fa-download"></i></button>
                                 <button class="btn-delete" onclick="deleteSummary('${sum._id}')"><i class="fas fa-trash"></i></button>
                                 <button class="btn-view" onclick="viewSummary('${sum._id}')"><i class="fas fa-eye"></i></button>
                             ` : `
@@ -970,7 +1603,7 @@
         }
 
         // ============================================================
-        // 13. إضافة جامعة
+        // 15. إضافة جامعة
         // ============================================================
         document.getElementById('addUniversityForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1023,7 +1656,7 @@
         });
 
         // ============================================================
-        // 14. إضافة مادة جديدة - مع حفظ السعر
+        // 16. إضافة مادة
         // ============================================================
         document.getElementById('addMaterialForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1095,8 +1728,250 @@
         });
 
         // ============================================================
-        // 15. إضافة ملخص جديد - مع حفظ السعر
+        // 17. رفع فيديو - ✅ إضافة دالة رفع الفيديو
         // ============================================================
+        let uploadedVideoFile = null;
+
+        document.getElementById('videoFile').addEventListener('change', function() {
+            if (this.files.length) {
+                handleVideoFile(this.files[0]);
+            }
+        });
+
+        const videoUploadArea = document.getElementById('videoUploadArea');
+        videoUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--primary)';
+            this.style.background = 'rgba(124, 58, 237, 0.05)';
+        });
+        videoUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--border-color)';
+            this.style.background = 'var(--bg-body)';
+        });
+        videoUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--border-color)';
+            this.style.background = 'var(--bg-body)';
+            if (e.dataTransfer.files.length) {
+                document.getElementById('videoFile').files = e.dataTransfer.files;
+                handleVideoFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleVideoFile(file) {
+            const allowedTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo', 'video/webm', 'video/x-matroska'];
+            const validExtensions = ['.mp4', '.avi', '.mov', '.webm', '.mkv'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (!allowedTypes.includes(file.type) && !validExtensions.includes(ext)) {
+                showAlert('❌ نوع الملف غير مدعوم. يرجى رفع فيديو بصيغة MP4, AVI, MOV, WEBM أو MKV', 'danger');
+                document.getElementById('videoFile').value = '';
+                return;
+            }
+
+            if (file.size > 100 * 1024 * 1024) {
+                showAlert('❌ حجم الملف كبير جداً. الحد الأقصى 100MB', 'danger');
+                document.getElementById('videoFile').value = '';
+                return;
+            }
+
+            uploadedVideoFile = file;
+            document.getElementById('videoFileName').textContent = file.name;
+            document.getElementById('videoFileSize').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+            document.getElementById('videoFileInfo').classList.add('show');
+
+            const uploadArea = document.getElementById('videoUploadArea');
+            uploadArea.querySelector('h4').textContent = `🎬 ${file.name}`;
+            uploadArea.querySelector('p').textContent = `حجم الملف: ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+        }
+
+        function removeVideoFile() {
+            uploadedVideoFile = null;
+            document.getElementById('videoFile').value = '';
+            document.getElementById('videoFileInfo').classList.remove('show');
+
+            const uploadArea = document.getElementById('videoUploadArea');
+            uploadArea.querySelector('h4').textContent = 'اسحب ملف الفيديو هنا أو انقر للاختيار';
+            uploadArea.querySelector('p').textContent = 'يدعم ملفات MP4, AVI, MOV, WEBM (الحد الأقصى 100MB)';
+        }
+
+        document.getElementById('addVideoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!isAdmin()) {
+                showAlert('❌ فقط المدير يمكنه رفع الفيديوهات', 'danger');
+                return;
+            }
+
+            const title = document.getElementById('videoTitle').value.trim();
+            const materialId = document.getElementById('videoMaterial').value;
+            const description = document.getElementById('videoDescription').value.trim();
+            const file = uploadedVideoFile;
+
+            if (!title || !materialId) {
+                showAlert('❌ يرجى إدخال عنوان الفيديو واختيار المادة', 'danger');
+                return;
+            }
+
+            if (!file) {
+                showAlert('❌ يرجى اختيار ملف فيديو', 'danger');
+                return;
+            }
+
+            const material = materials.find(m => m._id === materialId);
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('subjectId', materialId);
+            formData.append('subjectName', material ? material.title : '');
+            formData.append('description', description);
+            formData.append('video', file);
+
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/api/videos/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ تم رفع الفيديو "' + title + '" بنجاح!', 'success');
+                    this.reset();
+                    removeVideoFile();
+                    await fetchVideos();
+                } else {
+                    showAlert('❌ خطأ: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // 18. عرض فيديو
+        // ============================================================
+        function viewVideo(id) {
+            const video = videos.find(v => v._id === id);
+            if (video) {
+                if (video.filePath) {
+                    window.open(video.filePath, '_blank');
+                } else {
+                    alert(`🎬 ${video.title}\n\n📝 ${video.description || 'لا يوجد وصف'}\n👁️ ${video.views || 0} مشاهدة`);
+                }
+            }
+        }
+
+        // ============================================================
+        // 19. حذف فيديو
+        // ============================================================
+        async function deleteVideo(id) {
+            if (!isAdmin()) {
+                showAlert('❌ فقط المدير يمكنه حذف الفيديوهات', 'danger');
+                return;
+            }
+
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا الفيديو؟')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/videos/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('🗑️ تم حذف الفيديو بنجاح', 'success');
+                    await fetchVideos();
+                } else {
+                    showAlert('❌ خطأ: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
+            }
+        }
+
+        // ============================================================
+        // 20. إضافة ملخص
+        // ============================================================
+        let uploadedSummaryFile = null;
+
+        document.getElementById('summaryFile').addEventListener('change', function() {
+            if (this.files.length) {
+                handleSummaryFile(this.files[0]);
+            }
+        });
+
+        const summaryUploadArea = document.getElementById('summaryUploadArea');
+        summaryUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--primary)';
+            this.style.background = 'rgba(124, 58, 237, 0.05)';
+        });
+        summaryUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--border-color)';
+            this.style.background = 'var(--bg-body)';
+        });
+        summaryUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = 'var(--border-color)';
+            this.style.background = 'var(--bg-body)';
+            if (e.dataTransfer.files.length) {
+                document.getElementById('summaryFile').files = e.dataTransfer.files;
+                handleSummaryFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleSummaryFile(file) {
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                showAlert('❌ يرجى رفع ملف PDF فقط', 'danger');
+                document.getElementById('summaryFile').value = '';
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showAlert('❌ حجم الملف كبير جداً. الحد الأقصى 10MB', 'danger');
+                document.getElementById('summaryFile').value = '';
+                return;
+            }
+
+            uploadedSummaryFile = file;
+            document.getElementById('summaryFileName').textContent = file.name;
+            document.getElementById('summaryFileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+            document.getElementById('summaryFileInfo').classList.add('show');
+
+            const uploadArea = document.getElementById('summaryUploadArea');
+            uploadArea.querySelector('h4').textContent = `📄 ${file.name}`;
+            uploadArea.querySelector('p').textContent = `حجم الملف: ${(file.size / 1024).toFixed(2)} KB`;
+        }
+
+        function removeSummaryFile() {
+            uploadedSummaryFile = null;
+            document.getElementById('summaryFile').value = '';
+            document.getElementById('summaryFileInfo').classList.remove('show');
+
+            const uploadArea = document.getElementById('summaryUploadArea');
+            uploadArea.querySelector('h4').textContent = 'اسحب ملف PDF هنا أو انقر للاختيار';
+            uploadArea.querySelector('p').textContent = 'يدعم ملفات PDF فقط (الحد الأقصى 10MB)';
+        }
+
         document.getElementById('addSummaryForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -1172,73 +2047,7 @@
         });
 
         // ============================================================
-        // 16. حذف جامعة
-        // ============================================================
-        async function deleteUniversity(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف الجامعات', 'danger');
-                return;
-            }
-
-            if (!confirm('⚠️ هل أنت متأكد من حذف هذه الجامعة؟')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/api/universities/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert('🗑️ تم حذف الجامعة بنجاح', 'success');
-                    await fetchUniversities();
-                } else {
-                    showAlert('❌ خطأ: ' + data.message, 'danger');
-                }
-            } catch (error) {
-                console.error('❌ خطأ:', error);
-                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
-            }
-        }
-
-        // ============================================================
-        // 17. حذف مادة
-        // ============================================================
-        async function deleteMaterial(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف المواد', 'danger');
-                return;
-            }
-
-            if (!confirm('⚠️ هل أنت متأكد من حذف هذه المادة؟')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/api/explanations/materials/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert('🗑️ تم حذف المادة بنجاح', 'success');
-                    await fetchMaterials();
-                } else {
-                    showAlert('❌ خطأ: ' + data.message, 'danger');
-                }
-            } catch (error) {
-                console.error('❌ خطأ:', error);
-                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
-            }
-        }
-
-        // ============================================================
-        // 18. حذف ملخص
+        // 21. حذف ملخص
         // ============================================================
         async function deleteSummary(id) {
             if (!isAdmin()) {
@@ -1271,7 +2080,7 @@
         }
 
         // ============================================================
-        // 19. تحميل ملف الملخص
+        // 22. تحميل ملف الملخص
         // ============================================================
         async function downloadSummaryFile(id) {
             try {
@@ -1294,7 +2103,7 @@
         }
 
         // ============================================================
-        // 20. عرض
+        // 23. عرض ملخص
         // ============================================================
         function viewSummary(id) {
             const summary = summaries.find(s => s._id === id);
@@ -1303,6 +2112,9 @@
             }
         }
 
+        // ============================================================
+        // 24. عرض مادة
+        // ============================================================
         function viewMaterial(id) {
             const material = materials.find(m => m._id === id);
             if (material) {
@@ -1311,73 +2123,73 @@
         }
 
         // ============================================================
-        // 21. إدارة الملفات
+        // 25. حذف جامعة
         // ============================================================
-        function handleSummaryFile(file) {
-            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-                showAlert('❌ يرجى رفع ملف PDF فقط', 'danger');
-                document.getElementById('summaryFile').value = '';
+        async function deleteUniversity(id) {
+            if (!isAdmin()) {
+                showAlert('❌ فقط المدير يمكنه حذف الجامعات', 'danger');
                 return;
             }
 
-            if (file.size > 10 * 1024 * 1024) {
-                showAlert('❌ حجم الملف كبير جداً. الحد الأقصى 10MB', 'danger');
-                document.getElementById('summaryFile').value = '';
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذه الجامعة؟')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/universities/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('🗑️ تم حذف الجامعة بنجاح', 'success');
+                    await fetchUniversities();
+                } else {
+                    showAlert('❌ خطأ: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
+            }
+        }
+
+        // ============================================================
+        // 26. حذف مادة
+        // ============================================================
+        async function deleteMaterial(id) {
+            if (!isAdmin()) {
+                showAlert('❌ فقط المدير يمكنه حذف المواد', 'danger');
                 return;
             }
 
-            uploadedSummaryFile = file;
-            document.getElementById('summaryFileName').textContent = file.name;
-            document.getElementById('summaryFileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
-            document.getElementById('summaryFileInfo').classList.add('show');
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذه المادة؟')) return;
 
-            const uploadArea = document.getElementById('summaryUploadArea');
-            uploadArea.querySelector('h4').textContent = `📄 ${file.name}`;
-            uploadArea.querySelector('p').textContent = `حجم الملف: ${(file.size / 1024).toFixed(2)} KB`;
+            try {
+                const response = await fetch(`${API_URL}/api/explanations/materials/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('🗑️ تم حذف المادة بنجاح', 'success');
+                    await fetchMaterials();
+                } else {
+                    showAlert('❌ خطأ: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showAlert('❌ حدث خطأ في الاتصال بالخادم', 'danger');
+            }
         }
 
-        function removeSummaryFile() {
-            uploadedSummaryFile = null;
-            document.getElementById('summaryFile').value = '';
-            document.getElementById('summaryFileInfo').classList.remove('show');
-
-            const uploadArea = document.getElementById('summaryUploadArea');
-            uploadArea.querySelector('h4').textContent = 'اسحب ملف PDF هنا أو انقر للاختيار';
-            uploadArea.querySelector('p').textContent = 'يدعم ملفات PDF فقط (الحد الأقصى 10MB)';
-        }
-
         // ============================================================
-        // 22. أحداث رفع الملف
-        // ============================================================
-        document.getElementById('summaryFile').addEventListener('change', function() {
-            if (this.files.length) {
-                handleSummaryFile(this.files[0]);
-            }
-        });
-
-        const summaryUploadArea = document.getElementById('summaryUploadArea');
-        summaryUploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.style.borderColor = 'var(--primary)';
-            this.style.background = 'rgba(124, 58, 237, 0.05)';
-        });
-        summaryUploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.style.borderColor = 'var(--border-color)';
-            this.style.background = 'var(--bg-body)';
-        });
-        summaryUploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.style.borderColor = 'var(--border-color)';
-            this.style.background = 'var(--bg-body)';
-            if (e.dataTransfer.files.length) {
-                document.getElementById('summaryFile').files = e.dataTransfer.files;
-                handleSummaryFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        // ============================================================
-        // 23. تبديل الوضع
+        // 27. تبديل الوضع
         // ============================================================
         let isDark = false;
 
@@ -1395,7 +2207,7 @@
         }
 
         // ============================================================
-        // 24. زر العودة للأعلى
+        // 28. زر العودة للأعلى
         // ============================================================
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
@@ -1403,15 +2215,17 @@
         });
 
         // ============================================================
-        // 25. التشغيل الابتدائي
+        // 29. التشغيل الابتدائي
         // ============================================================
         async function init() {
             await fetchUniversities();
             await fetchMaterials();
+            await fetchVideos();
             await fetchSummaries();
             console.log('👑 تم تحميل صفحة إدارة الشروحات بنجاح!');
             console.log('🏛️ عدد الجامعات:', universities.length);
             console.log('📚 عدد المواد:', materials.length);
+            console.log('🎬 عدد الفيديوهات:', videos.length);
             console.log('📄 عدد الملخصات:', summaries.length);
         }
 
