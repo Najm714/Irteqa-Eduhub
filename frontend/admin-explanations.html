@@ -645,6 +645,158 @@
         }
 
         /* ============================================================
+           صفحة تسجيل الدخول
+           ============================================================ */
+        .login-container {
+            max-width: 440px;
+            margin: 80px auto;
+            background: var(--bg-card);
+            padding: 45px 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-main);
+        }
+
+        .login-container .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-container .login-logo i {
+            font-size: 3rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-container .login-logo h2 {
+            color: var(--text-color);
+            margin-top: 10px;
+            font-size: 1.8rem;
+        }
+
+        .login-container .login-logo h2 span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-container .login-logo p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .login-container .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-container .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .login-container .form-group label i {
+            color: var(--primary);
+            margin-left: 8px;
+        }
+
+        .login-container .form-group input {
+            width: 100%;
+            padding: 12px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+            background: var(--bg-body);
+            color: var(--text-color);
+        }
+
+        .login-container .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        .login-container .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-main);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .login-container .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .login-container .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .login-container .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .login-container .error-msg {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #FCA5A5;
+        }
+
+        .login-container .error-msg.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        .login-container .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ============================================================
            التجاوب
            ============================================================ */
         @media (max-width: 768px) {
@@ -746,15 +898,21 @@
             .content-list-item {
                 grid-template-columns: 1fr;
             }
+            .login-container {
+                margin: 40px 15px;
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- ====== زر تبديل الوضع ====== -->
     <button class="theme-toggle" onclick="toggleTheme()">
         <i class="fas fa-moon"></i>
     </button>
 
+    <!-- ====== زر العودة للأعلى ====== -->
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
         <i class="fas fa-chevron-up"></i>
     </button>
@@ -764,7 +922,7 @@
         <!-- ============================================================
         الهيدر
         ============================================================ -->
-        <header class="main-header">
+        <header class="main-header" id="adminHeader" style="display:none;">
             <a href="index.html" class="logo-area">
                 <div class="logo-icon"><i class="fas fa-rocket"></i></div>
                 <div class="logo-text">منصة <span>ارتقاء</span></div>
@@ -779,346 +937,394 @@
                 <a href="dashboard.html" class="btn-admin" style="background:var(--gradient-main);">
                     <i class="fas fa-tachometer-alt"></i> لوحة التحكم
                 </a>
+                <div class="user-info" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.05); padding:6px 16px; border-radius:50px; border:1px solid rgba(255,255,255,0.05);">
+                    <div class="user-avatar" id="userAvatar" style="width:35px; height:35px; border-radius:50%; background:var(--gradient-main); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; color:#fff;">أ</div>
+                    <span id="userName" style="font-weight:600; color:#fff;">المدير</span>
+                </div>
+                <button onclick="logout()" style="background:#EF4444; color:#fff; padding:8px 20px; border-radius:50px; border:none; font-weight:600; cursor:pointer; transition:var(--transition); font-family:'Cairo', sans-serif;">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
             </div>
         </header>
 
         <!-- ============================================================
-        العنوان
+        صفحة تسجيل الدخول
         ============================================================ -->
-        <div class="page-title">
-            <i class="fas fa-crown"></i>
-            إدارة الشروحات الأكاديمية
-        </div>
-        <p class="page-subtitle">
-            أضف، عدّل، أو احذف المحتوى الأكاديمي في منصة ارتقاء
-        </p>
-
-        <!-- ============================================================
-        رسائل التنبيه
-        ============================================================ -->
-        <div id="alertMessage" class="alert"></div>
-
-        <!-- ============================================================
-        تبويبات الإدارة
-        ============================================================ -->
-        <div class="admin-tabs">
-            <button class="tab-btn active" data-tab="universities" onclick="switchTab('universities')">
-                <i class="fas fa-university"></i> الجامعات
-            </button>
-            <button class="tab-btn" data-tab="materials" onclick="switchTab('materials')">
-                <i class="fas fa-book"></i> المواد
-            </button>
-            <button class="tab-btn" data-tab="videos" onclick="switchTab('videos')">
-                <i class="fas fa-video"></i> الفيديوهات
-            </button>
-            <button class="tab-btn" data-tab="summaries" onclick="switchTab('summaries')">
-                <i class="fas fa-file-pdf"></i> الملخصات
-            </button>
-        </div>
-
-        <!-- ============================================================
-        تبويب الجامعات
-        ============================================================ -->
-        <div id="tab-universities">
-            <div class="form-card active" id="universityForm">
-                <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--accent);"></i> إضافة جامعة جديدة</div>
-                <div class="form-subtitle">أدخل بيانات الجامعة لإضافتها إلى قائمة الجامعات</div>
-                <form id="addUniversityForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>اسم الجامعة <span class="required">*</span></label>
-                            <input type="text" id="uniName" placeholder="مثال: جامعة الملك سعود" required />
-                        </div>
-                        <div class="form-group">
-                            <label>أيقونة الجامعة <span class="required">*</span></label>
-                            <select id="uniIcon" required>
-                                <option value="fa-university">🏛️ fa-university</option>
-                                <option value="fa-industry">🏭 fa-industry</option>
-                                <option value="fa-female">👩 fa-female</option>
-                                <option value="fa-flask">🧪 fa-flask</option>
-                                <option value="fa-hospital">🏥 fa-hospital</option>
-                                <option value="fa-mosque">🕌 fa-mosque</option>
-                                <option value="fa-kaaba">🕋 fa-kaaba</option>
-                                <option value="fa-laptop">💻 fa-laptop</option>
-                                <option value="fa-building">🏢 fa-building</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>عدد المواد</label>
-                        <input type="number" id="uniCount" placeholder="مثال: 24" value="0" />
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit" style="background:var(--gradient-secondary);"><i class="fas fa-save"></i> إضافة الجامعة</button>
-                        <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
-                    </div>
-                </form>
+        <div class="login-container" id="loginContainer">
+            <div class="login-logo">
+                <i class="fas fa-user-cog"></i>
+                <h2>🔐 <span>تسجيل الدخول</span></h2>
+                <p>الدخول إلى لوحة تحكم المدير</p>
             </div>
-
-            <div class="content-list" id="universitiesList">
-                <div class="content-list-header">
-                    <span>الجامعة</span>
-                    <span>الأيقونة</span>
-                    <span>عدد المواد</span>
-                    <span>الإجراءات</span>
+            <div class="error-msg" id="loginError">❌ بيانات الدخول غير صحيحة</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="admin@example.com" required>
                 </div>
-                <div class="loading-center">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    جاري تحميل الجامعات...
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+            </form>
+            <div class="login-footer">
+                <i class="fas fa-shield-alt" style="color:var(--primary);"></i>
+                بيئة آمنة ومشفرة
             </div>
         </div>
 
         <!-- ============================================================
-        تبويب المواد
+        العنوان (يظهر بعد تسجيل الدخول)
         ============================================================ -->
-        <div id="tab-materials" style="display:none;">
-            <div class="form-card active" id="materialForm">
-                <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--primary);"></i> إضافة مادة جديدة</div>
-                <div class="form-subtitle">أدخل بيانات المادة لإضافتها إلى مكتبة الشروحات</div>
-                <form id="addMaterialForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عنوان المادة <span class="required">*</span></label>
-                            <input type="text" id="matTitle" placeholder="مثال: رياضيات ١" required />
+        <div id="dashboardContent" style="display:none;">
+            <div class="page-title">
+                <i class="fas fa-crown"></i>
+                إدارة الشروحات الأكاديمية
+            </div>
+            <p class="page-subtitle">
+                أضف، عدّل، أو احذف المحتوى الأكاديمي في منصة ارتقاء
+            </p>
+
+            <!-- رسائل التنبيه -->
+            <div id="alertMessage" class="alert"></div>
+
+            <!-- ============================================================
+            تبويبات الإدارة
+            ============================================================ -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="universities" onclick="switchTab('universities')">
+                    <i class="fas fa-university"></i> الجامعات
+                </button>
+                <button class="tab-btn" data-tab="materials" onclick="switchTab('materials')">
+                    <i class="fas fa-book"></i> المواد
+                </button>
+                <button class="tab-btn" data-tab="videos" onclick="switchTab('videos')">
+                    <i class="fas fa-video"></i> الفيديوهات
+                </button>
+                <button class="tab-btn" data-tab="summaries" onclick="switchTab('summaries')">
+                    <i class="fas fa-file-pdf"></i> الملخصات
+                </button>
+            </div>
+
+            <!-- ============================================================
+            تبويب الجامعات
+            ============================================================ -->
+            <div id="tab-universities">
+                <div class="form-card active" id="universityForm">
+                    <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--accent);"></i> إضافة جامعة جديدة</div>
+                    <div class="form-subtitle">أدخل بيانات الجامعة لإضافتها إلى قائمة الجامعات</div>
+                    <form id="addUniversityForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>اسم الجامعة <span class="required">*</span></label>
+                                <input type="text" id="uniName" placeholder="مثال: جامعة الملك سعود" required />
+                            </div>
+                            <div class="form-group">
+                                <label>أيقونة الجامعة <span class="required">*</span></label>
+                                <select id="uniIcon" required>
+                                    <option value="fa-university">🏛️ fa-university</option>
+                                    <option value="fa-industry">🏭 fa-industry</option>
+                                    <option value="fa-female">👩 fa-female</option>
+                                    <option value="fa-flask">🧪 fa-flask</option>
+                                    <option value="fa-hospital">🏥 fa-hospital</option>
+                                    <option value="fa-mosque">🕌 fa-mosque</option>
+                                    <option value="fa-kaaba">🕋 fa-kaaba</option>
+                                    <option value="fa-laptop">💻 fa-laptop</option>
+                                    <option value="fa-building">🏢 fa-building</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>كود المادة <span class="required">*</span></label>
-                            <input type="text" id="matCode" placeholder="مثال: MATH-101" required />
+                            <label>عدد المواد</label>
+                            <input type="number" id="uniCount" placeholder="مثال: 24" value="0" />
                         </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit" style="background:var(--gradient-secondary);"><i class="fas fa-save"></i> إضافة الجامعة</button>
+                            <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-list" id="universitiesList">
+                    <div class="content-list-header">
+                        <span>الجامعة</span>
+                        <span>الأيقونة</span>
+                        <span>عدد المواد</span>
+                        <span>الإجراءات</span>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>اسم المحاضر <span class="required">*</span></label>
-                            <input type="text" id="matInstructor" placeholder="مثال: د. خالد المنصور" required />
-                        </div>
-                        <div class="form-group">
-                            <label>الجامعة <span class="required">*</span></label>
-                            <select id="matUniversity" required>
-                                <option value="">اختر الجامعة</option>
-                            </select>
-                        </div>
+                    <div class="loading-center">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل الجامعات...
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>أيقونة المادة <span class="required">*</span></label>
-                            <select id="matIcon" required>
-                                <option value="fa-calculator">🧮 fa-calculator</option>
-                                <option value="fa-atom">⚛️ fa-atom</option>
-                                <option value="fa-flask">🧪 fa-flask</option>
-                                <option value="fa-water">💧 fa-water</option>
-                                <option value="fa-bolt">⚡ fa-bolt</option>
-                                <option value="fa-heart">❤️ fa-heart</option>
-                                <option value="fa-code">💻 fa-code</option>
-                                <option value="fa-chart-pie">📊 fa-chart-pie</option>
-                                <option value="fa-balance-scale">⚖️ fa-balance-scale</option>
-                                <option value="fa-oil-well">🛢️ fa-oil-well</option>
-                                <option value="fa-pills">💊 fa-pills</option>
-                                <option value="fa-brain">🧠 fa-brain</option>
-                                <option value="fa-microscope">🔬 fa-microscope</option>
-                                <option value="fa-robot">🤖 fa-robot</option>
-                                <option value="fa-database">🗄️ fa-database</option>
-                                <option value="fa-laptop-code">💻 fa-laptop-code</option>
-                                <option value="fa-drafting-compass">📐 fa-drafting-compass</option>
-                                <option value="fa-cubes">🧊 fa-cubes</option>
-                                <option value="fa-bullhorn">📢 fa-bullhorn</option>
-                                <option value="fa-rocket">🚀 fa-rocket</option>
-                                <option value="fa-shield-alt">🛡️ fa-shield-alt</option>
-                                <option value="fa-stethoscope">🩺 fa-stethoscope</option>
-                                <option value="fa-tooth">🦷 fa-tooth</option>
-                                <option value="fa-kaaba">🕋 fa-kaaba</option>
-                                <option value="fa-mosque">🕌 fa-mosque</option>
-                                <option value="fa-leaf">🌿 fa-leaf</option>
-                                <option value="fa-tree">🌳 fa-tree</option>
-                                <option value="fa-globe">🌍 fa-globe</option>
-                                <option value="fa-stars">⭐ fa-stars</option>
-                            </select>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            تبويب المواد
+            ============================================================ -->
+            <div id="tab-materials" style="display:none;">
+                <div class="form-card active" id="materialForm">
+                    <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--primary);"></i> إضافة مادة جديدة</div>
+                    <div class="form-subtitle">أدخل بيانات المادة لإضافتها إلى مكتبة الشروحات</div>
+                    <form id="addMaterialForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>عنوان المادة <span class="required">*</span></label>
+                                <input type="text" id="matTitle" placeholder="مثال: رياضيات ١" required />
+                            </div>
+                            <div class="form-group">
+                                <label>كود المادة <span class="required">*</span></label>
+                                <input type="text" id="matCode" placeholder="مثال: MATH-101" required />
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>عدد الفيديوهات</label>
-                            <input type="number" id="matVideos" placeholder="مثال: 24" value="10" />
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>اسم المحاضر <span class="required">*</span></label>
+                                <input type="text" id="matInstructor" placeholder="مثال: د. خالد المنصور" required />
+                            </div>
+                            <div class="form-group">
+                                <label>الجامعة <span class="required">*</span></label>
+                                <select id="matUniversity" required>
+                                    <option value="">اختر الجامعة</option>
+                                </select>
+                            </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>أيقونة المادة <span class="required">*</span></label>
+                                <select id="matIcon" required>
+                                    <option value="fa-calculator">🧮 fa-calculator</option>
+                                    <option value="fa-atom">⚛️ fa-atom</option>
+                                    <option value="fa-flask">🧪 fa-flask</option>
+                                    <option value="fa-water">💧 fa-water</option>
+                                    <option value="fa-bolt">⚡ fa-bolt</option>
+                                    <option value="fa-heart">❤️ fa-heart</option>
+                                    <option value="fa-code">💻 fa-code</option>
+                                    <option value="fa-chart-pie">📊 fa-chart-pie</option>
+                                    <option value="fa-balance-scale">⚖️ fa-balance-scale</option>
+                                    <option value="fa-oil-well">🛢️ fa-oil-well</option>
+                                    <option value="fa-pills">💊 fa-pills</option>
+                                    <option value="fa-brain">🧠 fa-brain</option>
+                                    <option value="fa-microscope">🔬 fa-microscope</option>
+                                    <option value="fa-robot">🤖 fa-robot</option>
+                                    <option value="fa-database">🗄️ fa-database</option>
+                                    <option value="fa-laptop-code">💻 fa-laptop-code</option>
+                                    <option value="fa-drafting-compass">📐 fa-drafting-compass</option>
+                                    <option value="fa-cubes">🧊 fa-cubes</option>
+                                    <option value="fa-bullhorn">📢 fa-bullhorn</option>
+                                    <option value="fa-rocket">🚀 fa-rocket</option>
+                                    <option value="fa-shield-alt">🛡️ fa-shield-alt</option>
+                                    <option value="fa-stethoscope">🩺 fa-stethoscope</option>
+                                    <option value="fa-tooth">🦷 fa-tooth</option>
+                                    <option value="fa-kaaba">🕋 fa-kaaba</option>
+                                    <option value="fa-mosque">🕌 fa-mosque</option>
+                                    <option value="fa-leaf">🌿 fa-leaf</option>
+                                    <option value="fa-tree">🌳 fa-tree</option>
+                                    <option value="fa-globe">🌍 fa-globe</option>
+                                    <option value="fa-stars">⭐ fa-stars</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>عدد الفيديوهات</label>
+                                <input type="number" id="matVideos" placeholder="مثال: 24" value="10" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>وصف المادة <span class="required">*</span></label>
+                                <textarea id="matDescription" placeholder="وصف مختصر للمادة..." rows="2" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><input type="checkbox" id="matFeatured" /> <strong>جعل المادة مميزة</strong></label>
+                                <div class="helper-text">المواد المميزة تظهر في قسم "المواد المميزة"</div>
+                            </div>
+                            <div class="form-group">
+                                <label>سعر الاشتراك <span class="required">*</span></label>
+                                <input type="number" id="matPrice" placeholder="مثال: 99" value="99" required min="1" />
+                                <div class="helper-text">سعر الاشتراك في هذه المادة بالريال</div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> إضافة المادة</button>
+                            <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-list" id="materialsList">
+                    <div class="content-list-header">
+                        <span>المادة</span>
+                        <span>المحاضر / الجامعة</span>
+                        <span>البيانات</span>
+                        <span>السعر</span>
+                        <span>الإجراءات</span>
                     </div>
-                    <div class="form-row">
+                    <div class="loading-center">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل المواد...
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            تبويب الفيديوهات - مع إضافة الجامعة والمادة
+            ============================================================ -->
+            <div id="tab-videos" style="display:none;">
+                <div class="form-card active" id="videoForm">
+                    <div class="form-title"><i class="fas fa-plus-circle" style="color:#3B82F6;"></i> رفع فيديو جديد</div>
+                    <div class="form-subtitle">أدخل بيانات الفيديو وارفع الملف لإضافته إلى المادة المختارة</div>
+                    <form id="addVideoForm" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>عنوان الفيديو <span class="required">*</span></label>
+                                <input type="text" id="videoTitle" placeholder="مثال: مقدمة في التفاضل" required />
+                            </div>
+                            <div class="form-group">
+                                <label>الجامعة <span class="required">*</span></label>
+                                <select id="videoUniversity" required>
+                                    <option value="">اختر الجامعة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>المادة <span class="required">*</span></label>
+                                <select id="videoMaterial" required>
+                                    <option value="">اختر المادة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>التخصص</label>
+                                <input type="text" id="videoSpecialty" placeholder="مثال: الهندسة" />
+                            </div>
+                        </div>
                         <div class="form-group full-width">
-                            <label>وصف المادة <span class="required">*</span></label>
-                            <textarea id="matDescription" placeholder="وصف مختصر للمادة..." rows="2" required></textarea>
+                            <label>وصف الفيديو</label>
+                            <textarea id="videoDescription" placeholder="وصف مختصر للفيديو..." rows="2"></textarea>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><input type="checkbox" id="matFeatured" /> <strong>جعل المادة مميزة</strong></label>
-                            <div class="helper-text">المواد المميزة تظهر في قسم "المواد المميزة"</div>
+                        <div class="form-group full-width">
+                            <label>رفع ملف الفيديو <span class="required">*</span></label>
+                            <div class="upload-area" id="videoUploadArea">
+                                <span class="upload-icon"><i class="fas fa-video"></i></span>
+                                <h4>اسحب ملف الفيديو هنا أو انقر للاختيار</h4>
+                                <p>يدعم ملفات MP4, AVI, MOV, WEBM (الحد الأقصى 100MB)</p>
+                                <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.webm,.mkv" required />
+                            </div>
+                            <div class="file-info" id="videoFileInfo">
+                                <i class="fas fa-video"></i>
+                                <span class="file-name" id="videoFileName">ملف</span>
+                                <span class="file-size" id="videoFileSize">0 MB</span>
+                                <button type="button" class="btn-remove-file" onclick="removeVideoFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="helper-text">يرجى اختيار ملف فيديو من جهازك</div>
                         </div>
-                        <div class="form-group">
-                            <label>سعر الاشتراك <span class="required">*</span></label>
-                            <input type="number" id="matPrice" placeholder="مثال: 99" value="99" required min="1" />
-                            <div class="helper-text">سعر الاشتراك في هذه المادة بالريال</div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit" style="background:#3B82F6;"><i class="fas fa-upload"></i> رفع الفيديو</button>
+                            <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
                         </div>
+                    </form>
+                </div>
+
+                <div class="content-list" id="videosList">
+                    <div class="content-list-header">
+                        <span>الفيديو</span>
+                        <span>المادة</span>
+                        <span>البيانات</span>
+                        <span>المشاهدات</span>
+                        <span>الإجراءات</span>
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> إضافة المادة</button>
-                        <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
+                    <div class="loading-center">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل الفيديوهات...
                     </div>
-                </form>
+                </div>
             </div>
 
-            <div class="content-list" id="materialsList">
-                <div class="content-list-header">
-                    <span>المادة</span>
-                    <span>المحاضر / الجامعة</span>
-                    <span>البيانات</span>
-                    <span>السعر</span>
-                    <span>الإجراءات</span>
+            <!-- ============================================================
+            تبويب الملخصات
+            ============================================================ -->
+            <div id="tab-summaries" style="display:none;">
+                <div class="form-card active" id="summaryForm">
+                    <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--success);"></i> إضافة ملخص جديد</div>
+                    <div class="form-subtitle">أدخل بيانات الملخص وارفع ملف PDF لإضافته إلى مكتبة الملخصات</div>
+                    <form id="addSummaryForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>عنوان الملخص <span class="required">*</span></label>
+                                <input type="text" id="sumTitle" placeholder="مثال: ملخص رياضيات 1" required />
+                            </div>
+                            <div class="form-group">
+                                <label>المادة <span class="required">*</span></label>
+                                <select id="sumSubject" required>
+                                    <option value="">اختر المادة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>عدد الصفحات <span class="required">*</span></label>
+                                <input type="number" id="sumPages" placeholder="مثال: 45" required />
+                            </div>
+                            <div class="form-group">
+                                <label>سعر الاشتراك <span class="required">*</span></label>
+                                <input type="number" id="sumPrice" placeholder="مثال: 49" value="49" required min="1" />
+                                <div class="helper-text">سعر الاشتراك في هذا الملخص بالريال</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>حجم الملف التقريبي <span class="required">*</span></label>
+                                <input type="text" id="sumSize" placeholder="مثال: 2.4 MB" required />
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>رفع ملف الملخص (PDF) <span class="required">*</span></label>
+                            <div class="upload-area" id="summaryUploadArea">
+                                <span class="upload-icon"><i class="fas fa-file-pdf"></i></span>
+                                <h4>اسحب ملف PDF هنا أو انقر للاختيار</h4>
+                                <p>يدعم ملفات PDF فقط (الحد الأقصى 10MB)</p>
+                                <input type="file" id="summaryFile" accept=".pdf" required />
+                            </div>
+                            <div class="file-info" id="summaryFileInfo">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="file-name" id="summaryFileName">ملف</span>
+                                <span class="file-size" id="summaryFileSize">0 KB</span>
+                                <button type="button" class="btn-remove-file" onclick="removeSummaryFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="helper-text">يرجى اختيار ملف PDF من جهازك</div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit-success"><i class="fas fa-save"></i> إضافة الملخص</button>
+                            <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="loading-center">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    جاري تحميل المواد...
+
+                <div class="content-list" id="summariesList">
+                    <div class="content-list-header">
+                        <span>الملخص</span>
+                        <span>المادة</span>
+                        <span>البيانات</span>
+                        <span>السعر</span>
+                        <span>الإجراءات</span>
+                    </div>
+                    <div class="loading-center">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل الملخصات...
+                    </div>
                 </div>
             </div>
+
         </div>
-
-        <!-- ============================================================
-        تبويب الفيديوهات
-        ============================================================ -->
-        <div id="tab-videos" style="display:none;">
-            <div class="form-card active" id="videoForm">
-                <div class="form-title"><i class="fas fa-plus-circle" style="color:#3B82F6;"></i> رفع فيديو جديد</div>
-                <div class="form-subtitle">أدخل بيانات الفيديو وارفع الملف لإضافته إلى المادة المختارة</div>
-                <form id="addVideoForm" enctype="multipart/form-data">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عنوان الفيديو <span class="required">*</span></label>
-                            <input type="text" id="videoTitle" placeholder="مثال: مقدمة في التفاضل" required />
-                        </div>
-                        <div class="form-group">
-                            <label>المادة <span class="required">*</span></label>
-                            <select id="videoMaterial" required>
-                                <option value="">اختر المادة</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group full-width">
-                        <label>وصف الفيديو</label>
-                        <textarea id="videoDescription" placeholder="وصف مختصر للفيديو..." rows="2"></textarea>
-                    </div>
-                    <div class="form-group full-width">
-                        <label>رفع ملف الفيديو <span class="required">*</span></label>
-                        <div class="upload-area" id="videoUploadArea">
-                            <span class="upload-icon"><i class="fas fa-video"></i></span>
-                            <h4>اسحب ملف الفيديو هنا أو انقر للاختيار</h4>
-                            <p>يدعم ملفات MP4, AVI, MOV, WEBM (الحد الأقصى 100MB)</p>
-                            <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.webm,.mkv" required />
-                        </div>
-                        <div class="file-info" id="videoFileInfo">
-                            <i class="fas fa-video"></i>
-                            <span class="file-name" id="videoFileName">ملف</span>
-                            <span class="file-size" id="videoFileSize">0 MB</span>
-                            <button type="button" class="btn-remove-file" onclick="removeVideoFile()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="helper-text">يرجى اختيار ملف فيديو من جهازك</div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit" style="background:#3B82F6;"><i class="fas fa-upload"></i> رفع الفيديو</button>
-                        <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="content-list" id="videosList">
-                <div class="content-list-header">
-                    <span>الفيديو</span>
-                    <span>المادة</span>
-                    <span>البيانات</span>
-                    <span>المشاهدات</span>
-                    <span>الإجراءات</span>
-                </div>
-                <div class="loading-center">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    جاري تحميل الفيديوهات...
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================================
-        تبويب الملخصات
-        ============================================================ -->
-        <div id="tab-summaries" style="display:none;">
-            <div class="form-card active" id="summaryForm">
-                <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--success);"></i> إضافة ملخص جديد</div>
-                <div class="form-subtitle">أدخل بيانات الملخص وارفع ملف PDF لإضافته إلى مكتبة الملخصات</div>
-                <form id="addSummaryForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عنوان الملخص <span class="required">*</span></label>
-                            <input type="text" id="sumTitle" placeholder="مثال: ملخص رياضيات 1" required />
-                        </div>
-                        <div class="form-group">
-                            <label>المادة <span class="required">*</span></label>
-                            <select id="sumSubject" required>
-                                <option value="">اختر المادة</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عدد الصفحات <span class="required">*</span></label>
-                            <input type="number" id="sumPages" placeholder="مثال: 45" required />
-                        </div>
-                        <div class="form-group">
-                            <label>سعر الاشتراك <span class="required">*</span></label>
-                            <input type="number" id="sumPrice" placeholder="مثال: 49" value="49" required min="1" />
-                            <div class="helper-text">سعر الاشتراك في هذا الملخص بالريال</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>حجم الملف التقريبي <span class="required">*</span></label>
-                            <input type="text" id="sumSize" placeholder="مثال: 2.4 MB" required />
-                        </div>
-                    </div>
-                    <div class="form-group full-width">
-                        <label>رفع ملف الملخص (PDF) <span class="required">*</span></label>
-                        <div class="upload-area" id="summaryUploadArea">
-                            <span class="upload-icon"><i class="fas fa-file-pdf"></i></span>
-                            <h4>اسحب ملف PDF هنا أو انقر للاختيار</h4>
-                            <p>يدعم ملفات PDF فقط (الحد الأقصى 10MB)</p>
-                            <input type="file" id="summaryFile" accept=".pdf" required />
-                        </div>
-                        <div class="file-info" id="summaryFileInfo">
-                            <i class="fas fa-file-pdf"></i>
-                            <span class="file-name" id="summaryFileName">ملف</span>
-                            <span class="file-size" id="summaryFileSize">0 KB</span>
-                            <button type="button" class="btn-remove-file" onclick="removeSummaryFile()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="helper-text">يرجى اختيار ملف PDF من جهازك</div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit-success"><i class="fas fa-save"></i> إضافة الملخص</button>
-                        <button type="reset" class="btn-reset"><i class="fas fa-undo"></i> إعادة تعيين</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="content-list" id="summariesList">
-                <div class="content-list-header">
-                    <span>الملخص</span>
-                    <span>المادة</span>
-                    <span>البيانات</span>
-                    <span>السعر</span>
-                    <span>الإجراءات</span>
-                </div>
-                <div class="loading-center">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    جاري تحميل الملخصات...
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <!-- ============================================================
@@ -1166,7 +1372,7 @@
         }
 
         // ============================================================
-        // 5. تبديل التبويبات - ✅ تعريف الدالة هنا
+        // 5. تبديل التبويبات
         // ============================================================
         function switchTab(tab) {
             console.log('🔄 تبديل التبويب إلى:', tab);
@@ -1185,7 +1391,134 @@
         }
 
         // ============================================================
-        // 6. جلب الجامعات
+        // 6. التحقق من تسجيل الدخول
+        // ============================================================
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('user');
+
+            if (!token || !userData) {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('dashboardContent').style.display = 'none';
+                document.getElementById('adminHeader').style.display = 'none';
+                return false;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                if (user.role !== 'admin') {
+                    alert('⚠️ هذه الصفحة مخصصة للمديرين فقط');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    document.getElementById('loginContainer').style.display = 'block';
+                    document.getElementById('dashboardContent').style.display = 'none';
+                    document.getElementById('adminHeader').style.display = 'none';
+                    return false;
+                }
+
+                currentToken = token;
+                currentUser = user;
+                document.getElementById('userName').textContent = user.name || 'المدير';
+                document.getElementById('userAvatar').textContent = (user.name || 'أ').charAt(0);
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                document.getElementById('adminHeader').style.display = 'flex';
+                
+                // تحميل البيانات
+                fetchUniversities();
+                fetchMaterials();
+                fetchVideos();
+                fetchSummaries();
+                return true;
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('dashboardContent').style.display = 'none';
+                document.getElementById('adminHeader').style.display = 'none';
+                return false;
+            }
+        }
+
+        // ============================================================
+        // 7. تسجيل الخروج
+        // ============================================================
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentToken = '';
+            currentUser = null;
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('adminHeader').style.display = 'none';
+            showAlert('✅ تم تسجيل الخروج بنجاح', 'success');
+        }
+
+        // ============================================================
+        // 8. معالجة تسجيل الدخول
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            errorEl.classList.remove('show');
+
+            if (!email || !password) {
+                errorEl.textContent = '❌ يرجى إدخال البريد الإلكتروني وكلمة المرور';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.user.role !== 'admin') {
+                        errorEl.textContent = '❌ هذا المستخدم ليس لديه صلاحية المدير';
+                        errorEl.classList.add('show');
+                        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    currentToken = data.token;
+                    currentUser = data.user;
+
+                    showAlert('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    checkAuth();
+                    document.getElementById('loginForm').reset();
+
+                } else {
+                    errorEl.textContent = '❌ ' + (data.message || 'بيانات الدخول غير صحيحة');
+                    errorEl.classList.add('show');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                errorEl.textContent = '❌ حدث خطأ في الاتصال بالخادم';
+                errorEl.classList.add('show');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // 9. جلب الجامعات
         // ============================================================
         async function fetchUniversities() {
             try {
@@ -1194,7 +1527,7 @@
                 if (data.success) {
                     universities = data.data;
                     renderUniversities();
-                    populateUniversitySelect();
+                    populateUniversitySelects();
                 }
             } catch (error) {
                 console.error('❌ خطأ:', error);
@@ -1202,7 +1535,7 @@
         }
 
         // ============================================================
-        // 7. جلب المواد
+        // 10. جلب المواد
         // ============================================================
         async function fetchMaterials() {
             try {
@@ -1219,7 +1552,7 @@
         }
 
         // ============================================================
-        // 8. جلب الفيديوهات
+        // 11. جلب الفيديوهات
         // ============================================================
         async function fetchVideos() {
             const container = document.getElementById('videosList');
@@ -1247,7 +1580,7 @@
         }
 
         // ============================================================
-        // 9. جلب الملخصات
+        // 12. جلب الملخصات
         // ============================================================
         async function fetchSummaries() {
             const container = document.getElementById('summariesList');
@@ -1275,13 +1608,21 @@
         }
 
         // ============================================================
-        // 10. تعبئة القوائم المنسدلة
+        // 13. تعبئة القوائم المنسدلة
         // ============================================================
-        function populateUniversitySelect() {
-            const select = document.getElementById('matUniversity');
-            select.innerHTML = '<option value="">اختر الجامعة</option>';
+        function populateUniversitySelects() {
+            // للجامعة في نموذج المادة
+            const matSelect = document.getElementById('matUniversity');
+            matSelect.innerHTML = '<option value="">اختر الجامعة</option>';
             universities.forEach(uni => {
-                select.innerHTML += `<option value="${uni._id}">${uni.name}</option>`;
+                matSelect.innerHTML += `<option value="${uni._id}">${uni.name}</option>`;
+            });
+
+            // للجامعة في نموذج الفيديو
+            const videoUniSelect = document.getElementById('videoUniversity');
+            videoUniSelect.innerHTML = '<option value="">اختر الجامعة</option>';
+            universities.forEach(uni => {
+                videoUniSelect.innerHTML += `<option value="${uni._id}">${uni.name}</option>`;
             });
         }
 
@@ -1290,7 +1631,8 @@
             const videoSelect = document.getElementById('videoMaterial');
             videoSelect.innerHTML = '<option value="">اختر المادة</option>';
             materials.forEach(mat => {
-                videoSelect.innerHTML += `<option value="${mat._id}">${mat.title} (${mat.code})</option>`;
+                const uni = universities.find(u => u._id === mat.universityId);
+                videoSelect.innerHTML += `<option value="${mat._id}">${mat.title} (${mat.code}) - ${uni ? uni.name : ''}</option>`;
             });
 
             // للمواد في نموذج الملخص
@@ -1302,7 +1644,7 @@
         }
 
         // ============================================================
-        // 11. عرض الجامعات
+        // 14. عرض الجامعات
         // ============================================================
         function renderUniversities() {
             const container = document.getElementById('universitiesList');
@@ -1335,11 +1677,7 @@
                         <div style="font-size:1.5rem;"><i class="fas ${uni.icon}"></i></div>
                         <div style="font-size:0.9rem;color:var(--text-muted);">${uni.count || 0} مادة</div>
                         <div class="item-actions">
-                            ${isAdmin() ? `
-                                <button class="btn-delete" onclick="deleteUniversity('${uni._id}')"><i class="fas fa-trash"></i></button>
-                            ` : `
-                                <span style="font-size:0.7rem;color:var(--text-muted);">للإدارة فقط</span>
-                            `}
+                            <button class="btn-delete" onclick="deleteUniversity('${uni._id}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1350,7 +1688,7 @@
         }
 
         // ============================================================
-        // 12. عرض المواد
+        // 15. عرض المواد
         // ============================================================
         function renderMaterials() {
             const container = document.getElementById('materialsList');
@@ -1399,12 +1737,8 @@
                             </span>
                         </div>
                         <div class="item-actions">
-                            ${isAdmin() ? `
-                                <button class="btn-delete" onclick="deleteMaterial('${mat._id}')"><i class="fas fa-trash"></i></button>
-                                <button class="btn-view" onclick="viewMaterial('${mat._id}')"><i class="fas fa-eye"></i></button>
-                            ` : `
-                                <span style="font-size:0.7rem;color:var(--text-muted);">للإدارة فقط</span>
-                            `}
+                            <button class="btn-delete" onclick="deleteMaterial('${mat._id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn-view" onclick="viewMaterial('${mat._id}')"><i class="fas fa-eye"></i></button>
                         </div>
                     </div>
                 `;
@@ -1415,7 +1749,7 @@
         }
 
         // ============================================================
-        // 13. عرض الفيديوهات
+        // 16. عرض الفيديوهات
         // ============================================================
         function renderVideos() {
             const container = document.getElementById('videosList');
@@ -1441,12 +1775,12 @@
             `;
 
             videos.forEach((video, index) => {
-                const material = materials.find(m => m._id === String(video.subjectId) || m._id === video
-                .subjectId);
+                const material = materials.find(m => m._id === String(video.subjectId));
                 html += `
                     <div class="content-list-item" data-aos="fade-up" data-aos-delay="${index * 50}">
                         <div>
                             <div class="item-title"><i class="fas fa-video" style="color:#3B82F6;"></i> ${video.title}</div>
+                            <div style="font-size:0.8rem;color:var(--text-muted);">${video.subjectName || 'غير محددة'}</div>
                         </div>
                         <div style="font-size:0.9rem;color:var(--text-muted);">${material ? material.title : video.subjectName || 'غير محددة'}</div>
                         <div>
@@ -1457,12 +1791,8 @@
                         </div>
                         <div style="font-size:0.9rem;font-weight:600;color:#3B82F6;">${video.views || 0} 👁️</div>
                         <div class="item-actions">
-                            ${isAdmin() ? `
-                                <button class="btn-view" onclick="viewVideo('${video._id}')"><i class="fas fa-eye"></i></button>
-                                <button class="btn-delete" onclick="deleteVideo('${video._id}')"><i class="fas fa-trash"></i></button>
-                            ` : `
-                                <span style="font-size:0.7rem;color:var(--text-muted);">للإدارة فقط</span>
-                            `}
+                            <button class="btn-view" onclick="viewVideo('${video._id}')"><i class="fas fa-eye"></i></button>
+                            <button class="btn-delete" onclick="deleteVideo('${video._id}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1473,7 +1803,7 @@
         }
 
         // ============================================================
-        // 14. عرض الملخصات
+        // 17. عرض الملخصات
         // ============================================================
         function renderSummaries() {
             const container = document.getElementById('summariesList');
@@ -1518,13 +1848,9 @@
                             </span>
                         </div>
                         <div class="item-actions">
-                            ${isAdmin() ? `
-                                <button class="btn-download" onclick="downloadSummaryFile('${sum._id}')"><i class="fas fa-download"></i></button>
-                                <button class="btn-delete" onclick="deleteSummary('${sum._id}')"><i class="fas fa-trash"></i></button>
-                                <button class="btn-view" onclick="viewSummary('${sum._id}')"><i class="fas fa-eye"></i></button>
-                            ` : `
-                                <span style="font-size:0.7rem;color:var(--text-muted);">للإدارة فقط</span>
-                            `}
+                            <button class="btn-download" onclick="downloadSummaryFile('${sum._id}')"><i class="fas fa-download"></i></button>
+                            <button class="btn-delete" onclick="deleteSummary('${sum._id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn-view" onclick="viewSummary('${sum._id}')"><i class="fas fa-eye"></i></button>
                         </div>
                     </div>
                 `;
@@ -1535,15 +1861,10 @@
         }
 
         // ============================================================
-        // 15. إضافة جامعة
+        // 18. إضافة جامعة
         // ============================================================
         document.getElementById('addUniversityForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه إضافة الجامعات', 'danger');
-                return;
-            }
 
             const name = document.getElementById('uniName').value.trim();
             const icon = document.getElementById('uniIcon').value;
@@ -1588,15 +1909,10 @@
         });
 
         // ============================================================
-        // 16. إضافة مادة
+        // 19. إضافة مادة
         // ============================================================
         document.getElementById('addMaterialForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه إضافة المواد', 'danger');
-                return;
-            }
 
             const title = document.getElementById('matTitle').value.trim();
             const code = document.getElementById('matCode').value.trim();
@@ -1660,7 +1976,7 @@
         });
 
         // ============================================================
-        // 17. رفع فيديو
+        // 20. رفع فيديو - مع ربطه بالمادة والجامعة
         // ============================================================
         document.getElementById('videoFile').addEventListener('change', function() {
             if (this.files.length) {
@@ -1726,21 +2042,35 @@
             uploadArea.querySelector('p').textContent = 'يدعم ملفات MP4, AVI, MOV, WEBM (الحد الأقصى 100MB)';
         }
 
+        // تحديث قائمة المواد عند اختيار الجامعة
+        document.getElementById('videoUniversity').addEventListener('change', function() {
+            const universityId = this.value;
+            const videoSelect = document.getElementById('videoMaterial');
+            
+            videoSelect.innerHTML = '<option value="">اختر المادة</option>';
+            
+            const filteredMaterials = materials.filter(m => m.universityId === universityId);
+            filteredMaterials.forEach(mat => {
+                videoSelect.innerHTML += `<option value="${mat._id}">${mat.title} (${mat.code})</option>`;
+            });
+            
+            if (filteredMaterials.length === 0) {
+                videoSelect.innerHTML = '<option value="">لا توجد مواد في هذه الجامعة</option>';
+            }
+        });
+
         document.getElementById('addVideoForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه رفع الفيديوهات', 'danger');
-                return;
-            }
-
             const title = document.getElementById('videoTitle').value.trim();
+            const universityId = document.getElementById('videoUniversity').value;
             const materialId = document.getElementById('videoMaterial').value;
+            const specialtyName = document.getElementById('videoSpecialty').value.trim();
             const description = document.getElementById('videoDescription').value.trim();
             const file = uploadedVideoFile;
 
-            if (!title || !materialId) {
-                showAlert('❌ يرجى إدخال عنوان الفيديو واختيار المادة', 'danger');
+            if (!title || !universityId || !materialId) {
+                showAlert('❌ يرجى إدخال عنوان الفيديو واختيار الجامعة والمادة', 'danger');
                 return;
             }
 
@@ -1750,10 +2080,14 @@
             }
 
             const material = materials.find(m => m._id === materialId);
+            const university = universities.find(u => u._id === universityId);
+            
             const formData = new FormData();
             formData.append('title', title);
             formData.append('subjectId', materialId);
             formData.append('subjectName', material ? material.title : '');
+            formData.append('specialtyName', specialtyName);
+            formData.append('universityName', university ? university.name : '');
             formData.append('description', description);
             formData.append('video', file);
 
@@ -1789,37 +2123,25 @@
                 btn.disabled = false;
             }
         });
-// ============================================================
-// عرض فيديو - ✅ النسخة المحسنة
-// ============================================================
-function viewVideo(id) {
-    const video = videos.find(v => v._id === id);
-    if (!video) {
-        showAlert('❌ الفيديو غير موجود', 'danger');
-        return;
-    }
 
-    console.log('🎬 عرض الفيديو:', video);
-    console.log('📁 المسار:', video.filePath);
-
-    // ✅ استخدام المسار الصحيح
-    if (video.filePath) {
-        // فتح الفيديو في نافذة جديدة
-        window.open(video.filePath, '_blank');
-    } else {
-        // عرض معلومات الفيديو
-        alert(`🎬 ${video.title}\n\n📝 ${video.description || 'لا يوجد وصف'}\n👁️ ${video.views || 0} مشاهدة`);
-    }
-}
         // ============================================================
-        // 19. حذف فيديو
+        // 21. عرض فيديو
+        // ============================================================
+        function viewVideo(id) {
+            const video = videos.find(v => v._id === id);
+            if (video) {
+                if (video.filePath) {
+                    window.open(video.filePath, '_blank');
+                } else {
+                    alert(`🎬 ${video.title}\n\n📝 ${video.description || 'لا يوجد وصف'}\n👁️ ${video.views || 0} مشاهدة`);
+                }
+            }
+        }
+
+        // ============================================================
+        // 22. حذف فيديو
         // ============================================================
         async function deleteVideo(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف الفيديوهات', 'danger');
-                return;
-            }
-
             if (!confirm('⚠️ هل أنت متأكد من حذف هذا الفيديو؟')) return;
 
             try {
@@ -1845,7 +2167,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 20. إضافة ملخص
+        // 23. إضافة ملخص
         // ============================================================
         document.getElementById('summaryFile').addEventListener('change', function() {
             if (this.files.length) {
@@ -1909,11 +2231,6 @@ function viewVideo(id) {
 
         document.getElementById('addSummaryForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه إضافة الملخصات', 'danger');
-                return;
-            }
 
             const title = document.getElementById('sumTitle').value.trim();
             const subject = document.getElementById('sumSubject').value;
@@ -1982,14 +2299,9 @@ function viewVideo(id) {
         });
 
         // ============================================================
-        // 21. حذف ملخص
+        // 24. حذف ملخص
         // ============================================================
         async function deleteSummary(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف الملخصات', 'danger');
-                return;
-            }
-
             if (!confirm('⚠️ هل أنت متأكد من حذف هذا الملخص؟')) return;
 
             try {
@@ -2015,7 +2327,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 22. تحميل ملف الملخص
+        // 25. تحميل ملف الملخص
         // ============================================================
         async function downloadSummaryFile(id) {
             try {
@@ -2038,7 +2350,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 23. عرض ملخص
+        // 26. عرض ملخص
         // ============================================================
         function viewSummary(id) {
             const summary = summaries.find(s => s._id === id);
@@ -2048,7 +2360,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 24. عرض مادة
+        // 27. عرض مادة
         // ============================================================
         function viewMaterial(id) {
             const material = materials.find(m => m._id === id);
@@ -2058,14 +2370,9 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 25. حذف جامعة
+        // 28. حذف جامعة
         // ============================================================
         async function deleteUniversity(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف الجامعات', 'danger');
-                return;
-            }
-
             if (!confirm('⚠️ هل أنت متأكد من حذف هذه الجامعة؟')) return;
 
             try {
@@ -2091,14 +2398,9 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 26. حذف مادة
+        // 29. حذف مادة
         // ============================================================
         async function deleteMaterial(id) {
-            if (!isAdmin()) {
-                showAlert('❌ فقط المدير يمكنه حذف المواد', 'danger');
-                return;
-            }
-
             if (!confirm('⚠️ هل أنت متأكد من حذف هذه المادة؟')) return;
 
             try {
@@ -2124,7 +2426,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 27. تبديل الوضع
+        // 30. تبديل الوضع
         // ============================================================
         let isDark = false;
 
@@ -2142,7 +2444,7 @@ function viewVideo(id) {
         }
 
         // ============================================================
-        // 28. زر العودة للأعلى
+        // 31. زر العودة للأعلى
         // ============================================================
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
@@ -2150,21 +2452,9 @@ function viewVideo(id) {
         });
 
         // ============================================================
-        // 29. التشغيل الابتدائي
+        // 32. التشغيل الابتدائي
         // ============================================================
-        async function init() {
-            await fetchUniversities();
-            await fetchMaterials();
-            await fetchVideos();
-            await fetchSummaries();
-            console.log('👑 تم تحميل صفحة إدارة الشروحات بنجاح!');
-            console.log('🏛️ عدد الجامعات:', universities.length);
-            console.log('📚 عدد المواد:', materials.length);
-            console.log('🎬 عدد الفيديوهات:', videos.length);
-            console.log('📄 عدد الملخصات:', summaries.length);
-        }
-
-        init();
+        checkAuth();
     </script>
 
 </body>
