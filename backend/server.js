@@ -1519,7 +1519,6 @@ app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res
         res.status(500).json({ success: false, message: error.message });
     }
 });
-
 // ============================================================
 // 7. مسارات المواد التعليمية (EXPLANATIONS MATERIALS)
 // ============================================================
@@ -1527,7 +1526,8 @@ app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res
 // جلب جميع المواد
 app.get('/api/explanations/materials', async (req, res) => {
     try {
-        const materials = await ExplanationMaterial.find().sort({ createdAt: -1 });
+        const materials = await ExplanationMaterial.find()
+            .sort({ createdAt: -1 });
         res.status(200).json({
             success: true,
             data: materials
@@ -1537,8 +1537,9 @@ app.get('/api/explanations/materials', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+
 // ============================================================
-// جلب مادة محددة
+// ✅ جلب مادة محددة - هذا المسار كان مفقوداً
 // ============================================================
 app.get('/api/explanations/materials/:id', async (req, res) => {
     try {
@@ -1567,6 +1568,7 @@ app.get('/api/explanations/materials/:id', async (req, res) => {
         });
     }
 });
+
 // إضافة مادة جديدة (للمدير فقط)
 app.post('/api/explanations/materials', protect, authorize('admin'), async (req, res) => {
     try {
@@ -1607,6 +1609,43 @@ app.post('/api/explanations/materials', protect, authorize('admin'), async (req,
     }
 });
 
+// تحديث مادة (للمدير فقط)
+app.put('/api/explanations/materials/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const material = await ExplanationMaterial.findById(id);
+        if (!material) {
+            return res.status(404).json({
+                success: false,
+                message: 'المادة غير موجودة'
+            });
+        }
+
+        // تحديث الحقول
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] !== undefined) {
+                material[key] = updateData[key];
+            }
+        });
+
+        await material.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'تم تحديث المادة بنجاح',
+            data: material
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحديث المادة:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 // حذف مادة (للمدير فقط)
 app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async (req, res) => {
     try {
@@ -1627,7 +1666,6 @@ app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async
         res.status(500).json({ success: false, message: error.message });
     }
 });
-
 // ============================================================
 // 8. مسارات الملخصات (SUMMARIES)
 // ============================================================
