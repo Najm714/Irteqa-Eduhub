@@ -645,74 +645,6 @@
         }
 
         /* ============================================================
-           مودال إضافة فيديو
-           ============================================================ */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal-box {
-            background: var(--bg-card);
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            border-radius: var(--radius);
-            padding: 35px 30px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
-            position: relative;
-            animation: slideUp 0.3s ease;
-            overflow-y: auto;
-        }
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 1.8rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .modal-close:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
-        }
-        .modal-box h3 {
-            color: var(--text-color);
-            margin-bottom: 5px;
-            font-size: 1.3rem;
-        }
-        .modal-box .modal-subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-
-        /* ============================================================
            التجاوب
            ============================================================ */
         @media (max-width: 768px) {
@@ -797,9 +729,6 @@
             }
             .file-info .btn-remove-file {
                 margin-right: 0;
-            }
-            .modal-box {
-                padding: 25px 20px;
             }
         }
         @media (max-width: 480px) {
@@ -1050,7 +979,7 @@
         </div>
 
         <!-- ============================================================
-        تبويب الفيديوهات - ✅ إضافة إدارة الفيديوهات
+        تبويب الفيديوهات
         ============================================================ -->
         <div id="tab-videos" style="display:none;">
             <div class="form-card active" id="videoForm">
@@ -1237,12 +1166,15 @@
         }
 
         // ============================================================
-        // 5. تبديل التبويبات
+        // 5. تبديل التبويبات - ✅ تعريف الدالة هنا
         // ============================================================
         function switchTab(tab) {
+            console.log('🔄 تبديل التبويب إلى:', tab);
+            
             document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.tab === tab);
             });
+            
             document.getElementById('tab-universities').style.display = tab === 'universities' ? 'block' : 'none';
             document.getElementById('tab-materials').style.display = tab === 'materials' ? 'block' : 'none';
             document.getElementById('tab-videos').style.display = tab === 'videos' ? 'block' : 'none';
@@ -1728,10 +1660,8 @@
         });
 
         // ============================================================
-        // 17. رفع فيديو - ✅ إضافة دالة رفع الفيديو
+        // 17. رفع فيديو
         // ============================================================
-        let uploadedVideoFile = null;
-
         document.getElementById('videoFile').addEventListener('change', function() {
             if (this.files.length) {
                 handleVideoFile(this.files[0]);
@@ -1910,8 +1840,6 @@
         // ============================================================
         // 20. إضافة ملخص
         // ============================================================
-        let uploadedSummaryFile = null;
-
         document.getElementById('summaryFile').addEventListener('change', function() {
             if (this.files.length) {
                 handleSummaryFile(this.files[0]);

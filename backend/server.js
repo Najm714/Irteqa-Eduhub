@@ -419,6 +419,7 @@ app.delete('/api/videos/:id', protect, authorize('admin'), async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+
 // ============================================================
 // 2. مسارات الفيديوهات (VIDEOS)
 // ============================================================
