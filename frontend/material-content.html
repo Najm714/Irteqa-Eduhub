@@ -152,6 +152,58 @@
         }
 
         /* ============================================================
+           رسائل التنبيه
+           ============================================================ */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) translateX(-50%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translateX(-50%);
+            }
+        }
+
+        /* ============================================================
            الهيدر
            ============================================================ */
         .header {
@@ -658,17 +710,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         .modal-box .video-player video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
 
         .modal-box .video-player .placeholder {
             color: #fff;
             text-align: center;
+            padding: 40px;
         }
 
         .modal-box .video-player .placeholder i {
@@ -676,6 +730,11 @@
             display: block;
             margin-bottom: 15px;
             opacity: 0.3;
+        }
+
+        .modal-box .video-player .placeholder .error-icon {
+            color: #EF4444;
+            opacity: 1;
         }
 
         .modal-box .video-info {
@@ -693,6 +752,14 @@
             color: var(--text-muted);
             font-size: 0.95rem;
             line-height: 1.7;
+        }
+
+        .modal-box .video-info .video-url-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            word-break: break-all;
+            opacity: 0.5;
         }
 
         /* ============================================================
@@ -849,6 +916,12 @@
             .back-to-top {
                 bottom: 75px;
             }
+
+            .alert {
+                min-width: 250px;
+                top: 80px;
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -873,6 +946,13 @@
                 height: 45px;
                 font-size: 1.3rem;
             }
+
+            .alert {
+                min-width: 200px;
+                top: 70px;
+                font-size: 0.8rem;
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
@@ -887,6 +967,9 @@
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
         <i class="fas fa-chevron-up"></i>
     </button>
+
+    <!-- ====== رسائل التنبيه ====== -->
+    <div id="alertMessage" class="alert"></div>
 
     <!-- ============================================================
     الهيدر
@@ -987,6 +1070,7 @@
             <div class="video-info">
                 <h3 id="videoModalTitle">عنوان الفيديو</h3>
                 <p class="video-desc" id="videoModalDesc">وصف الفيديو</p>
+                <div class="video-url-info" id="videoUrlInfo"></div>
             </div>
         </div>
     </div>
@@ -1068,21 +1152,33 @@
         });
 
         // ============================================================
-        // 4. API URL
+        // 4. عرض رسائل التنبيه
+        // ============================================================
+        function showAlert(message, type = 'success') {
+            const alertEl = document.getElementById('alertMessage');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert-${type} show`;
+            setTimeout(() => {
+                alertEl.classList.remove('show');
+            }, 5000);
+        }
+
+        // ============================================================
+        // 5. API URL
         // ============================================================
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:5000' 
             : 'https://irteqa-eduhub.onrender.com';
 
         // ============================================================
-        // 5. المتغيرات
+        // 6. المتغيرات
         // ============================================================
+        let videos = [];
         let currentMaterialId = null;
         let currentSubscriptionStatus = 'active';
-        let videos = [];
 
         // ============================================================
-        // 6. تحميل بيانات المادة من الرابط
+        // 7. تحميل بيانات المادة من الرابط
         // ============================================================
         function loadMaterialData() {
             const params = new URLSearchParams(window.location.search);
@@ -1110,7 +1206,7 @@
         }
 
         // ============================================================
-        // 7. تحديث حالة الاشتراك
+        // 8. تحديث حالة الاشتراك
         // ============================================================
         function updateSubscriptionStatus(status) {
             const badge = document.getElementById('subscriptionStatus');
@@ -1134,7 +1230,7 @@
         }
 
         // ============================================================
-        // 8. جلب فيديوهات المادة من الخادم
+        // 9. جلب فيديوهات المادة من الخادم
         // ============================================================
         async function loadVideos() {
             const grid = document.getElementById('videosGrid');
@@ -1150,172 +1246,154 @@
             `;
 
             try {
+                console.log('🔍 جلب فيديوهات للمادة ID:', currentMaterialId);
+
                 // جلب الفيديوهات من الخادم حسب معرف المادة
                 const response = await fetch(`${API_URL}/api/videos/subject/${currentMaterialId || 1}`);
                 const data = await response.json();
 
-                if (data.success && data.data.length > 0) {
+                console.log('📦 الرد من الخادم:', data);
+
+                if (data.success && data.data && data.data.length > 0) {
                     videos = data.data;
                     countStat.textContent = videos.length;
                     countLabel.textContent = `${videos.length} فيديو`;
                     renderVideos(videos);
                 } else {
-                    // استخدام بيانات تجريبية إذا لم تكن هناك فيديوهات
-                    const demoVideos = getDemoVideos();
-                    videos = demoVideos;
-                    countStat.textContent = videos.length;
-                    countLabel.textContent = `${videos.length} فيديو`;
-                    renderVideos(demoVideos);
+                    // لا توجد فيديوهات
+                    videos = [];
+                    countStat.textContent = '0';
+                    countLabel.textContent = '0 فيديو';
+                    grid.innerHTML = `
+                        <div class="no-videos">
+                            <i class="fas fa-video-slash"></i>
+                            <h3>لا توجد فيديوهات</h3>
+                            <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('❌ خطأ في جلب الفيديوهات:', error);
-                // استخدام بيانات تجريبية
-                const demoVideos = getDemoVideos();
-                videos = demoVideos;
-                countStat.textContent = videos.length;
-                countLabel.textContent = `${videos.length} فيديو`;
-                renderVideos(demoVideos);
+                showAlert('❌ حدث خطأ في تحميل الفيديوهات', 'danger');
+                grid.innerHTML = `
+                    <div class="no-videos">
+                        <i class="fas fa-exclamation-circle" style="color:#EF4444;"></i>
+                        <h3 style="color:#EF4444;">حدث خطأ</h3>
+                        <p>تعذر تحميل الفيديوهات</p>
+                    </div>
+                `;
             }
         }
 
         // ============================================================
-        // 9. فيديوهات تجريبية
+        // 10. عرض الفيديوهات
         // ============================================================
-        function getDemoVideos() {
-            return [{
-                id: 1,
-                title: 'مقدمة في التفاضل',
-                description: 'تعريف النهايات والاشتقاق وأساسيات التفاضل مع أمثلة تطبيقية.',
-                duration: '12:34',
-                views: 234,
-                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
-            }, {
-                id: 2,
-                title: 'قواعد الاشتقاق الأساسية',
-                description: 'شرح قواعد الاشتقاق الأساسية مع أمثلة محلولة خطوة بخطوة.',
-                duration: '18:22',
-                views: 189,
-                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
-            }, {
-                id: 3,
-                title: 'تطبيقات الاشتقاق في الهندسة',
-                description: 'تطبيقات الاشتقاق في الهندسة وحل مسائل عملية.',
-                duration: '15:45',
-                views: 145,
-                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
-            }, {
-                id: 4,
-                title: 'التكامل غير المحدود',
-                description: 'مقدمة في التكامل غير المحدود وقواعده الأساسية.',
-                duration: '20:10',
-                views: 98,
-                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
-            }, {
-                id: 5,
-                title: 'التكامل المحدود وحساب المساحات',
-                description: 'التكامل المحدود واستخدامه في حساب المساحات تحت المنحنيات.',
-                duration: '16:30',
-                views: 76,
-                thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
-            }];
+        function renderVideos(videosList) {
+            const grid = document.getElementById('videosGrid');
+
+            if (!videosList || videosList.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-videos">
+                        <i class="fas fa-video-slash"></i>
+                        <h3>لا توجد فيديوهات</h3>
+                        <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = videosList.map((video, index) => {
+                const thumbnail = video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
+                return `
+                    <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo('${video._id}')">
+                        <div class="video-thumbnail">
+                            <img src="${thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'" />
+                            <div class="play-overlay"><i class="fas fa-play"></i></div>
+                            <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                            <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
+                        </div>
+                        <div class="video-body">
+                            <h3>${video.title}</h3>
+                            <div class="video-meta">
+                                <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
+                                <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
+                            </div>
+                            <div class="video-tags">
+                                <span class="tag">#${video.subjectName || 'مادة'}</span>
+                                ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
-// ============================================================
-// عرض الفيديوهات - ✅ النسخة المحسنة
-// ============================================================
-function renderVideos(videosList) {
-    const grid = document.getElementById('videosGrid');
 
-    if (!videosList || videosList.length === 0) {
-        grid.innerHTML = `
-            <div class="no-videos">
-                <i class="fas fa-video-slash"></i>
-                <h3>لا توجد فيديوهات</h3>
-                <p>سيتم إضافة فيديوهات هذه المادة قريباً</p>
-            </div>
-        `;
-        return;
-    }
+        // ============================================================
+        // 11. فتح الفيديو في المودال - ✅ النسخة المحسنة
+        // ============================================================
+        function openVideo(videoId) {
+            const video = videos.find(v => v._id === videoId);
+            if (!video) {
+                showAlert('❌ الفيديو غير موجود', 'danger');
+                return;
+            }
 
-    grid.innerHTML = videosList.map((video, index) => {
-        // ✅ استخدام المسار الصحيح للفيديو
-        const videoUrl = video.filePath || '';
-        const thumbnail = video.thumbnail || 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
-        
-        return `
-            <div class="video-card" data-aos="fade-up" data-aos-delay="${Math.min(index * 50, 300)}" onclick="openVideo('${video._id}')">
-                <div class="video-thumbnail">
-                    <img src="${thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'" />
-                    <div class="play-overlay"><i class="fas fa-play"></i></div>
-                    <span class="duration"><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                    <span class="views-badge"><i class="fas fa-eye"></i> ${video.views || 0}</span>
-                </div>
-                <div class="video-body">
-                    <h3>${video.title}</h3>
-                    <div class="video-meta">
-                        <span><i class="fas fa-clock"></i> ${video.duration || '00:00'}</span>
-                        <span><i class="fas fa-eye"></i> ${video.views || 0}</span>
+            console.log('🎬 فتح الفيديو:', video);
+            console.log('📁 المسار المخزن:', video.filePath);
+            console.log('📁 اسم الملف:', video.fileName);
+
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            const title = document.getElementById('videoModalTitle');
+            const desc = document.getElementById('videoModalDesc');
+            const urlInfo = document.getElementById('videoUrlInfo');
+
+            title.textContent = video.title;
+            desc.textContent = video.description || 'لا يوجد وصف';
+
+            // ✅ بناء المسار الصحيح للفيديو
+            let videoUrl = null;
+
+            if (video.filePath) {
+                if (video.filePath.startsWith('http')) {
+                    videoUrl = video.filePath;
+                } else if (video.filePath.startsWith('/uploads')) {
+                    videoUrl = `${API_URL}${video.filePath}`;
+                } else {
+                    videoUrl = `${API_URL}/uploads/videos/${video.fileName || video.filePath}`;
+                }
+            } else if (video.fileName) {
+                videoUrl = `${API_URL}/uploads/videos/${video.fileName}`;
+            }
+
+            console.log('🔗 الرابط النهائي:', videoUrl);
+
+            // عرض رابط الفيديو للمساعدة في التصحيح
+            urlInfo.textContent = `🔗 ${videoUrl || 'لا يوجد رابط'}`;
+
+            if (videoUrl) {
+                // ✅ محاولة تشغيل الفيديو
+                player.innerHTML = `
+                    <video controls autoplay style="width:100%; height:100%; object-fit:contain;" 
+                           onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-exclamation-circle error-icon\\'></i><p style=\\'color:#EF4444;\\'>❌ تعذر تحميل الفيديو</p><p style=\\'font-size:0.9rem; opacity:0.7;\\'>الملف غير موجود على الخادم</p><p style=\\'font-size:0.8rem; opacity:0.5; margin-top:10px;\\'>${videoUrl}</p></div>'">
+                        <source src="${videoUrl}" type="video/mp4">
+                        <source src="${videoUrl}" type="video/webm">
+                        متصفحك لا يدعم تشغيل الفيديو
+                    </video>
+                `;
+            } else {
+                player.innerHTML = `
+                    <div class="placeholder">
+                        <i class="fas fa-exclamation-circle error-icon"></i>
+                        <p style="color:#EF4444;">❌ لا يوجد مسار للفيديو</p>
+                        <p style="font-size:0.9rem; opacity:0.7;">يرجى التأكد من رفع الفيديو بشكل صحيح</p>
                     </div>
-                    <div class="video-tags">
-                        ${video.tags ? video.tags.map(tag => `<span class="tag">#${tag}</span>`).join('') : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
+                `;
+            }
 
-// ============================================================
-// فتح الفيديو - ✅ النسخة المحسنة
-// ============================================================
-function openVideo(videoId) {
-    const video = videos.find(v => v._id === videoId);
-    if (!video) {
-        showAlert('❌ الفيديو غير موجود', 'danger');
-        return;
-    }
-
-    console.log('🎬 فتح الفيديو:', video);
-    console.log('📁 المسار:', video.filePath);
-
-    const modal = document.getElementById('videoModal');
-    const player = document.getElementById('videoPlayer');
-    const title = document.getElementById('videoModalTitle');
-    const desc = document.getElementById('videoModalDesc');
-
-    title.textContent = video.title;
-    desc.textContent = video.description || 'لا يوجد وصف';
-
-    // ✅ استخدام المسار الصحيح للفيديو
-    if (video.filePath) {
-        // استخدام المسار الكامل
-        const videoUrl = video.filePath.startsWith('http') 
-            ? video.filePath 
-            : video.filePath;
-        
-        player.innerHTML = `
-            <video controls autoplay style="width:100%; height:100%; object-fit:cover;">
-                <source src="${videoUrl}" type="video/mp4">
-                <source src="${videoUrl}" type="video/webm">
-                متصفحك لا يدعم تشغيل الفيديو
-            </video>
-        `;
-    } else {
-        player.innerHTML = `
-            <div class="placeholder">
-                <i class="fas fa-video"></i>
-                <p>الفيديو غير متوفر حالياً</p>
-            </div>
-        `;
-    }
-
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
         // ============================================================
         // 12. إغلاق مودال الفيديو
@@ -1323,17 +1401,17 @@ function openVideo(videoId) {
         function closeVideoModal() {
             const modal = document.getElementById('videoModal');
             const player = document.getElementById('videoPlayer');
-            
+
             // إيقاف الفيديو عند الإغلاق
             const video = player.querySelector('video');
             if (video) {
                 video.pause();
                 video.currentTime = 0;
             }
-            
+
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
-            
+
             // إعادة تعيين مكان الفيديو بعد فترة
             setTimeout(() => {
                 player.innerHTML = `
@@ -1365,10 +1443,48 @@ function openVideo(videoId) {
         document.addEventListener('DOMContentLoaded', function() {
             loadMaterialData();
             loadVideos();
-            
+
             console.log('📚 تم تحميل صفحة محتوى المادة بنجاح!');
             console.log('🌐 API_URL:', API_URL);
         });
+
+        // ============================================================
+        // 16. دالة مساعدة للتحقق من وجود الفيديو (يمكن استدعاؤها من Console)
+        // ============================================================
+        async function checkVideoExists(videoId) {
+            try {
+                const video = videos.find(v => v._id === videoId);
+                if (!video) {
+                    console.log('❌ الفيديو غير موجود');
+                    return false;
+                }
+
+                let videoUrl = null;
+                if (video.filePath) {
+                    if (video.filePath.startsWith('http')) {
+                        videoUrl = video.filePath;
+                    } else if (video.filePath.startsWith('/uploads')) {
+                        videoUrl = `${API_URL}${video.filePath}`;
+                    } else {
+                        videoUrl = `${API_URL}/uploads/videos/${video.fileName || video.filePath}`;
+                    }
+                } else if (video.fileName) {
+                    videoUrl = `${API_URL}/uploads/videos/${video.fileName}`;
+                }
+
+                console.log('🔍 التحقق من الرابط:', videoUrl);
+                const response = await fetch(videoUrl, { method: 'HEAD' });
+                console.log(`✅ الفيديو موجود: ${response.ok}`);
+                return response.ok;
+            } catch (error) {
+                console.error('❌ خطأ في التحقق من الفيديو:', error);
+                return false;
+            }
+        }
+
+        // جعل الدوال متاحة في Console للاختبار
+        window.checkVideoExists = checkVideoExists;
+        window.videos = videos;
     </script>
 
 </body>
