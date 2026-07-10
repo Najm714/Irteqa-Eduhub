@@ -1346,6 +1346,7 @@
 // ✅ عرض الملفات المرفوعة مع روابط تحميل
 let filesHtml = '<span style="color: var(--text-muted);">لا توجد ملفات</span>';
 if (order.files && order.files.length > 0) {
+    console.log(`📁 عدد الملفات في الطلب: ${order.files.length}`);
     filesHtml = order.files.map((file, index) => {
         const fileExtension = (file.filename || '').split('.').pop().toLowerCase();
         const iconMap = {
@@ -1366,7 +1367,7 @@ if (order.files && order.files.length > 0) {
         const baseUrl = API_BASE_URL.replace('/api', '');
         const fileUrl = `${baseUrl}/uploads/business-orders/${file.fileId}`;
         
-        console.log('🔗 رابط الملف:', fileUrl);
+        console.log(`🔗 رابط الملف ${index+1}:`, fileUrl);
 
         return `
             <a href="${fileUrl}" target="_blank" class="file-link" onclick="event.stopPropagation();">
@@ -1376,6 +1377,8 @@ if (order.files && order.files.length > 0) {
             </a>
         `;
     }).join(' ');
+} else {
+    console.log('⚠️ لا توجد ملفات في هذا الطلب');
 }
                 const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('ar-SA') : 'غير محدد';
                 const updatedAt = order.updatedAt ? new Date(order.updatedAt).toLocaleString('ar-SA') : 'غير محدد';

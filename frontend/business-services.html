@@ -1625,28 +1625,7 @@
             dateInput.min = today.toISOString().split('T')[0];
         });
 // ============================================================
-// ✅ دالة تحويل الملف إلى Base64 مع التحقق من الصحة
-// ============================================================
-function convertFileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            // التأكد من أن البيانات صالحة
-            if (reader.result && reader.result.startsWith('data:')) {
-                resolve(reader.result);
-            } else {
-                reject(new Error('بيانات الملف غير صالحة'));
-            }
-        };
-        reader.onerror = (error) => {
-            reject(error);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// ============================================================
-// ✅ إرسال الطلب مع الملفات - نسخة محسنة
+// ✅ إرسال الطلب مع الملفات - نسخة نهائية
 // ============================================================
 async function submitRequest(event) {
     event.preventDefault();
@@ -1683,6 +1662,12 @@ async function submitRequest(event) {
         return;
     }
 
+    // ✅ التحقق من وجود ملفات
+    console.log(`📁 عدد الملفات المرفوعة: ${selectedFiles.length}`);
+    if (selectedFiles.length === 0) {
+        showMessage('⚠️ لم تقم برفع أي ملفات. يمكنك متابعة الطلب بدون ملفات.', 'info');
+    }
+
     // ✅ عرض رسالة "جاري معالجة الملفات..."
     showMessage('⏳ جاري معالجة الملفات...', 'info');
 
@@ -1693,13 +1678,19 @@ async function submitRequest(event) {
             try {
                 console.log(`📄 جاري تحويل الملف: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
                 const base64 = await convertFileToBase64(file);
-                filesData.push({
-                    filename: file.name,
-                    fileType: file.type || 'application/octet-stream',
-                    fileSize: file.size,
-                    fileData: base64
-                });
-                console.log(`✅ تم تحويل الملف: ${file.name}`);
+                
+                // ✅ التأكد من أن البيانات صالحة
+                if (base64 && base64.startsWith('data:')) {
+                    filesData.push({
+                        filename: file.name,
+                        fileType: file.type || 'application/octet-stream',
+                        fileSize: file.size,
+                        fileData: base64
+                    });
+                    console.log(`✅ تم تحويل الملف: ${file.name} (${(base64.length / 1024).toFixed(1)} KB Base64)`);
+                } else {
+                    console.error(`❌ بيانات الملف ${file.name} غير صالحة`);
+                }
             } catch (error) {
                 console.error('❌ خطأ في تحويل الملف:', error);
                 showMessage(`❌ حدث خطأ في معالجة الملف: ${file.name}`, 'error');
@@ -1745,6 +1736,8 @@ async function submitRequest(event) {
             const dataLength = f.fileData ? f.fileData.length : 0;
             console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} characters)`);
         });
+    } else {
+        console.log('    ⚠️ لا توجد ملفات');
     }
     console.log('📤 === نهاية البيانات ===');
 
@@ -1807,6 +1800,26 @@ async function submitRequest(event) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
     }
+}
+
+// ============================================================
+// ✅ دالة تحويل الملف إلى Base64
+// ============================================================
+function convertFileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (reader.result && reader.result.startsWith('data:')) {
+                resolve(reader.result);
+            } else {
+                reject(new Error('بيانات الملف غير صالحة'));
+            }
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(file);
+    });
 }
         // ============================================================
         // عرض رسائل النموذج

@@ -3022,7 +3022,7 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
     }
 });
 // ============================================================
-// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (استقبال JSON مع Base64)
+// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (نسخة محسنة)
 // ============================================================
 app.post('/api/business-orders', async (req, res) => {
     try {
@@ -3043,7 +3043,7 @@ app.post('/api/business-orders', async (req, res) => {
             files
         } = req.body;
 
-        // ✅ طباعة جميع البيانات المستلمة للتأكد
+        // ✅ طباعة جميع البيانات المستلمة
         console.log('📥 === البيانات المستلمة من النموذج (JSON) ===');
         console.log('  name:', name);
         console.log('  email:', email);
@@ -3057,17 +3057,21 @@ app.post('/api/business-orders', async (req, res) => {
         console.log('  deliveryDate:', deliveryDate);
         console.log('  notes:', notes);
         console.log('  termsAgreed:', termsAgreed);
-        console.log('  عدد الملفات المستلمة:', files ? files.length : 0);
+        console.log('  typeof files:', typeof files);
+        console.log('  files is array:', Array.isArray(files));
+        console.log('  عدد الملفات:', files ? (Array.isArray(files) ? files.length : 'not array') : 0);
         
         // ✅ عرض تفاصيل الملفات إذا وجدت
-        if (files && files.length > 0) {
+        if (files && Array.isArray(files) && files.length > 0) {
             files.forEach((f, i) => {
                 const sizeKB = (f.fileSize / 1024).toFixed(1);
                 const dataLength = f.fileData ? f.fileData.length : 0;
-                console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} characters)`);
+                const hasBase64 = f.fileData && f.fileData.includes(';base64,');
+                console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} chars, صالح: ${hasBase64})`);
             });
         } else {
             console.log('⚠️ لا توجد ملفات مرفوعة في الطلب');
+            console.log('   files value:', files);
         }
         console.log('📥 === نهاية البيانات ===');
 
@@ -3102,7 +3106,7 @@ app.post('/api/business-orders', async (req, res) => {
 
         // ✅ معالجة الملفات (Base64) وحفظها على الخادم
         const filesData = [];
-        if (files && files.length > 0) {
+        if (files && Array.isArray(files) && files.length > 0) {
             const fs = require('fs');
             const path = require('path');
             const businessOrdersDir = path.join(__dirname, 'uploads', 'business-orders');
@@ -3123,6 +3127,7 @@ app.post('/api/business-orders', async (req, res) => {
                     
                     if (!file.fileData.includes(';base64,')) {
                         console.error(`❌ ملف ${file.filename} ليس بتنسيق Base64 صحيح`);
+                        console.log(`   بداية البيانات: ${file.fileData.substring(0, 50)}...`);
                         continue;
                     }
                     
@@ -3186,7 +3191,7 @@ app.post('/api/business-orders', async (req, res) => {
             files: filesData
         };
 
-        console.log('📦 بيانات الطلب:', JSON.stringify(orderData, null, 2));
+        console.log(`📦 عدد الملفات المحفوظة في الطلب: ${filesData.length}`);
 
         const order = new Order(orderData);
         await order.save();
