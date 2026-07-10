@@ -1625,7 +1625,7 @@
             dateInput.min = today.toISOString().split('T')[0];
         });
 // ============================================================
-// ✅ إرسال الطلب مع الملفات - نسخة مُصححة بالكامل
+// ✅ إرسال الطلب مع الملفات - باستخدام JSON + Base64
 // ============================================================
 async function submitRequest(event) {
     event.preventDefault();
@@ -1662,35 +1662,53 @@ async function submitRequest(event) {
         return;
     }
 
-    // ✅ إنشاء FormData وإضافة جميع الحقول
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('phone', phone);
-    formData.append('department', department);
-    formData.append('service', service);
-    formData.append('requestType', requestType);
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('organization', organization || '');
-    formData.append('deliveryDate', deliveryDate);
-    formData.append('notes', notes || '');
-    formData.append('termsAgreed', termsAgreed ? 'true' : 'false');
-
-    // ✅ إضافة الملفات إلى FormData
+    // ✅ تحويل الملفات إلى Base64
+    const filesData = [];
     for (let file of selectedFiles) {
-        formData.append('files', file);
-    }
-
-    // ✅ طباعة البيانات للتأكد (للتطوير)
-    console.log('📤 === البيانات المرسلة ===');
-    for (let [key, value] of formData.entries()) {
-        if (key === 'files') {
-            console.log(`  ${key}: ${value.name} (${(value.size / 1024).toFixed(1)} KB)`);
-        } else {
-            console.log(`  ${key}: ${value}`);
+        try {
+            const base64 = await convertFileToBase64(file);
+            filesData.push({
+                filename: file.name,
+                fileType: file.type,
+                fileSize: file.size,
+                fileData: base64
+            });
+        } catch (error) {
+            console.error('❌ خطأ في تحويل الملف:', error);
+            showMessage(`❌ حدث خطأ في معالجة الملف: ${file.name}`, 'error');
+            return;
         }
     }
+
+    // ✅ بناء كائن البيانات
+    const data = {
+        name: name,
+        email: email,
+        phone: phone,
+        department: department,
+        service: service,
+        requestType: requestType,
+        title: title,
+        description: description,
+        organization: organization || '',
+        deliveryDate: deliveryDate,
+        notes: notes || '',
+        termsAgreed: termsAgreed,
+        files: filesData
+    };
+
+    // ✅ طباعة البيانات للتأكد
+    console.log('📤 === البيانات المرسلة ===');
+    console.log('  name:', data.name);
+    console.log('  email:', data.email);
+    console.log('  phone:', data.phone);
+    console.log('  department:', data.department);
+    console.log('  service:', data.service);
+    console.log('  requestType:', data.requestType);
+    console.log('  title:', data.title);
+    console.log('  description:', data.description);
+    console.log('  deliveryDate:', data.deliveryDate);
+    console.log('  عدد الملفات:', filesData.length);
     console.log('📤 === نهاية البيانات ===');
 
     // تعطيل الزر
@@ -1709,8 +1727,10 @@ async function submitRequest(event) {
         // ✅ إرسال الطلب إلى الخادم
         const response = await fetch(`${API_URL}/business-orders`, {
             method: 'POST',
-            body: formData
-            // ❌ لا نضيف Content-Type لأن fetch يضيفه تلقائياً مع FormData
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
         const result = await response.json();
@@ -1735,7 +1755,6 @@ async function submitRequest(event) {
             dateInput.value = future.toISOString().split('T')[0];
 
         } else {
-            // عرض رسالة الخطأ التفصيلية
             let errorMsg = result.message || 'حدث خطأ في إرسال الطلب';
             if (result.missing && result.missing.length > 0) {
                 errorMsg += ` (الحقول المفقودة: ${result.missing.join('، ')})`;
@@ -1750,6 +1769,22 @@ async function submitRequest(event) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
     }
+}
+
+// ============================================================
+// ✅ دالة تحويل الملف إلى Base64
+// ============================================================
+function convertFileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(file);
+    });
 }
         // ============================================================
         // عرض رسائل النموذج

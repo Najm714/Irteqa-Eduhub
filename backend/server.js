@@ -3022,11 +3022,11 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
     }
 });
 // ============================================================
-// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال مع رفع الملفات
+// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (استقبال JSON)
 // ============================================================
-app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (req, res) => {
+app.post('/api/business-orders', async (req, res) => {
     try {
-        // ✅ استخراج البيانات من req.body (multer يملأها تلقائياً)
+        // ✅ استخراج البيانات من req.body (JSON)
         const {
             name, 
             email, 
@@ -3039,11 +3039,12 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
             organization, 
             deliveryDate, 
             notes, 
-            termsAgreed
+            termsAgreed,
+            files
         } = req.body;
 
         // ✅ طباعة جميع البيانات المستلمة للتأكد
-        console.log('📥 === البيانات المستلمة من النموذج ===');
+        console.log('📥 === البيانات المستلمة من النموذج (JSON) ===');
         console.log('  name:', name);
         console.log('  email:', email);
         console.log('  phone:', phone);
@@ -3056,7 +3057,7 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
         console.log('  deliveryDate:', deliveryDate);
         console.log('  notes:', notes);
         console.log('  termsAgreed:', termsAgreed);
-        console.log('  عدد الملفات:', req.files ? req.files.length : 0);
+        console.log('  عدد الملفات:', files ? files.length : 0);
         console.log('📥 === نهاية البيانات ===');
 
         // ✅ التحقق من الحقول المطلوبة
@@ -3080,20 +3081,6 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
         }
 
         if (missingFields.length > 0) {
-            // حذف الملفات المرفوعة إذا فشل التحقق
-            if (req.files && req.files.length > 0) {
-                req.files.forEach(file => {
-                    if (fs.existsSync(file.path)) {
-                        try {
-                            fs.unlinkSync(file.path);
-                            console.log(`🗑️ تم حذف الملف: ${file.path}`);
-                        } catch (err) {
-                            console.error('❌ خطأ في حذف الملف:', err);
-                        }
-                    }
-                });
-            }
-            
             return res.status(400).json({
                 success: false,
                 message: `الحقول المطلوبة غير مكتملة: ${missingFields.join('، ')}`,
@@ -3102,19 +3089,44 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
             });
         }
 
-        // معالجة الملفات المرفوعة
-        const files = [];
-        if (req.files && req.files.length > 0) {
-            req.files.forEach(file => {
-                files.push({
-                    filename: file.originalname,
-                    filePath: file.path,
-                    fileId: file.filename,
-                    fileSize: file.size,
-                    mimeType: file.mimetype,
-                    uploadDate: new Date()
-                });
-            });
+        // ✅ معالجة الملفات (Base64)
+        const filesData = [];
+        if (files && files.length > 0) {
+            const fs = require('fs');
+            const path = require('path');
+            const businessOrdersDir = path.join(__dirname, 'uploads', 'business-orders');
+            
+            if (!fs.existsSync(businessOrdersDir)) {
+                fs.mkdirSync(businessOrdersDir, { recursive: true });
+            }
+
+            for (const file of files) {
+                try {
+                    // استخراج البيانات من Base64
+                    const base64Data = file.fileData.split(';base64,').pop();
+                    const buffer = Buffer.from(base64Data, 'base64');
+                    
+                    // إنشاء اسم ملف فريد
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                    const ext = path.extname(file.filename);
+                    const fileName = 'business-' + uniqueSuffix + ext;
+                    const filePath = path.join(businessOrdersDir, fileName);
+                    
+                    // حفظ الملف على الخادم
+                    fs.writeFileSync(filePath, buffer);
+                    
+                    filesData.push({
+                        filename: file.filename,
+                        filePath: filePath,
+                        fileId: fileName,
+                        fileSize: file.fileSize,
+                        mimeType: file.fileType || 'application/octet-stream',
+                        uploadDate: new Date()
+                    });
+                } catch (error) {
+                    console.error('❌ خطأ في حفظ الملف:', error);
+                }
+            }
         }
 
         // استيراد نموذج Order
@@ -3136,16 +3148,16 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
             organization: organization ? organization.trim() : '',
             deliveryDate: deliveryDate,
             notes: notes ? notes.trim() : '',
-            termsAgreed: termsAgreed === 'true' || termsAgreed === true,
+            termsAgreed: termsAgreed === true || termsAgreed === 'true',
             orderType: 'business',
             status: 'pending',
-            files: files
+            files: filesData
         });
 
         await order.save();
 
         console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
-        console.log(`📁 عدد الملفات المرفوعة: ${files.length}`);
+        console.log(`📁 عدد الملفات المرفوعة: ${filesData.length}`);
 
         res.status(201).json({
             success: true,
@@ -3156,26 +3168,12 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
                 service: order.service,
                 status: order.status,
                 createdAt: order.createdAt,
-                filesCount: files.length
+                filesCount: filesData.length
             }
         });
 
     } catch (error) {
         console.error('❌ خطأ في إنشاء الطلب:', error);
-        
-        // حذف الملفات المرفوعة في حالة الخطأ
-        if (req.files && req.files.length > 0) {
-            req.files.forEach(file => {
-                if (fs.existsSync(file.path)) {
-                    try {
-                        fs.unlinkSync(file.path);
-                    } catch (err) {
-                        console.error('❌ خطأ في حذف الملف:', err);
-                    }
-                }
-            });
-        }
-        
         res.status(500).json({
             success: false,
             message: error.message || 'حدث خطأ في إنشاء الطلب'
