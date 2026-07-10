@@ -11,9 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
 
     <style>
-        /* ============================================================
-           المتغيرات - نفس ألوان الصفحة الرئيسية
-           ============================================================ */
+        /* نفس الستايلات السابقة - تم حذفها للاختصار */
         :root {
             --primary: #7C3AED;
             --primary-dark: #6D28D9;
@@ -51,9 +49,6 @@
             --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.3);
         }
 
-        /* ============================================================
-           الإعدادات العامة
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -78,9 +73,6 @@
             padding: 0 20px;
         }
 
-        /* ============================================================
-           شريط التمرير
-           ============================================================ */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -92,9 +84,6 @@
             border-radius: 10px;
         }
 
-        /* ============================================================
-           زر تبديل الوضع
-           ============================================================ */
         .theme-toggle {
             position: fixed;
             bottom: 30px;
@@ -123,9 +112,6 @@
             color: #fff;
         }
 
-        /* ============================================================
-           الهيدر
-           ============================================================ */
         .header {
             background: var(--bg-card);
             box-shadow: var(--shadow);
@@ -223,9 +209,6 @@
             box-shadow: 0 5px 20px rgba(245, 158, 11, 0.4);
         }
 
-        /* ============================================================
-           Breadcrumb
-           ============================================================ */
         .breadcrumb {
             padding: 20px 0;
             background: var(--bg-card);
@@ -261,19 +244,16 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================
-           لوحة التحكم - الإحصائيات
-           ============================================================ */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin: 30px 0 40px;
         }
 
         .stat-card {
             background: var(--bg-card);
-            padding: 25px;
+            padding: 20px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
@@ -299,13 +279,13 @@
         }
 
         .stat-card .icon {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            margin-bottom: 5px;
             display: inline-block;
         }
 
         .stat-card .number {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 900;
             color: var(--text-color);
             display: block;
@@ -315,7 +295,7 @@
         .stat-card .label {
             color: var(--text-muted);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .stat-card.pending::before { background: var(--gradient-warning); }
@@ -324,9 +304,6 @@
         .stat-card.total::before { background: var(--gradient-secondary); }
         .stat-card.cancelled::before { background: var(--gradient-danger); }
 
-        /* ============================================================
-           التحكم في الفلترة والبحث
-           ============================================================ */
         .controls-bar {
             display: flex;
             flex-wrap: wrap;
@@ -426,9 +403,6 @@
             box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
         }
 
-        /* ============================================================
-           جدول الطلبات
-           ============================================================ */
         .table-wrapper {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -465,10 +439,6 @@
             vertical-align: middle;
         }
 
-        .table-wrapper tbody tr {
-            transition: var(--transition);
-        }
-
         .table-wrapper tbody tr:hover {
             background: rgba(124, 58, 237, 0.05);
         }
@@ -477,7 +447,6 @@
             border-bottom: none;
         }
 
-        /* حالة الطلب */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -508,7 +477,6 @@
             color: #991B1B;
         }
 
-        /* أزرار الإجراءات */
         .action-buttons {
             display: flex;
             gap: 6px;
@@ -579,19 +547,6 @@
             color: #fff;
         }
 
-        .action-btn.download {
-            background: rgba(59, 130, 246, 0.1);
-            color: #2563EB;
-        }
-
-        .action-btn.download:hover {
-            background: #2563EB;
-            color: #fff;
-        }
-
-        /* ============================================================
-           نافذة تفاصيل الطلب (Modal)
-           ============================================================ */
         .modal {
             display: none;
             position: fixed;
@@ -729,9 +684,6 @@
             font-size: 0.95rem;
         }
 
-        /* ============================================================
-           الفوتر
-           ============================================================ */
         .footer {
             background: #0F172A;
             color: #94A3B8;
@@ -757,9 +709,6 @@
             font-size: 0.9rem;
         }
 
-        /* ============================================================
-           رسائل (Toast)
-           ============================================================ */
         .toast {
             position: fixed;
             top: 30px;
@@ -796,9 +745,6 @@
             background: var(--gradient-main);
         }
 
-        /* ============================================================
-           حالة عدم وجود بيانات
-           ============================================================ */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -821,9 +767,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================
-           مؤشر التحميل
-           ============================================================ */
         .loading-spinner {
             text-align: center;
             padding: 40px;
@@ -840,31 +783,23 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ============================================================
-           التجاوب
-           ============================================================ */
         @media (max-width: 992px) {
             .detail-grid {
                 grid-template-columns: 1fr;
             }
-
             .modal-content {
                 padding: 30px;
             }
-
             .controls-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
-
             .controls-bar .search-box {
                 width: 100%;
             }
-
             .controls-bar select {
                 width: 100%;
             }
-
             .controls-bar .export-btn {
                 justify-content: center;
             }
@@ -876,20 +811,16 @@
                 align-items: stretch;
                 gap: 10px;
             }
-
             .header-actions {
                 flex-wrap: wrap;
                 justify-content: space-between;
             }
-
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
-
             .modal-content {
                 padding: 20px;
             }
-
             .theme-toggle {
                 width: 45px;
                 height: 45px;
@@ -897,12 +828,10 @@
                 bottom: 20px;
                 left: 20px;
             }
-
             .action-buttons {
                 flex-direction: column;
                 gap: 4px;
             }
-
             .action-btn {
                 justify-content: center;
             }
@@ -912,16 +841,13 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
             .modal-actions {
                 flex-direction: column;
             }
-
             .modal-actions .action-btn {
                 width: 100%;
                 justify-content: center;
             }
-
             .modal-content {
                 padding: 15px;
             }
@@ -1115,7 +1041,7 @@
     </footer>
 
     <!-- ============================================================
-    الجافا سكريبت - الاتصال بقاعدة البيانات
+    الجافا سكريبت - الاتصال بقاعدة البيانات (مصحح)
     ============================================================ -->
     <script>
         // ============================================================
@@ -1138,21 +1064,30 @@
         }
 
         // ============================================================
+        // ✅ تكوين عنوان API الصحيح
+        // ============================================================
+        // استخدم العنوان الفعلي للخادم
+        const API_BASE_URL = 'https://irteqa-eduhub.onrender.com/api';
+        // للتجربة المحلية: const API_BASE_URL = 'http://localhost:5000/api';
+
+        console.log('🌐 عنوان API المستخدم:', API_BASE_URL);
+
+        // ============================================================
         // المتغيرات العامة
         // ============================================================
         let orders = [];
         let currentFilteredOrders = [];
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:5000/api' 
-            : 'https://irteqa-eduhub.onrender.com';
+        let refreshInterval = null;
 
+        // ============================================================
         // الحصول على التوكن من localStorage
+        // ============================================================
         function getToken() {
             return localStorage.getItem('token') || '';
         }
 
         // ============================================================
-        // تحميل الطلبات من قاعدة البيانات
+        // ✅ تحميل الطلبات من قاعدة البيانات - مسار مبسط
         // ============================================================
         async function loadOrders() {
             const spinner = document.getElementById('loadingSpinner');
@@ -1161,30 +1096,65 @@
             try {
                 const token = getToken();
                 if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول كمدير', 'error');
+                    showToast('❌ يرجى تسجيل الدخول كمدير للوصول إلى الطلبات', 'error');
                     spinner.style.display = 'none';
                     return;
                 }
 
-                const response = await fetch(`${API_BASE_URL}/business-orders/admin/all`, {
+                // ✅ استخدام المسار المبسط /api/business-orders
+                const url = `${API_BASE_URL}/business-orders`;
+                console.log('📡 جلب الطلبات من:', url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('📡 حالة الاستجابة:', response.status);
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showToast('❌ جلسة غير صالحة. يرجى تسجيل الدخول مرة أخرى.', 'error');
+                        spinner.style.display = 'none';
+                        return;
+                    }
+                    if (response.status === 404) {
+                        showToast('⚠️ مسار الطلبات غير موجود. يرجى التحقق من إعدادات الخادم.', 'error');
+                        spinner.style.display = 'none';
+                        return;
+                    }
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `خطأ ${response.status}`);
+                }
+
                 const data = await response.json();
+                console.log('📊 عدد الطلبات المستلمة:', data.count || 0);
 
                 if (data.success) {
                     orders = data.data || [];
                     renderOrders();
                     updateStats();
-                    showToast(`✅ تم تحميل ${orders.length} طلب`, 'success');
+                    if (orders.length > 0) {
+                        showToast(`✅ تم تحميل ${orders.length} طلب`, 'success');
+                    } else {
+                        showToast('📭 لا توجد طلبات حالياً', 'info');
+                    }
                 } else {
                     showToast('❌ ' + (data.message || 'حدث خطأ في تحميل الطلبات'), 'error');
                 }
             } catch (error) {
                 console.error('❌ خطأ في تحميل الطلبات:', error);
-                showToast('❌ حدث خطأ في الاتصال بالخادم', 'error');
+                
+                let errorMessage = 'حدث خطأ في الاتصال بالخادم';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '❌ لا يمكن الاتصال بالخادم. تأكد من أن الخادم يعمل على ' + API_BASE_URL;
+                } else {
+                    errorMessage = '❌ ' + error.message;
+                }
+                showToast(errorMessage, 'error');
             }
 
             spinner.style.display = 'none';
@@ -1207,7 +1177,7 @@
                     (order.service || '').toLowerCase().includes(searchQuery) ||
                     (order.title || '').toLowerCase().includes(searchQuery) ||
                     (order.department || '').toLowerCase().includes(searchQuery) ||
-                    String(order._id).includes(searchQuery) ||
+                    String(order._id || '').includes(searchQuery) ||
                     (order.phone || '').includes(searchQuery);
 
                 const matchStatus = statusFilter === 'all' || order.status === statusFilter;
@@ -1232,31 +1202,34 @@
                 'pending': { label: 'قيد الانتظار', class: 'pending', icon: 'fa-clock' },
                 'in-progress': { label: 'قيد التنفيذ', class: 'in-progress', icon: 'fa-spinner fa-spin' },
                 'completed': { label: 'مكتملة', class: 'completed', icon: 'fa-check-circle' },
-                'cancelled': { label: 'ملغية', class: 'cancelled', icon: 'fa-times-circle' }
+                'cancelled': { label: 'ملغية', class: 'cancelled', icon: 'fa-times-circle' },
+                'revision': { label: 'مراجعة', class: 'pending', icon: 'fa-edit' }
             };
 
             let html = '';
             filtered.forEach((order, index) => {
                 const statusInfo = statusMap[order.status] || statusMap['pending'];
-                const date = new Date(order.createdAt);
+                const date = order.createdAt ? new Date(order.createdAt) : new Date();
                 const dateStr = date.toLocaleDateString('ar-SA');
                 const timeStr = date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
 
                 const fileCount = order.files && order.files.length > 0 ? order.files.length : 0;
                 const fileIcon = fileCount > 0 ? `<i class="fas fa-paperclip" style="color: var(--primary);"></i>` : '';
 
+                const orderId = order._id ? order._id.toString().slice(-6) : '---';
+
                 html += `
                     <tr>
-                        <td><strong>#${order._id.toString().slice(-6)}</strong></td>
+                        <td><strong>#${orderId}</strong></td>
                         <td>
-                            <strong>${order.name}</strong><br>
-                            <small style="color: var(--text-muted); font-size: 0.75rem;">${order.email}</small>
+                            <strong>${order.name || 'غير محدد'}</strong><br>
+                            <small style="color: var(--text-muted); font-size: 0.75rem;">${order.email || 'لا يوجد بريد'}</small>
                             <br>
-                            <small style="color: var(--text-muted); font-size: 0.7rem;">${order.phone}</small>
+                            <small style="color: var(--text-muted); font-size: 0.7rem;">${order.phone || 'لا يوجد رقم'}</small>
                         </td>
-                        <td style="font-size: 0.85rem;">${order.department}</td>
-                        <td style="font-size: 0.85rem;">${order.service} ${fileIcon}</td>
-                        <td style="font-size: 0.85rem;">${order.requestType}</td>
+                        <td style="font-size: 0.85rem;">${order.department || 'غير محدد'}</td>
+                        <td style="font-size: 0.85rem;">${order.service || 'غير محدد'} ${fileIcon}</td>
+                        <td style="font-size: 0.85rem;">${order.requestType || 'غير محدد'}</td>
                         <td style="font-size: 0.8rem;">
                             ${dateStr}<br>
                             <small style="color: var(--text-muted);">${timeStr}</small>
@@ -1333,11 +1306,23 @@
         async function viewOrder(id) {
             try {
                 const token = getToken();
-                const response = await fetch(`${API_BASE_URL}/business-orders/${id}`, {
+                if (!token) {
+                    showToast('❌ يرجى تسجيل الدخول', 'error');
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/business-orders/${id}`;
+                console.log('📡 جلب تفاصيل الطلب:', url);
+
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+
+                if (!response.ok) {
+                    throw new Error(`خطأ ${response.status}`);
+                }
 
                 const data = await response.json();
 
@@ -1354,7 +1339,8 @@
                     'pending': { label: 'قيد الانتظار', class: 'pending' },
                     'in-progress': { label: 'قيد التنفيذ', class: 'in-progress' },
                     'completed': { label: 'مكتملة', class: 'completed' },
-                    'cancelled': { label: 'ملغية', class: 'cancelled' }
+                    'cancelled': { label: 'ملغية', class: 'cancelled' },
+                    'revision': { label: 'مراجعة', class: 'pending' }
                 };
                 const statusInfo = statusMap[order.status] || statusMap['pending'];
 
@@ -1387,21 +1373,21 @@
                     }).join(' ');
                 }
 
-                const createdAt = new Date(order.createdAt).toLocaleString('ar-SA');
-                const updatedAt = new Date(order.updatedAt).toLocaleString('ar-SA');
+                const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('ar-SA') : 'غير محدد';
+                const updatedAt = order.updatedAt ? new Date(order.updatedAt).toLocaleString('ar-SA') : 'غير محدد';
 
                 const detailsHtml = `
                     <div class="detail-item">
                         <span class="label">الاسم الكامل</span>
-                        <span class="value">${order.name}</span>
+                        <span class="value">${order.name || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">البريد الإلكتروني</span>
-                        <span class="value">${order.email}</span>
+                        <span class="value">${order.email || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">رقم التواصل</span>
-                        <span class="value">${order.phone}</span>
+                        <span class="value">${order.phone || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">الحالة</span>
@@ -1409,27 +1395,27 @@
                     </div>
                     <div class="detail-item">
                         <span class="label">القسم</span>
-                        <span class="value">${order.department}</span>
+                        <span class="value">${order.department || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">الخدمة المطلوبة</span>
-                        <span class="value">${order.service}</span>
+                        <span class="value">${order.service || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">نوع الطلب</span>
-                        <span class="value">${order.requestType}</span>
+                        <span class="value">${order.requestType || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">موعد التسليم</span>
-                        <span class="value">${order.deliveryDate}</span>
+                        <span class="value">${order.deliveryDate || order.deadline || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item full-width">
                         <span class="label">عنوان الطلب</span>
-                        <span class="value">${order.title}</span>
+                        <span class="value">${order.title || 'غير محدد'}</span>
                     </div>
                     <div class="detail-item full-width">
                         <span class="label">وصف الطلب</span>
-                        <span class="value" style="font-weight: 400; line-height: 1.8;">${order.description}</span>
+                        <span class="value" style="font-weight: 400; line-height: 1.8;">${order.description || 'لا يوجد وصف'}</span>
                     </div>
                     ${order.organization ? `
                         <div class="detail-item full-width">
@@ -1507,19 +1493,26 @@
         async function downloadFile(orderId, fileIndex) {
             try {
                 const token = getToken();
-                const response = await fetch(`${API_BASE_URL}/business-orders/${orderId}/files/${fileIndex}`, {
+                if (!token) {
+                    showToast('❌ يرجى تسجيل الدخول', 'error');
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/business-orders/${orderId}/files/${fileIndex}`;
+                console.log('📥 تحميل ملف من:', url);
+
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
                 if (!response.ok) {
-                    const data = await response.json();
+                    const data = await response.json().catch(() => ({}));
                     showToast('❌ ' + (data.message || 'فشل تحميل الملف'), 'error');
                     return;
                 }
 
-                // الحصول على اسم الملف من الـ headers
                 const contentDisposition = response.headers.get('Content-Disposition');
                 let filename = 'ملف';
                 if (contentDisposition) {
@@ -1529,16 +1522,15 @@
                     }
                 }
 
-                // تحميل الملف
                 const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
+                const urlBlob = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = urlBlob;
                 a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(urlBlob);
 
                 showToast(`✅ تم تحميل الملف: ${filename}`, 'success');
 
@@ -1566,7 +1558,15 @@
         async function updateStatus(id, newStatus) {
             try {
                 const token = getToken();
-                const response = await fetch(`${API_BASE_URL}/business-orders/${id}/status`, {
+                if (!token) {
+                    showToast('❌ يرجى تسجيل الدخول', 'error');
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/business-orders/${id}/status`;
+                console.log('📡 تحديث الحالة:', url);
+
+                const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1602,7 +1602,15 @@
 
             try {
                 const token = getToken();
-                const response = await fetch(`${API_BASE_URL}/business-orders/${id}`, {
+                if (!token) {
+                    showToast('❌ يرجى تسجيل الدخول', 'error');
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/business-orders/${id}`;
+                console.log('🗑️ حذف الطلب:', url);
+
+                const response = await fetch(url, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -1629,33 +1637,41 @@
         async function exportOrders() {
             try {
                 const token = getToken();
-                const response = await fetch(`${API_BASE_URL}/business-orders/export/csv`, {
+                if (!token) {
+                    showToast('❌ يرجى تسجيل الدخول', 'error');
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/business-orders/export/csv`;
+                console.log('📤 تصدير البيانات:', url);
+
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
                 if (!response.ok) {
-                    const data = await response.json();
+                    const data = await response.json().catch(() => ({}));
                     showToast('❌ ' + (data.message || 'فشل تصدير البيانات'), 'error');
                     return;
                 }
 
                 const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
+                const urlBlob = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = urlBlob;
                 a.download = `طلبات_خدمات_الأعمال_${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(urlBlob);
 
                 showToast('✅ تم تصدير البيانات بنجاح', 'success');
 
             } catch (error) {
                 console.error('❌ خطأ في تصدير البيانات:', error);
-                showToast('❌ حدث خطأ في تصدير البيانات', 'error');
+                showToast('❌ حدث خطأ في تصدير البيانات: ' + error.message, 'error');
             }
         }
 
@@ -1681,15 +1697,15 @@
         }
 
         // ============================================================
-        // التحقق من وجود طلبات جديدة
+        // التحديث التلقائي
         // ============================================================
-        let refreshInterval = null;
-
         function startAutoRefresh() {
             if (refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(() => {
-                loadOrders();
-            }, 30000); // تحديث كل 30 ثانية
+                if (document.visibilityState === 'visible') {
+                    loadOrders();
+                }
+            }, 30000);
         }
 
         function stopAutoRefresh() {
@@ -1700,29 +1716,32 @@
         }
 
         // ============================================================
-        // تحميل البيانات عند بدء التشغيل
+        // ✅ تحميل البيانات عند بدء التشغيل
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             loadOrders();
             startAutoRefresh();
 
-            // إضافة مستمع للبحث
             document.getElementById('searchInput').addEventListener('input', function() {
                 if (this.value.length > 2 || this.value.length === 0) {
                     filterOrders();
                 }
             });
 
-            // إيقاف التحديث التلقائي عند مغادرة الصفحة
             window.addEventListener('beforeunload', function() {
                 stopAutoRefresh();
             });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    loadOrders();
+                }
+            });
         });
 
-        console.log('🚀 منصة ارتقاء - إدارة خدمات كلية الأعمال (قاعدة البيانات)');
-        console.log('📋 نظام إدارة الطلبات متصل بقاعدة البيانات');
-        console.log('✅ دعم تحميل الملفات المرفوعة بشكل حقيقي');
-        console.log('🔄 التحديث التلقائي كل 30 ثانية');
+        console.log('🚀 منصة ارتقاء - إدارة خدمات كلية الأعمال');
+        console.log('🌐 عنوان API:', API_BASE_URL);
+        console.log('📋 جاري تحميل الطلبات...');
     </script>
 </body>
 </html>
