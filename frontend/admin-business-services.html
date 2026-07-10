@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>إدارة خدمات كلية الأعمال - منصة ارتقاء</title>
+    <title>خدمات كلية الأعمال - منصة ارتقاء</title>
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+    <!-- AOS Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <style>
         /* ============================================================
@@ -19,7 +21,9 @@
             --primary-dark: #6D28D9;
             --primary-light: #8B5CF6;
             --secondary: #EC4899;
+            --secondary-dark: #DB2777;
             --accent: #F59E0B;
+            --accent-light: #FBBF24;
             --dark: #0F172A;
             --dark-light: #1E293B;
             --light: #F8FAFC;
@@ -36,9 +40,9 @@
             --border-color: #E2E8F0;
             --gradient-main: linear-gradient(135deg, #7C3AED, #EC4899);
             --gradient-secondary: linear-gradient(135deg, #F59E0B, #EC4899);
+            --gradient-business: linear-gradient(135deg, #1E40AF, #7C3AED);
             --gradient-success: linear-gradient(135deg, #10B981, #059669);
             --gradient-danger: linear-gradient(135deg, #EF4444, #DC2626);
-            --gradient-warning: linear-gradient(135deg, #F59E0B, #D97706);
         }
 
         [data-theme="dark"] {
@@ -70,7 +74,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -114,6 +118,35 @@
             color: #fff;
         }
 
+        .back-to-top {
+            position: fixed;
+            bottom: 95px;
+            left: 30px;
+            z-index: 999;
+            background: var(--gradient-main);
+            color: #fff;
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-to-top.visible {
+            display: flex;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
         .header {
             background: var(--bg-card);
             box-shadow: var(--shadow);
@@ -122,7 +155,9 @@
             top: 0;
             z-index: 1000;
             transition: var(--transition);
-            border-bottom: 3px solid var(--primary);
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-main);
+            border-image-slice: 1;
         }
 
         .header .container {
@@ -148,19 +183,18 @@
             background: var(--gradient-main);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-5deg); }
         }
 
         .logo span {
             background: var(--gradient-main);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
         }
 
         .back-link {
@@ -182,90 +216,178 @@
             transform: translateX(-5px);
         }
 
-        .admin-badge {
-            background: var(--gradient-main);
+        .business-hero {
+            background: var(--gradient-business);
             color: #fff;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            padding: 100px 0 80px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .refresh-btn {
+        .business-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .business-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, -30px) rotate(5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .business-hero .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .business-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .business-hero h1 span {
             background: var(--gradient-secondary);
-            color: #fff;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.4);
+        .business-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
         }
 
-        .breadcrumb {
-            padding: 20px 0;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .breadcrumb ul {
-            list-style: none;
+        .business-hero .badges {
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 20px;
             flex-wrap: wrap;
         }
 
-        .breadcrumb ul li {
+        .business-hero .badge {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .breadcrumb ul li a {
+        .business-hero .badge i {
+            color: var(--accent);
+        }
+
+        .services-section {
+            padding: 80px 0;
+            background: var(--bg-body);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .service-category {
+            margin-bottom: 60px;
+        }
+
+        .service-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--border-color);
+            position: relative;
+        }
+
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            right: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-main);
+            border-radius: 3px;
+        }
+
+        .category-title i {
             color: var(--primary);
-            text-decoration: none;
-            transition: var(--transition);
+            font-size: 2rem;
         }
 
-        .breadcrumb ul li a:hover {
-            color: var(--secondary);
-        }
-
-        .breadcrumb ul li .separator {
-            color: var(--text-muted);
-        }
-
-        .stats-grid {
+        .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin: 30px 0 40px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
         }
 
-        .stat-card {
+        .service-item {
             background: var(--bg-card);
-            padding: 20px;
             border-radius: var(--radius);
+            padding: 25px 30px;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
             transition: var(--transition);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         }
 
-        .stat-card::before {
+        .service-item::before {
             content: '';
             position: absolute;
             top: 0;
@@ -273,432 +395,377 @@
             right: 0;
             height: 4px;
             background: var(--gradient-main);
+            transform: scaleX(0);
+            transition: var(--transition);
         }
 
-        .stat-card:hover {
+        .service-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-item:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
         }
 
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 5px;
+        .service-item .icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 12px;
             display: inline-block;
         }
 
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 900;
+        .service-item h4 {
+            font-size: 1.15rem;
             color: var(--text-color);
-            display: block;
-            direction: ltr;
+            margin-bottom: 8px;
         }
 
-        .stat-card .label {
+        .service-item p {
             color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .stat-card.pending::before { background: var(--gradient-warning); }
-        .stat-card.in-progress::before { background: var(--gradient-main); }
-        .stat-card.completed::before { background: var(--gradient-success); }
-        .stat-card.total::before { background: var(--gradient-secondary); }
-        .stat-card.cancelled::before { background: var(--gradient-danger); }
-
-        .controls-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .controls-bar .search-box {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            align-items: center;
-            background: var(--bg-body);
-            border-radius: 50px;
-            padding: 5px 15px;
-            border: 2px solid var(--border-color);
-            transition: var(--transition);
-        }
-
-        .controls-bar .search-box:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
-        }
-
-        .controls-bar .search-box input {
-            border: none;
-            background: transparent;
-            padding: 10px 15px;
-            font-family: 'Cairo', sans-serif;
             font-size: 0.95rem;
-            color: var(--text-color);
-            width: 100%;
-            outline: none;
+            line-height: 1.7;
         }
 
-        .controls-bar .search-box input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .controls-bar .search-box button {
-            background: var(--gradient-main);
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: var(--transition);
-            padding: 8px 18px;
-            border-radius: 50px;
-        }
-
-        .controls-bar .search-box button:hover {
-            transform: scale(1.05);
-        }
-
-        .controls-bar select {
-            padding: 12px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.95rem;
-            background: var(--bg-body);
-            color: var(--text-color);
-            transition: var(--transition);
-            cursor: pointer;
-            min-width: 140px;
-        }
-
-        .controls-bar select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
-        }
-
-        .controls-bar .export-btn {
-            background: var(--gradient-success);
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .controls-bar .export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .table-wrapper {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            overflow-x: auto;
-        }
-
-        .table-wrapper table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1000px;
-        }
-
-        .table-wrapper thead {
-            background: var(--gradient-main);
-            color: #fff;
-        }
-
-        .table-wrapper thead th {
-            padding: 15px 20px;
-            text-align: right;
-            font-weight: 700;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .table-wrapper tbody td {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-color);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-
-        .table-wrapper tbody tr:hover {
-            background: rgba(124, 58, 237, 0.05);
-        }
-
-        .table-wrapper tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .status-badge.pending {
-            background: #FEF3C7;
-            color: #D97706;
-        }
-
-        .status-badge.in-progress {
-            background: #EDE9FE;
-            color: #7C3AED;
-        }
-
-        .status-badge.completed {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        .status-badge.cancelled {
-            background: #FEE2E2;
-            color: #991B1B;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 5px 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .action-btn.view {
+        .service-item .tag {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 3px 15px;
             background: rgba(124, 58, 237, 0.1);
             color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        .action-btn.view:hover {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        .action-btn.approve {
-            background: rgba(16, 185, 129, 0.1);
-            color: #059669;
-        }
-
-        .action-btn.approve:hover {
-            background: var(--gradient-success);
-            color: #fff;
-        }
-
-        .action-btn.reject {
-            background: rgba(239, 68, 68, 0.1);
-            color: #DC2626;
-        }
-
-        .action-btn.reject:hover {
-            background: var(--gradient-danger);
-            color: #fff;
-        }
-
-        .action-btn.delete {
-            background: rgba(239, 68, 68, 0.1);
-            color: #DC2626;
-        }
-
-        .action-btn.delete:hover {
-            background: var(--gradient-danger);
-            color: #fff;
-        }
-
-        .action-btn.complete {
-            background: rgba(16, 185, 129, 0.1);
-            color: #059669;
-        }
-
-        .action-btn.complete:hover {
-            background: var(--gradient-success);
-            color: #fff;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(8px);
-            padding: 20px;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
+        .request-form-section {
+            padding: 80px 0;
             background: var(--bg-card);
-            border-radius: var(--radius);
+        }
+
+        .request-form-wrapper {
             max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 40px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            background: var(--bg-body);
+            padding: 50px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
-            position: relative;
         }
 
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--gradient-main);
+        .request-form-wrapper .form-header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        .modal-content .close-modal {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            font-size: 2rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            z-index: 10;
-        }
-
-        .modal-content .close-modal:hover {
-            transform: rotate(90deg);
-            color: var(--primary);
-        }
-
-        .modal-content h2 {
+        .request-form-wrapper .form-header h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
             color: var(--text-color);
-            margin-bottom: 25px;
-            font-size: 1.8rem;
         }
 
-        .modal-content h2 span {
+        .request-form-wrapper .form-header h2 span {
             background: var(--gradient-main);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .detail-item {
-            padding: 15px;
-            background: var(--bg-body);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .detail-item .label {
-            font-size: 0.8rem;
+        .request-form-wrapper .form-header p {
             color: var(--text-muted);
-            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
             display: block;
-            margin-bottom: 5px;
-        }
-
-        .detail-item .value {
-            font-size: 0.95rem;
-            color: var(--text-color);
             font-weight: 600;
-            word-break: break-word;
+            margin-bottom: 8px;
+            color: var(--text-color);
         }
 
-        .detail-item .value .file-link {
-            color: var(--primary);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: rgba(124, 58, 237, 0.1);
-            border-radius: 8px;
-            margin: 2px 0;
+        .form-group label .required {
+            color: #EF4444;
+            margin-right: 3px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
             transition: var(--transition);
+            background: var(--bg-card);
+            color: var(--text-color);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group .file-upload {
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-card);
+        }
+
+        .form-group .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .form-group .file-upload i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-group .file-upload p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group .file-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .form-group .file-list .file-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             font-size: 0.85rem;
         }
 
-        .detail-item .value .file-link:hover {
-            background: var(--primary);
-            color: #fff;
-            transform: translateY(-2px);
+        .form-group .file-list .file-item i {
+            color: var(--primary);
         }
 
-        .detail-item.full-width {
-            grid-column: 1 / -1;
+        .form-group .file-list .file-item .remove-file {
+            color: #EF4444;
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .modal-actions {
+        .form-group .file-list .file-item .remove-file:hover {
+            transform: scale(1.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group .checkbox-group {
             display: flex;
+            align-items: flex-start;
             gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
         }
 
-        .modal-actions .action-btn {
-            padding: 10px 25px;
+        .form-group .checkbox-group:hover {
+            border-color: var(--primary);
+        }
+
+        .form-group .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .form-group .checkbox-group label {
+            font-weight: 400;
             font-size: 0.95rem;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .form-group .checkbox-group label strong {
+            color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--gradient-main);
+            color: #fff;
+            padding: 16px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .terms-section {
+            padding: 60px 0;
+            background: var(--bg-body);
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .terms-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .terms-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .terms-card .icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .terms-card h3 {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .terms-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .terms-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .terms-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .terms-card ul li i {
+            color: var(--primary);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .form-message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #34D399;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #F87171;
+        }
+
+        .form-message.info {
+            display: block;
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 2px solid #60A5FA;
         }
 
         .footer {
             background: #0F172A;
             color: #94A3B8;
-            padding: 30px 0 20px;
+            padding: 40px 0 30px;
             text-align: center;
-            margin-top: 40px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .footer .footer-brand {
             font-size: 1.2rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .footer .footer-brand span {
@@ -707,150 +774,92 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .footer .footer-links a {
+            color: #94A3B8;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .footer .footer-links a:hover {
+            color: #fff;
+        }
+
         .footer .copyright {
             font-size: 0.9rem;
-        }
-
-        .toast {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            padding: 15px 25px;
-            border-radius: 12px;
-            color: #fff;
-            font-weight: 600;
-            z-index: 3000;
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            background: var(--gradient-success);
-        }
-
-        .toast.error {
-            background: var(--gradient-danger);
-        }
-
-        .toast.warning {
-            background: var(--gradient-warning);
-        }
-
-        .toast.info {
-            background: var(--gradient-main);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            color: var(--text-muted);
-        }
-
-        .loading-spinner {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading-spinner i {
-            font-size: 3rem;
-            color: var(--primary);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+            margin-top: 10px;
         }
 
         @media (max-width: 992px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
+            .business-hero h1 {
+                font-size: 2.8rem;
             }
-            .modal-content {
+            .request-form-wrapper {
                 padding: 30px;
             }
-            .controls-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .controls-bar .search-box {
-                width: 100%;
-            }
-            .controls-bar select {
-                width: 100%;
-            }
-            .controls-bar .export-btn {
-                justify-content: center;
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .header .container {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
+            .business-hero h1 {
+                font-size: 2.2rem;
             }
-            .header-actions {
-                flex-wrap: wrap;
-                justify-content: space-between;
+            .business-hero {
+                padding: 60px 0 50px;
             }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
+            .section-header h2 {
+                font-size: 2rem;
             }
-            .modal-content {
+            .category-title {
+                font-size: 1.4rem;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .request-form-wrapper {
                 padding: 20px;
             }
-            .theme-toggle {
+            .terms-grid {
+                grid-template-columns: 1fr;
+            }
+            .theme-toggle,
+            .back-to-top {
                 width: 45px;
                 height: 45px;
                 font-size: 1.2rem;
                 bottom: 20px;
                 left: 20px;
             }
-            .action-buttons {
-                flex-direction: column;
-                gap: 4px;
-            }
-            .action-btn {
-                justify-content: center;
+            .back-to-top {
+                bottom: 75px;
             }
         }
 
         @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .business-hero h1 {
+                font-size: 1.8rem;
             }
-            .modal-actions {
+            .business-hero .badges {
                 flex-direction: column;
+                align-items: center;
             }
-            .modal-actions .action-btn {
+            .business-hero .badge {
                 width: 100%;
                 justify-content: center;
             }
-            .modal-content {
+            .request-form-wrapper {
                 padding: 15px;
             }
         }
@@ -863,170 +872,471 @@
         <i class="fas fa-moon"></i>
     </button>
 
-    <!-- ====== Toast Notifications ====== -->
-    <div class="toast" id="toast"></div>
+    <!-- ====== زر العودة للأعلى ====== -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <!-- ============================================================
     الهيدر
     ============================================================ -->
-    <header class="header">
+    <header class="header" id="header">
         <div class="container">
             <a href="index.html" class="logo">
                 <i class="fas fa-graduation-cap"></i>
                 منصة <span>ارتقاء</span>
             </a>
-            <div class="header-actions">
-                <span class="admin-badge"><i class="fas fa-user-shield"></i> لوحة المدير</span>
-                <button class="refresh-btn" onclick="loadOrders()">
-                    <i class="fas fa-sync-alt"></i> تحديث
-                </button>
-                <a href="admin-dashboard.html" class="back-link">
-                    <i class="fas fa-arrow-right"></i> العودة
-                </a>
-            </div>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-right"></i> العودة للرئيسية
+            </a>
         </div>
     </header>
 
     <!-- ============================================================
-    Breadcrumb
+    القسم الرئيسي
     ============================================================ -->
-    <div class="breadcrumb">
+    <section class="business-hero" id="hero">
         <div class="container">
-            <ul>
-                <li><a href="admin-dashboard.html"><i class="fas fa-home"></i> لوحة التحكم</a></li>
-                <li><span class="separator">›</span></li>
-                <li>خدمات كلية الأعمال</li>
-                <li><span class="separator">›</span></li>
-                <li>إدارة الطلبات</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- ============================================================
-    المحتوى الرئيسي
-    ============================================================ -->
-    <main>
-        <div class="container">
-
-            <!-- ============================================================
-            الإحصائيات
-            ============================================================ -->
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card total" onclick="filterByStatus('all')">
-                    <div class="icon"><i class="fas fa-clipboard-list"></i></div>
-                    <span class="number" id="totalOrders">0</span>
-                    <span class="label">إجمالي الطلبات</span>
-                </div>
-                <div class="stat-card pending" onclick="filterByStatus('pending')">
-                    <div class="icon"><i class="fas fa-clock"></i></div>
-                    <span class="number" id="pendingOrders">0</span>
-                    <span class="label">قيد الانتظار</span>
-                </div>
-                <div class="stat-card in-progress" onclick="filterByStatus('in-progress')">
-                    <div class="icon"><i class="fas fa-spinner"></i></div>
-                    <span class="number" id="inProgressOrders">0</span>
-                    <span class="label">قيد التنفيذ</span>
-                </div>
-                <div class="stat-card completed" onclick="filterByStatus('completed')">
-                    <div class="icon"><i class="fas fa-check-circle"></i></div>
-                    <span class="number" id="completedOrders">0</span>
-                    <span class="label">مكتملة</span>
-                </div>
-                <div class="stat-card cancelled" onclick="filterByStatus('cancelled')">
-                    <div class="icon"><i class="fas fa-times-circle"></i></div>
-                    <span class="number" id="cancelledOrders">0</span>
-                    <span class="label">ملغية</span>
-                </div>
-            </div>
-
-            <!-- ============================================================
-            أدوات التحكم
-            ============================================================ -->
-            <div class="controls-bar">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="ابحث عن طلب (اسم، بريد، خدمة، عنوان، رقم)..."
-                        onkeyup="if(event.key === 'Enter') filterOrders()" />
-                    <button onclick="filterOrders()"><i class="fas fa-search"></i></button>
-                </div>
-                <select id="filterStatus" onchange="filterOrders()">
-                    <option value="all">جميع الحالات</option>
-                    <option value="pending">قيد الانتظار</option>
-                    <option value="in-progress">قيد التنفيذ</option>
-                    <option value="completed">مكتملة</option>
-                    <option value="cancelled">ملغية</option>
-                </select>
-                <select id="filterDepartment" onchange="filterOrders()">
-                    <option value="all">جميع الأقسام</option>
-                    <option value="الإدارة والاستراتيجية وإدارة المشاريع">الإدارة والاستراتيجية</option>
-                    <option value="إدارة الأعمال والتسويق">إدارة الأعمال والتسويق</option>
-                    <option value="المالية والمحاسبة">المالية والمحاسبة</option>
-                    <option value="الاقتصاد">الاقتصاد</option>
-                    <option value="الموارد البشرية">الموارد البشرية</option>
-                    <option value="إدارة العمليات والخدمات">إدارة العمليات والخدمات</option>
-                    <option value="الإحصاء والأبحاث الاقتصادية">الإحصاء والأبحاث الاقتصادية</option>
-                </select>
-                <button class="export-btn" onclick="exportOrders()">
-                    <i class="fas fa-file-export"></i> تصدير CSV
-                </button>
-            </div>
-
-            <!-- ============================================================
-            جدول الطلبات
-            ============================================================ -->
-            <div class="table-wrapper">
-                <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-                    <i class="fas fa-spinner"></i>
-                    <p>جاري تحميل الطلبات...</p>
-                </div>
-                <table id="ordersTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>العميل</th>
-                            <th>القسم</th>
-                            <th>الخدمة</th>
-                            <th>نوع الطلب</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody">
-                        <!-- يتم تعبئتها بواسطة JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- حالة عدم وجود بيانات -->
-            <div class="empty-state" id="emptyState" style="display: none;">
-                <i class="fas fa-inbox"></i>
-                <h3>لا توجد طلبات</h3>
-                <p>لم يتم استلام أي طلبات خدمات لكلية الأعمال حتى الآن.</p>
-                <p style="margin-top: 10px; font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> الطلبات ستظهر هنا تلقائياً عند تقديمها من صفحة الخدمات.
+            <div data-aos="fade-up" data-aos-duration="1000">
+                <h1>خدمات <span>كلية الأعمال والاقتصاد</span></h1>
+                <p>
+                    نقدم مجموعة متكاملة من الخدمات الأكاديمية والاستشارية المتخصصة في مجالات
+                    الإدارة، التسويق، المالية، المحاسبة، الاقتصاد، والموارد البشرية،
+                    بأيدي خبراء أكاديميين وممارسين محترفين.
                 </p>
+                <div class="badges">
+                    <span class="badge"><i class="fas fa-check-circle"></i> 7 أقسام متخصصة</span>
+                    <span class="badge"><i class="fas fa-star"></i> أكثر من 40 خدمة</span>
+                    <span class="badge"><i class="fas fa-users"></i> خبراء معتمدون</span>
+                </div>
             </div>
-
         </div>
-    </main>
+    </section>
 
     <!-- ============================================================
-    نافذة تفاصيل الطلب (Modal)
+    أقسام الخدمات
     ============================================================ -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()">&times;</button>
-            <h2>تفاصيل الطلب <span>#<span id="modalOrderId">0</span></span></h2>
-
-            <div class="detail-grid" id="modalDetails">
-                <!-- يتم تعبئتها بواسطة JavaScript -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up" data-aos-duration="800">
+                <h2>أقسام وخدمات <span>كلية الأعمال</span></h2>
+                <p>اختر القسم المناسب لتخصصك واستكشف الخدمات المتاحة</p>
             </div>
 
-            <div class="modal-actions" id="modalActions">
-                <!-- يتم تعبئتها بواسطة JavaScript -->
+            <!-- القسم 1 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-briefcase"></i>
+                    القسم 1: الإدارة والاستراتيجية وإدارة المشاريع
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('إدارة الجودة')">
+                        <div class="icon"><i class="fas fa-certificate"></i></div>
+                        <h4>إدارة الجودة</h4>
+                        <p>تقديم حلول شاملة لتحسين وتطوير الأداء المؤسسي وضمان تطبيق أعلى معايير الجودة</p>
+                        <span class="tag">جودة • تحسين • تطوير</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('إدارة المشاريع')">
+                        <div class="icon"><i class="fas fa-project-diagram"></i></div>
+                        <h4>إدارة المشاريع</h4>
+                        <p>دعم تخطيط وتنفيذ المشاريع لضمان تحقيق الأهداف بكفاءة وفعالية ضمن الموارد المتاحة</p>
+                        <span class="tag">تخطيط • مخاطر • أداء</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الإدارة الاستراتيجية')">
+                        <div class="icon"><i class="fas fa-chess-queen"></i></div>
+                        <h4>الإدارة الاستراتيجية</h4>
+                        <p>صياغة وتوجيه الخطط طويلة المدى لمساعدة المنظمات في التكيف مع بيئتها وتحقيق الميزة التنافسية</p>
+                        <span class="tag">استراتيجية • نمو • تنافسية</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الحوكمة')">
+                        <div class="icon"><i class="fas fa-balance-scale"></i></div>
+                        <h4>الحوكمة</h4>
+                        <p>وضع الأطر التنظيمية التي تضمن الشفافية والمساءلة وحفظ حقوق أصحاب المصلحة</p>
+                        <span class="tag">حوكمة • شفافية • امتثال</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('القيادة واتخاذ القرار')">
+                        <div class="icon"><i class="fas fa-people-arrows"></i></div>
+                        <h4>القيادة واتخاذ القرار</h4>
+                        <p>تقديم رؤى تحليلية لفهم السلوك القيادي وتدعيم آليات صنع القرار الإداري</p>
+                        <span class="tag">قيادة • قرار • إدارة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 2 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-store"></i>
+                    القسم 2: إدارة الأعمال والتسويق
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('إدارة الأعمال')">
+                        <div class="icon"><i class="fas fa-building"></i></div>
+                        <h4>إدارة الأعمال</h4>
+                        <p>دراسة وتحليل المبادئ والعمليات الإدارية التي تساهم في تنظيم وقيادة الأعمال بنجاح</p>
+                        <span class="tag">أعمال • إدارة • تنظيم</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('التسويق')">
+                        <div class="icon"><i class="fas fa-bullhorn"></i></div>
+                        <h4>التسويق</h4>
+                        <p>تحليل استراتيجيات التسويق، إدارة العلامات التجارية، أبحاث السوق، التسويق الرقمي</p>
+                        <span class="tag">تسويق • علامات • أبحاث</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('سلوك المستهلك')">
+                        <div class="icon"><i class="fas fa-user-friends"></i></div>
+                        <h4>سلوك المستهلك</h4>
+                        <p>تحليل العوامل المؤثرة في سلوك المستهلك، أنماط الشراء، التنبؤ بالاتجاهات</p>
+                        <span class="tag">مستهلك • أنماط • اتجاهات</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('إدارة المبيعات')">
+                        <div class="icon"><i class="fas fa-handshake"></i></div>
+                        <h4>إدارة المبيعات</h4>
+                        <p>تخطيط المبيعات، إدارة فرق المبيعات، تحليل أداء المبيعات وتطويره</p>
+                        <span class="tag">مبيعات • أداء • تخطيط</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 3 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-coins"></i>
+                    القسم 3: المالية والمحاسبة
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('المحاسبة المالية')">
+                        <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                        <h4>المحاسبة المالية</h4>
+                        <p>إعداد القوائم المالية، تحليل البيانات المحاسبية، تطبيق المعايير المحاسبية</p>
+                        <span class="tag">محاسبة • قوائم • معايير</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('المحاسبة الإدارية')">
+                        <div class="icon"><i class="fas fa-chart-pie"></i></div>
+                        <h4>المحاسبة الإدارية</h4>
+                        <p>تحليل التكاليف، إعداد الموازنات، تقييم الأداء المالي للوحدات الإدارية</p>
+                        <span class="tag">تكاليف • موازنات • أداء</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('التمويل')">
+                        <div class="icon"><i class="fas fa-chart-line"></i></div>
+                        <h4>التمويل</h4>
+                        <p>تحليل الأسواق المالية، تقييم الاستثمارات، إدارة المخاطر المالية، هيكل رأس المال</p>
+                        <span class="tag">استثمار • مخاطر • أسواق</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الرقابة المالية')">
+                        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>الرقابة المالية</h4>
+                        <p>تحليل أنظمة الرقابة الداخلية، تدقيق الحسابات، تطوير آليات المراقبة المالية</p>
+                        <span class="tag">رقابة • تدقيق • مراقبة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 4 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-globe-asia"></i>
+                    القسم 4: الاقتصاد
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('الاقتصاد الكلي')">
+                        <div class="icon"><i class="fas fa-globe"></i></div>
+                        <h4>الاقتصاد الكلي</h4>
+                        <p>تحليل السياسات الاقتصادية، النمو الاقتصادي، التضخم، البطالة، التجارة الدولية</p>
+                        <span class="tag">كلي • سياسات • نمو</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الاقتصاد الجزئي')">
+                        <div class="icon"><i class="fas fa-cubes"></i></div>
+                        <h4>الاقتصاد الجزئي</h4>
+                        <p>تحليل سلوك المستهلكين والمنتجين، هياكل السوق، نظرية التسعير، التوازن الاقتصادي</p>
+                        <span class="tag">جزئي • أسواق • تسعير</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الاقتصاد القياسي')">
+                        <div class="icon"><i class="fas fa-calculator"></i></div>
+                        <h4>الاقتصاد القياسي</h4>
+                        <p>تحليل البيانات الاقتصادية، النمذجة الإحصائية، التنبؤ بالمتغيرات الاقتصادية</p>
+                        <span class="tag">قياسي • نمذجة • تنبؤ</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('الاقتصاد الدولي')">
+                        <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
+                        <h4>الاقتصاد الدولي</h4>
+                        <p>تحليل التجارة الدولية، تدفقات رأس المال، السياسات النقدية الدولية، أسعار الصرف</p>
+                        <span class="tag">دولي • تجارة • صرف</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 5 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-users-cog"></i>
+                    القسم 5: الموارد البشرية
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('إدارة الموارد البشرية')">
+                        <div class="icon"><i class="fas fa-user-tie"></i></div>
+                        <h4>إدارة الموارد البشرية</h4>
+                        <p>تخطيط القوى العاملة، التوظيف والاختيار، تطوير الموظفين، إدارة الأداء</p>
+                        <span class="tag">توظيف • أداء • تطوير</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('التدريب والتطوير')">
+                        <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <h4>التدريب والتطوير</h4>
+                        <p>تصميم برامج تدريبية، تقييم الاحتياجات التدريبية، قياس فعالية التدريب</p>
+                        <span class="tag">تدريب • تطوير • تقييم</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('التعويضات والحوافز')">
+                        <div class="icon"><i class="fas fa-money-check-alt"></i></div>
+                        <h4>التعويضات والحوافز</h4>
+                        <p>تحليل أنظمة التعويضات، تصميم برامج الحوافز، تقييم الفوائد والمزايا</p>
+                        <span class="tag">تعويضات • حوافز • فوائد</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('العلاقات الصناعية')">
+                        <div class="icon"><i class="fas fa-handshake"></i></div>
+                        <h4>العلاقات الصناعية</h4>
+                        <p>تحليل علاقات العمل، التفاوض الجماعي، حل النزاعات العمالية، ثقافة العمل</p>
+                        <span class="tag">علاقات • تفاوض • نزاعات</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 6 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-cogs"></i>
+                    القسم 6: إدارة العمليات والخدمات
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('إدارة العمليات')">
+                        <div class="icon"><i class="fas fa-industry"></i></div>
+                        <h4>إدارة العمليات</h4>
+                        <p>تحليل العمليات الإنتاجية، إدارة سلسلة التوريد، تحسين كفاءة العمليات</p>
+                        <span class="tag">عمليات • توريد • كفاءة</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('إدارة الخدمات')">
+                        <div class="icon"><i class="fas fa-concierge-bell"></i></div>
+                        <h4>إدارة الخدمات</h4>
+                        <p>تحليل جودة الخدمة، إدارة تجربة العملاء، تطوير نماذج تقديم الخدمات</p>
+                        <span class="tag">خدمات • جودة • تجربة</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('إدارة المخزون واللوجستيات')">
+                        <div class="icon"><i class="fas fa-truck"></i></div>
+                        <h4>إدارة المخزون واللوجستيات</h4>
+                        <p>تخطيط المخزون، إدارة المستودعات، توزيع المنتجات، سلاسل الإمداد</p>
+                        <span class="tag">مخزون • لوجستيات • توزيع</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم 7 -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-title">
+                    <i class="fas fa-chart-bar"></i>
+                    القسم 7: الإحصاء والأبحاث الاقتصادية
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('الإحصاء التطبيقي')">
+                        <div class="icon"><i class="fas fa-chart-pie"></i></div>
+                        <h4>الإحصاء التطبيقي</h4>
+                        <p>تحليل البيانات الإحصائية، اختبار الفروض، تصميم الدراسات الإحصائية</p>
+                        <span class="tag">إحصاء • تحليل • اختبار</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('أبحاث السوق')">
+                        <div class="icon"><i class="fas fa-search-dollar"></i></div>
+                        <h4>أبحاث السوق</h4>
+                        <p>تصميم وتحليل استبيانات السوق، تحليل المنافسين، تقدير حجم السوق</p>
+                        <span class="tag">سوق • استبيانات • تحليل</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('النمذجة الاقتصادية')">
+                        <div class="icon"><i class="fas fa-project-diagram"></i></div>
+                        <h4>النمذجة الاقتصادية</h4>
+                        <p>بناء نماذج اقتصادية، تحليل النظم الاقتصادية، التنبؤ بالاتجاهات</p>
+                        <span class="tag">نمذجة • نظم • تنبؤ</span>
+                    </div>
+                    <div class="service-item" onclick="openRequestForm('تحليل البيانات الكبيرة')">
+                        <div class="icon"><i class="fas fa-database"></i></div>
+                        <h4>تحليل البيانات الكبيرة</h4>
+                        <p>معالجة وتحليل البيانات الاقتصادية الضخمة، استخراج الأنماط والرؤى</p>
+                        <span class="tag">بيانات • ضخمة • رؤى</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;" data-aos="fade-up" data-aos-duration="800">
+                <a href="#request-form" class="btn-submit" style="width: auto; padding: 16px 60px; display: inline-block; text-decoration: none;">
+                    <i class="fas fa-paper-plane"></i> تقديم طلب خدمة
+                </a>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- ============================================================
+    نموذج طلب الخدمة
+    ============================================================ -->
+    <section class="request-form-section" id="request-form">
+        <div class="container">
+            <div class="request-form-wrapper" data-aos="fade-up" data-aos-duration="800">
+                <div class="form-header">
+                    <h2>طلب <span>خدمة أكاديمية</span></h2>
+                    <p>املأ النموذج التالي وسيتم إرسال طلبك إلى فريق الإدارة للمراجعة</p>
+                </div>
+
+                <form id="serviceRequestForm" onsubmit="submitRequest(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>الاسم الكامل <span class="required">*</span></label>
+                            <input type="text" id="fullName" placeholder="أدخل اسمك الكامل" required />
+                        </div>
+                        <div class="form-group">
+                            <label>البريد الإلكتروني <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="example@email.com" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>رقم التواصل (واتساب) <span class="required">*</span></label>
+                        <input type="tel" id="phone" placeholder="+966 54 850 4018" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>القسم <span class="required">*</span></label>
+                            <select id="department" required onchange="updateServices()">
+                                <option value="">اختر القسم</option>
+                                <option value="الإدارة والاستراتيجية وإدارة المشاريع">الإدارة والاستراتيجية وإدارة المشاريع</option>
+                                <option value="إدارة الأعمال والتسويق">إدارة الأعمال والتسويق</option>
+                                <option value="المالية والمحاسبة">المالية والمحاسبة</option>
+                                <option value="الاقتصاد">الاقتصاد</option>
+                                <option value="الموارد البشرية">الموارد البشرية</option>
+                                <option value="إدارة العمليات والخدمات">إدارة العمليات والخدمات</option>
+                                <option value="الإحصاء والأبحاث الاقتصادية">الإحصاء والأبحاث الاقتصادية</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>الخدمة المطلوبة <span class="required">*</span></label>
+                            <select id="service" required>
+                                <option value="">اختر الخدمة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نوع الطلب <span class="required">*</span></label>
+                        <select id="requestType" required>
+                            <option value="">اختر نوع الطلب</option>
+                            <option value="تحليل">تحليل</option>
+                            <option value="مراجعة">مراجعة</option>
+                            <option value="إعداد تقرير">إعداد تقرير</option>
+                            <option value="تنظيم بيانات">تنظيم بيانات</option>
+                            <option value="تفسير نتائج">تفسير نتائج</option>
+                            <option value="تطوير محتوى">تطوير محتوى</option>
+                            <option value="إعداد عرض تقديمي">إعداد عرض تقديمي</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>عنوان الطلب <span class="required">*</span></label>
+                        <input type="text" id="requestTitle" placeholder="مثال: تحليل استراتيجيات التسويق لشركة X" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>وصف الطلب <span class="required">*</span></label>
+                        <textarea id="requestDescription" placeholder="صف طلبك بالتفصيل، واذكر المتطلبات والتوقعات..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الجهة أو الشركة محل التطبيق (اختياري)</label>
+                        <input type="text" id="organization" placeholder="اسم الجهة أو الشركة إن وجدت" />
+                    </div>
+
+                    <!-- ============================================================
+                    ✅ رفع الملفات - الجزء الأهم
+                    ============================================================ -->
+                    <div class="form-group">
+                        <label>الملفات المرفقة</label>
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>اضغط لرفع الملفات</strong> أو اسحبها هنا</p>
+                            <p style="font-size: 0.8rem;">الصيغ المدعومة: Word, Excel, PowerPoint, PDF, ZIP</p>
+                            <p style="font-size: 0.75rem; color: var(--primary); margin-top: 8px;" id="fileCount">لم يتم رفع أي ملفات</p>
+                        </div>
+                        <input type="file" id="fileInput" name="files" multiple 
+                               accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.zip" 
+                               style="display: none;" 
+                               onchange="handleFiles(this.files)" />
+                        <div class="file-list" id="fileList"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>موعد التسليم المطلوب <span class="required">*</span></label>
+                        <input type="date" id="deliveryDate" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>ملاحظات إضافية (اختياري)</label>
+                        <textarea id="additionalNotes" placeholder="أي تعليمات أو ملاحظات إضافية تود إضافتها..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="termsAgree" required />
+                            <label for="termsAgree">
+                                <strong>أقر بأنني قرأت ووافقت على الشروط والأحكام وسياسة الخصوصية</strong>
+                                الخاصة بمنصة ارتقاء إديو هوب
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> إرسال الطلب
+                    </button>
+
+                    <div class="form-message" id="formMessage"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    الشروط والأحكام
+    ============================================================ -->
+    <section class="terms-section" id="terms">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up" data-aos-duration="800">
+                <h2>الشروط <span>والأحكام</span></h2>
+                <p>نلتزم بتقديم خدماتنا وفق أعلى معايير الشفافية والاحترافية</p>
+            </div>
+            <div class="terms-grid">
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="600">
+                    <div class="icon"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>سياسة طلب الخدمات والاعتماد</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>دقة البيانات:</strong> يلتزم العميل بتعبئة نموذج طلب الخدمة بدقة</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اكتمال المرفقات:</strong> يجب إرفاق جميع الملفات والتعليمات</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اعتماد الطلب:</strong> لا يُعتبر الطلب مؤكداً إلا بعد مراجعته وتحديد التكلفة</li>
+                    </ul>
+                </div>
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="700">
+                    <div class="icon"><i class="fas fa-credit-card"></i></div>
+                    <h3>سياسة الدفع والاسترجاع</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>آلية الدفع:</strong> يتم الاتفاق على آلية الدفع بناءً على حجم العمل</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب قبل التنفيذ:</strong> استرجاع المبلغ بالكامل</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب بعد التنفيذ:</strong> لا يحق للعميل المطالبة باسترجاع المبلغ</li>
+                    </ul>
+                </div>
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="800">
+                    <div class="icon"><i class="fas fa-lock"></i></div>
+                    <h3>الخصوصية وسرية المعلومات</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>حماية البيانات:</strong> التزام تام بسرية بيانات العميل</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>ملكية العمل:</strong> جميع الملفات والبيانات ملك للعميل</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الهدف الاسترشادي:</strong> المخرجات هي خدمات استشارية وبحثية</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ============================================================
     الفوتر
@@ -1036,6 +1346,12 @@
             <div class="footer-brand">
                 منصة <span>ارتقاء</span> إديو هوب
             </div>
+            <div class="footer-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="dmca.html">سياسات وأحكام</a>
+                <a href="privacy-policy.html">سياسة الخصوصية</a>
+                <a href="terms-of-service.html">شروط الاستخدام</a>
+            </div>
             <div class="copyright">
                 &copy; 2026 منصة ارتقاء إديو هوب. جميع الحقوق محفوظة.
             </div>
@@ -1043,9 +1359,19 @@
     </footer>
 
     <!-- ============================================================
-    الجافا سكريبت - الاتصال بقاعدة البيانات
+    الجافا سكريبت - الكود النهائي
     ============================================================ -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        // ============================================================
+        // تفعيل AOS
+        // ============================================================
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
         // ============================================================
         // تبديل الوضع
         // ============================================================
@@ -1066,633 +1392,423 @@
         }
 
         // ============================================================
-        // ✅ تحديد عنوان API - يعمل محلياً وعن بعد
+        // زر العودة للأعلى
+        // ============================================================
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 500) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        });
+
+        // ============================================================
+        // تحديد عنوان API
         // ============================================================
         const API_BASE_URL = (() => {
-            // إذا كنت تعمل محلياً
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 return 'http://localhost:5000/api';
             }
-            // ✅ العنوان الفعلي للخادم على Render
             return 'https://irteqa-eduhub.onrender.com/api';
         })();
 
         console.log('🌐 عنوان API المستخدم:', API_BASE_URL);
 
         // ============================================================
-        // المتغيرات العامة
+        // بيانات الخدمات
         // ============================================================
-        let orders = [];
-        let currentFilteredOrders = [];
-        let refreshInterval = null;
+        const servicesData = {
+            'الإدارة والاستراتيجية وإدارة المشاريع': [
+                'إدارة الجودة', 'إدارة المشاريع', 'الإدارة الاستراتيجية', 'الحوكمة', 'القيادة واتخاذ القرار'
+            ],
+            'إدارة الأعمال والتسويق': [
+                'إدارة الأعمال', 'التسويق', 'سلوك المستهلك', 'إدارة المبيعات'
+            ],
+            'المالية والمحاسبة': [
+                'المحاسبة المالية', 'المحاسبة الإدارية', 'التمويل', 'الرقابة المالية'
+            ],
+            'الاقتصاد': [
+                'الاقتصاد الكلي', 'الاقتصاد الجزئي', 'الاقتصاد القياسي', 'الاقتصاد الدولي'
+            ],
+            'الموارد البشرية': [
+                'إدارة الموارد البشرية', 'التدريب والتطوير', 'التعويضات والحوافز', 'العلاقات الصناعية'
+            ],
+            'إدارة العمليات والخدمات': [
+                'إدارة العمليات', 'إدارة الخدمات', 'إدارة المخزون واللوجستيات'
+            ],
+            'الإحصاء والأبحاث الاقتصادية': [
+                'الإحصاء التطبيقي', 'أبحاث السوق', 'النمذجة الاقتصادية', 'تحليل البيانات الكبيرة'
+            ]
+        };
 
         // ============================================================
-        // الحصول على التوكن من localStorage
+        // تحديث الخدمات
         // ============================================================
-        function getToken() {
-            return localStorage.getItem('token') || '';
-        }
+        function updateServices() {
+            const department = document.getElementById('department').value;
+            const serviceSelect = document.getElementById('service');
+            serviceSelect.innerHTML = '<option value="">اختر الخدمة</option>';
 
-        // ============================================================
-        // تحميل الطلبات من قاعدة البيانات
-        // ============================================================
-        async function loadOrders() {
-            const spinner = document.getElementById('loadingSpinner');
-            spinner.style.display = 'block';
-
-            try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول كمدير للوصول إلى الطلبات', 'error');
-                    spinner.style.display = 'none';
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders`;
-                console.log('📡 جلب الطلبات من:', url);
-
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+            if (department && servicesData[department]) {
+                servicesData[department].forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service;
+                    option.textContent = service;
+                    serviceSelect.appendChild(option);
                 });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        showToast('❌ جلسة غير صالحة. يرجى تسجيل الدخول مرة أخرى.', 'error');
-                        spinner.style.display = 'none';
-                        return;
-                    }
-                    if (response.status === 404) {
-                        showToast('⚠️ مسار الطلبات غير موجود. يرجى التحقق من إعدادات الخادم.', 'error');
-                        spinner.style.display = 'none';
-                        return;
-                    }
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `خطأ ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data.success) {
-                    orders = data.data || [];
-                    renderOrders();
-                    updateStats();
-                    if (orders.length > 0) {
-                        showToast(`✅ تم تحميل ${orders.length} طلب`, 'success');
-                    } else {
-                        showToast('📭 لا توجد طلبات حالياً', 'info');
-                    }
-                } else {
-                    showToast('❌ ' + (data.message || 'حدث خطأ في تحميل الطلبات'), 'error');
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحميل الطلبات:', error);
-                let errorMessage = 'حدث خطأ في الاتصال بالخادم';
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage = '❌ لا يمكن الاتصال بالخادم. تأكد من أن الخادم يعمل على ' + API_BASE_URL;
-                } else {
-                    errorMessage = '❌ ' + error.message;
-                }
-                showToast(errorMessage, 'error');
             }
-
-            spinner.style.display = 'none';
         }
 
         // ============================================================
-        // عرض الطلبات في الجدول
+        // فتح نموذج الطلب
         // ============================================================
-        function renderOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const departmentFilter = document.getElementById('filterDepartment').value;
+        function openRequestForm(serviceName) {
+            document.getElementById('request-form').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                for (const [dept, services] of Object.entries(servicesData)) {
+                    if (services.includes(serviceName)) {
+                        document.getElementById('department').value = dept;
+                        updateServices();
+                        const serviceSelect = document.getElementById('service');
+                        for (let option of serviceSelect.options) {
+                            if (option.value === serviceName) {
+                                serviceSelect.value = serviceName;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                document.getElementById('requestDescription').focus();
+            }, 800);
+        }
 
-            let filtered = orders.filter(order => {
-                const matchSearch =
-                    (order.name || '').toLowerCase().includes(searchQuery) ||
-                    (order.email || '').toLowerCase().includes(searchQuery) ||
-                    (order.service || '').toLowerCase().includes(searchQuery) ||
-                    (order.title || '').toLowerCase().includes(searchQuery) ||
-                    (order.department || '').toLowerCase().includes(searchQuery) ||
-                    String(order._id || '').includes(searchQuery) ||
-                    (order.phone || '').includes(searchQuery);
+        // ============================================================
+        // ✅ متغير تخزين الملفات المرفوعة
+        // ============================================================
+        let selectedFiles = [];
 
-                const matchStatus = statusFilter === 'all' || order.status === statusFilter;
-                const matchDepartment = departmentFilter === 'all' || order.department === departmentFilter;
+        // ============================================================
+        // ✅ معالجة الملفات المرفوعة
+        // ============================================================
+        function handleFiles(files) {
+            console.log('📁 تم اختيار ملفات:', files);
+            console.log('📁 عدد الملفات:', files.length);
+            
+            // مسح القائمة السابقة
+            const list = document.getElementById('fileList');
+            list.innerHTML = '';
+            selectedFiles = [];
+            
+            for (let file of files) {
+                console.log(`📄 ملف: ${file.name}, النوع: ${file.type}, الحجم: ${(file.size / 1024).toFixed(1)} KB`);
+                selectedFiles.push(file);
+                addFileToList(file);
+            }
+            
+            updateFileCount();
+            
+            if (selectedFiles.length > 0) {
+                showMessage(`✅ تم رفع ${selectedFiles.length} ملف بنجاح`, 'success');
+            }
+        }
 
-                return matchSearch && matchStatus && matchDepartment;
+        // ============================================================
+        // ✅ إضافة ملف إلى القائمة
+        // ============================================================
+        function addFileToList(file) {
+            const list = document.getElementById('fileList');
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            const fileSize = (file.size / 1024).toFixed(1);
+            item.innerHTML = `
+                <i class="fas fa-file"></i>
+                <span>${file.name} (${fileSize} KB)</span>
+                <span class="remove-file" onclick="removeFile('${file.name}')">&times;</span>
+            `;
+            list.appendChild(item);
+        }
+
+        // ============================================================
+        // ✅ حذف ملف من القائمة
+        // ============================================================
+        function removeFile(fileName) {
+            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+            const items = document.getElementById('fileList').children;
+            for (let item of items) {
+                if (item.textContent.includes(fileName)) {
+                    item.remove();
+                    break;
+                }
+            }
+            updateFileCount();
+        }
+
+        // ============================================================
+        // ✅ تحديث عدد الملفات
+        // ============================================================
+        function updateFileCount() {
+            const count = selectedFiles.length;
+            const fileCountEl = document.getElementById('fileCount');
+            if (fileCountEl) {
+                if (count === 0) {
+                    fileCountEl.textContent = 'لم يتم رفع أي ملفات';
+                } else {
+                    const names = selectedFiles.map(f => f.name).join(', ');
+                    fileCountEl.innerHTML = `✅ <strong>${count}</strong> ملف: ${names}`;
+                }
+            }
+        }
+
+        // ============================================================
+        // ✅ دالة تحويل الملف إلى Base64
+        // ============================================================
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    if (reader.result && reader.result.startsWith('data:')) {
+                        resolve(reader.result);
+                    } else {
+                        reject(new Error('بيانات الملف غير صالحة'));
+                    }
+                };
+                reader.onerror = (error) => {
+                    reject(error);
+                };
+                reader.readAsDataURL(file);
             });
+        }
 
-            currentFilteredOrders = filtered;
+        // ============================================================
+        // ✅ تعيين التاريخ الافتراضي
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('deliveryDate');
+            const today = new Date();
+            const future = new Date(today);
+            future.setDate(future.getDate() + 7);
+            dateInput.value = future.toISOString().split('T')[0];
+            dateInput.min = today.toISOString().split('T')[0];
+        });
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                document.getElementById('ordersTable').style.display = 'none';
+        // ============================================================
+        // ✅ عرض رسائل النموذج
+        // ============================================================
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('formMessage');
+            messageEl.textContent = text;
+            messageEl.className = 'form-message ' + type;
+            messageEl.style.display = 'block';
+
+            clearTimeout(messageEl._timeout);
+            messageEl._timeout = setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 10000);
+        }
+
+        // ============================================================
+        // ✅ إرسال الطلب - النسخة النهائية
+        // ============================================================
+        async function submitRequest(event) {
+            event.preventDefault();
+
+            // جمع البيانات من النموذج
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const department = document.getElementById('department').value;
+            const service = document.getElementById('service').value;
+            const requestType = document.getElementById('requestType').value;
+            const title = document.getElementById('requestTitle').value.trim();
+            const description = document.getElementById('requestDescription').value.trim();
+            const organization = document.getElementById('organization').value.trim();
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const notes = document.getElementById('additionalNotes').value.trim();
+            const termsAgreed = document.getElementById('termsAgree').checked;
+
+            // التحقق من الحقول المطلوبة
+            const errors = [];
+            if (!name) errors.push('الاسم الكامل');
+            if (!email) errors.push('البريد الإلكتروني');
+            if (!phone) errors.push('رقم التواصل');
+            if (!department) errors.push('القسم');
+            if (!service) errors.push('الخدمة');
+            if (!requestType) errors.push('نوع الطلب');
+            if (!title) errors.push('عنوان الطلب');
+            if (!description) errors.push('وصف الطلب');
+            if (!deliveryDate) errors.push('موعد التسليم');
+            if (!termsAgreed) errors.push('الموافقة على الشروط');
+
+            if (errors.length > 0) {
+                showMessage(`❌ يرجى تعبئة الحقول التالية: ${errors.join('، ')}`, 'error');
                 return;
             }
 
-            emptyState.style.display = 'none';
-            document.getElementById('ordersTable').style.display = '';
+            console.log('📁 === معلومات الملفات ===');
+            console.log('  عدد الملفات المرفوعة:', selectedFiles.length);
+            if (selectedFiles.length > 0) {
+                selectedFiles.forEach((file, i) => {
+                    console.log(`  ملف ${i+1}: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)} KB)`);
+                });
+            } else {
+                console.log('  ⚠️ لا توجد ملفات مرفوعة');
+            }
 
-            const statusMap = {
-                'pending': { label: 'قيد الانتظار', class: 'pending', icon: 'fa-clock' },
-                'in-progress': { label: 'قيد التنفيذ', class: 'in-progress', icon: 'fa-spinner fa-spin' },
-                'completed': { label: 'مكتملة', class: 'completed', icon: 'fa-check-circle' },
-                'cancelled': { label: 'ملغية', class: 'cancelled', icon: 'fa-times-circle' },
-                'revision': { label: 'مراجعة', class: 'pending', icon: 'fa-edit' }
+            showMessage('⏳ جاري معالجة الملفات...', 'info');
+
+            // تحويل الملفات إلى Base64
+            const filesData = [];
+            if (selectedFiles && selectedFiles.length > 0) {
+                for (let file of selectedFiles) {
+                    try {
+                        console.log(`📄 جاري تحويل الملف: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+                        const base64 = await convertFileToBase64(file);
+                        
+                        if (base64 && base64.startsWith('data:')) {
+                            filesData.push({
+                                filename: file.name,
+                                fileType: file.type || 'application/octet-stream',
+                                fileSize: file.size,
+                                fileData: base64
+                            });
+                            console.log(`✅ تم تحويل الملف: ${file.name} (${(base64.length / 1024).toFixed(1)} KB Base64)`);
+                        } else {
+                            console.error(`❌ بيانات الملف ${file.name} غير صالحة`);
+                        }
+                    } catch (error) {
+                        console.error('❌ خطأ في تحويل الملف:', error);
+                        showMessage(`❌ حدث خطأ في معالجة الملف: ${file.name}`, 'error');
+                        return;
+                    }
+                }
+            }
+
+            // بناء كائن البيانات
+            const data = {
+                name: name,
+                email: email,
+                phone: phone,
+                department: department,
+                service: service,
+                requestType: requestType,
+                title: title,
+                description: description,
+                organization: organization || '',
+                deliveryDate: deliveryDate,
+                notes: notes || '',
+                termsAgreed: termsAgreed,
+                files: filesData
             };
 
-            let html = '';
-            filtered.forEach((order, index) => {
-                const statusInfo = statusMap[order.status] || statusMap['pending'];
-                const date = order.createdAt ? new Date(order.createdAt) : new Date();
-                const dateStr = date.toLocaleDateString('ar-SA');
-                const timeStr = date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-
-                const fileCount = order.files && order.files.length > 0 ? order.files.length : 0;
-                const fileIcon = fileCount > 0 ? `<i class="fas fa-paperclip" style="color: var(--primary);"></i>` : '';
-
-                const orderId = order._id ? order._id.toString().slice(-6) : '---';
-
-                html += `
-                    <tr>
-                        <td><strong>#${orderId}</strong></td>
-                        <td>
-                            <strong>${order.name || 'غير محدد'}</strong><br>
-                            <small style="color: var(--text-muted); font-size: 0.75rem;">${order.email || 'لا يوجد بريد'}</small>
-                            <br>
-                            <small style="color: var(--text-muted); font-size: 0.7rem;">${order.phone || 'لا يوجد رقم'}</small>
-                        </td>
-                        <td style="font-size: 0.85rem;">${order.department || 'غير محدد'}</td>
-                        <td style="font-size: 0.85rem;">${order.service || 'غير محدد'} ${fileIcon}</td>
-                        <td style="font-size: 0.85rem;">${order.requestType || 'غير محدد'}</td>
-                        <td style="font-size: 0.8rem;">
-                            ${dateStr}<br>
-                            <small style="color: var(--text-muted);">${timeStr}</small>
-                        </td>
-                        <td>
-                            <span class="status-badge ${statusInfo.class}">
-                                <i class="fas ${statusInfo.icon}"></i>
-                                ${statusInfo.label}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn view" onclick="viewOrder('${order._id}')">
-                                    <i class="fas fa-eye"></i> عرض
-                                </button>
-                                ${order.status === 'pending' ? `
-                                    <button class="action-btn approve" onclick="updateStatus('${order._id}', 'in-progress')">
-                                        <i class="fas fa-check"></i> قبول
-                                    </button>
-                                    <button class="action-btn reject" onclick="updateStatus('${order._id}', 'cancelled')">
-                                        <i class="fas fa-times"></i> رفض
-                                    </button>
-                                ` : ''}
-                                ${order.status === 'in-progress' ? `
-                                    <button class="action-btn complete" onclick="updateStatus('${order._id}', 'completed')">
-                                        <i class="fas fa-check-double"></i> إكمال
-                                    </button>
-                                ` : ''}
-                                <button class="action-btn delete" onclick="deleteOrder('${order._id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
-        }
-
-        // ============================================================
-        // تحديث الإحصائيات
-        // ============================================================
-        function updateStats() {
-            const total = orders.length;
-            const pending = orders.filter(o => o.status === 'pending').length;
-            const inProgress = orders.filter(o => o.status === 'in-progress').length;
-            const completed = orders.filter(o => o.status === 'completed').length;
-            const cancelled = orders.filter(o => o.status === 'cancelled').length;
-
-            document.getElementById('totalOrders').textContent = total;
-            document.getElementById('pendingOrders').textContent = pending;
-            document.getElementById('inProgressOrders').textContent = inProgress;
-            document.getElementById('completedOrders').textContent = completed;
-            document.getElementById('cancelledOrders').textContent = cancelled;
-        }
-
-        // ============================================================
-        // فلترة الطلبات
-        // ============================================================
-        function filterOrders() {
-            renderOrders();
-        }
-
-        function filterByStatus(status) {
-            document.getElementById('filterStatus').value = status;
-            filterOrders();
-            document.querySelector('.table-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // ============================================================
-        // عرض تفاصيل الطلب مع الملفات
-        // ============================================================
-        async function viewOrder(id) {
-            try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول', 'error');
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders/${id}`;
-                console.log('📡 جلب تفاصيل الطلب:', url);
-
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+            console.log('📤 === البيانات المرسلة ===');
+            console.log('  name:', data.name);
+            console.log('  email:', data.email);
+            console.log('  phone:', data.phone);
+            console.log('  department:', data.department);
+            console.log('  service:', data.service);
+            console.log('  requestType:', data.requestType);
+            console.log('  title:', data.title);
+            console.log('  description:', data.description);
+            console.log('  deliveryDate:', data.deliveryDate);
+            console.log('  عدد الملفات في البيانات:', filesData.length);
+            if (filesData.length > 0) {
+                filesData.forEach((f, i) => {
+                    console.log(`    ملف ${i+1}: ${f.filename} (${(f.fileSize / 1024).toFixed(1)} KB)`);
                 });
-
-                if (!response.ok) {
-                    throw new Error(`خطأ ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (!data.success) {
-                    showToast('❌ ' + data.message, 'error');
-                    return;
-                }
-
-                const order = data.data;
-
-                document.getElementById('modalOrderId').textContent = order._id.toString().slice(-6);
-
-                const statusMap = {
-                    'pending': { label: 'قيد الانتظار', class: 'pending' },
-                    'in-progress': { label: 'قيد التنفيذ', class: 'in-progress' },
-                    'completed': { label: 'مكتملة', class: 'completed' },
-                    'cancelled': { label: 'ملغية', class: 'cancelled' },
-                    'revision': { label: 'مراجعة', class: 'pending' }
-                };
-                const statusInfo = statusMap[order.status] || statusMap['pending'];
-// ✅ عرض الملفات المرفوعة مع روابط تحميل
-let filesHtml = '<span style="color: var(--text-muted);">لا توجد ملفات</span>';
-if (order.files && order.files.length > 0) {
-    console.log(`📁 عدد الملفات في الطلب: ${order.files.length}`);
-    filesHtml = order.files.map((file, index) => {
-        const fileExtension = (file.filename || '').split('.').pop().toLowerCase();
-        const iconMap = {
-            'pdf': 'fa-file-pdf',
-            'doc': 'fa-file-word',
-            'docx': 'fa-file-word',
-            'xls': 'fa-file-excel',
-            'xlsx': 'fa-file-excel',
-            'ppt': 'fa-file-powerpoint',
-            'pptx': 'fa-file-powerpoint',
-            'zip': 'fa-file-archive',
-            'rar': 'fa-file-archive',
-            'txt': 'fa-file-alt'
-        };
-        const icon = iconMap[fileExtension] || 'fa-file';
-
-        // ✅ بناء رابط الملف
-        const baseUrl = API_BASE_URL.replace('/api', '');
-        const fileUrl = `${baseUrl}/uploads/business-orders/${file.fileId}`;
-        
-        console.log(`🔗 رابط الملف ${index+1}:`, fileUrl);
-
-        return `
-            <a href="${fileUrl}" target="_blank" class="file-link" onclick="event.stopPropagation();">
-                <i class="fas ${icon}"></i>
-                ${file.filename || 'ملف'}
-                <i class="fas fa-external-link-alt" style="font-size: 0.6rem;"></i>
-            </a>
-        `;
-    }).join(' ');
-} else {
-    console.log('⚠️ لا توجد ملفات في هذا الطلب');
-}
-                const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('ar-SA') : 'غير محدد';
-                const updatedAt = order.updatedAt ? new Date(order.updatedAt).toLocaleString('ar-SA') : 'غير محدد';
-
-                const detailsHtml = `
-                    <div class="detail-item">
-                        <span class="label">الاسم الكامل</span>
-                        <span class="value">${order.name || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">البريد الإلكتروني</span>
-                        <span class="value">${order.email || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">رقم التواصل</span>
-                        <span class="value">${order.phone || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">الحالة</span>
-                        <span class="value"><span class="status-badge ${statusInfo.class}">${statusInfo.label}</span></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">القسم</span>
-                        <span class="value">${order.department || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">الخدمة المطلوبة</span>
-                        <span class="value">${order.service || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">نوع الطلب</span>
-                        <span class="value">${order.requestType || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">موعد التسليم</span>
-                        <span class="value">${order.deliveryDate || order.deadline || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item full-width">
-                        <span class="label">عنوان الطلب</span>
-                        <span class="value">${order.title || 'غير محدد'}</span>
-                    </div>
-                    <div class="detail-item full-width">
-                        <span class="label">وصف الطلب</span>
-                        <span class="value" style="font-weight: 400; line-height: 1.8;">${order.description || 'لا يوجد وصف'}</span>
-                    </div>
-                    ${order.organization ? `
-                        <div class="detail-item full-width">
-                            <span class="label">الجهة محل التطبيق</span>
-                            <span class="value">${order.organization}</span>
-                        </div>
-                    ` : ''}
-                    ${order.notes ? `
-                        <div class="detail-item full-width">
-                            <span class="label">ملاحظات إضافية</span>
-                            <span class="value" style="font-weight: 400;">${order.notes}</span>
-                        </div>
-                    ` : ''}
-                    <div class="detail-item full-width">
-                        <span class="label">الملفات المرفقة <span style="font-size: 0.7rem; color: var(--text-muted);">(${order.files?.length || 0} ملف)</span></span>
-                        <span class="value" style="display: flex; flex-wrap: wrap; gap: 8px;">${filesHtml}</span>
-                    </div>
-                    <div class="detail-item full-width">
-                        <span class="label">تاريخ الطلب</span>
-                        <span class="value">${createdAt}</span>
-                    </div>
-                    <div class="detail-item full-width">
-                        <span class="label">آخر تحديث</span>
-                        <span class="value">${updatedAt}</span>
-                    </div>
-                `;
-
-                document.getElementById('modalDetails').innerHTML = detailsHtml;
-
-                // أزرار الإجراءات
-                let actionsHtml = `
-                    <button class="action-btn view" onclick="closeModal()"><i class="fas fa-times"></i> إغلاق</button>
-                `;
-
-                if (order.status === 'pending') {
-                    actionsHtml += `
-                        <button class="action-btn approve" onclick="updateStatus('${order._id}', 'in-progress'); closeModal();">
-                            <i class="fas fa-check"></i> قبول الطلب
-                        </button>
-                        <button class="action-btn reject" onclick="updateStatus('${order._id}', 'cancelled'); closeModal();">
-                            <i class="fas fa-times"></i> رفض الطلب
-                        </button>
-                    `;
-                }
-
-                if (order.status === 'in-progress') {
-                    actionsHtml += `
-                        <button class="action-btn complete" onclick="updateStatus('${order._id}', 'completed'); closeModal();">
-                            <i class="fas fa-check-double"></i> إكمال الطلب
-                        </button>
-                    `;
-                }
-
-                if (order.status !== 'cancelled') {
-                    actionsHtml += `
-                        <button class="action-btn delete" onclick="deleteOrder('${order._id}'); closeModal();">
-                            <i class="fas fa-trash"></i> حذف الطلب
-                        </button>
-                    `;
-                }
-
-                document.getElementById('modalActions').innerHTML = actionsHtml;
-                document.getElementById('orderModal').classList.add('show');
-                document.body.style.overflow = 'hidden';
-
-            } catch (error) {
-                console.error('❌ خطأ في عرض الطلب:', error);
-                showToast('❌ حدث خطأ في عرض تفاصيل الطلب', 'error');
             }
-        }
+            console.log('📤 === نهاية البيانات ===');
 
-        // ============================================================
-        // إغلاق المودال
-        // ============================================================
-        function closeModal() {
-            document.getElementById('orderModal').classList.remove('show');
-            document.body.style.overflow = '';
-        }
+            // تعطيل الزر
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
 
-        document.getElementById('orderModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-
-        // ============================================================
-        // تحديث حالة الطلب
-        // ============================================================
-        async function updateStatus(id, newStatus) {
             try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول', 'error');
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders/${id}/status`;
-
-                const response = await fetch(url, {
-                    method: 'PUT',
+                const response = await fetch(`${API_BASE_URL}/business-orders`, {
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ status: newStatus })
+                    body: JSON.stringify(data)
                 });
 
-                const data = await response.json();
+                const result = await response.json();
+                console.log('📥 استجابة الخادم:', result);
 
-                if (data.success) {
-                    const statusMap = {
-                        'in-progress': 'تم قبول الطلب بنجاح!',
-                        'completed': 'تم إكمال الطلب بنجاح!',
-                        'cancelled': 'تم رفض/إلغاء الطلب.'
-                    };
-                    showToast('✅ ' + (statusMap[newStatus] || 'تم تحديث الحالة'), 'success');
-                    loadOrders();
+                if (result.success) {
+                    const orderId = result.data?.id || '';
+                    const filesCount = result.data?.filesCount || 0;
+                    showMessage(`✅ ${result.message} | رقم الطلب: #${orderId.toString().slice(-6)} | الملفات: ${filesCount}`, 'success');
+                    
+                    // إعادة تعيين النموذج
+                    document.getElementById('serviceRequestForm').reset();
+                    document.getElementById('fileList').innerHTML = '';
+                    selectedFiles = [];
+                    updateFileCount();
+                    updateServices();
+
+                    // تعيين التاريخ الافتراضي
+                    const dateInput = document.getElementById('deliveryDate');
+                    const today = new Date();
+                    const future = new Date(today);
+                    future.setDate(future.getDate() + 7);
+                    dateInput.value = future.toISOString().split('T')[0];
+
                 } else {
-                    showToast('❌ ' + data.message, 'error');
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحديث الحالة:', error);
-                showToast('❌ حدث خطأ في تحديث الحالة', 'error');
-            }
-        }
-
-        // ============================================================
-        // حذف الطلب
-        // ============================================================
-        async function deleteOrder(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا الطلب؟ هذا الإجراء لا يمكن التراجع عنه.')) return;
-
-            try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول', 'error');
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders/${id}`;
-
-                const response = await fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+                    let errorMsg = result.message || 'حدث خطأ في إرسال الطلب';
+                    if (result.missing && result.missing.length > 0) {
+                        errorMsg += ` (الحقول المفقودة: ${result.missing.join('، ')})`;
                     }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showToast('✅ تم حذف الطلب بنجاح', 'success');
-                    loadOrders();
-                } else {
-                    showToast('❌ ' + data.message, 'error');
+                    showMessage(`❌ ${errorMsg}`, 'error');
                 }
+
             } catch (error) {
-                console.error('❌ خطأ في حذف الطلب:', error);
-                showToast('❌ حدث خطأ في حذف الطلب', 'error');
+                console.error('❌ خطأ في إرسال الطلب:', error);
+                showMessage('❌ حدث خطأ في الاتصال بالخادم. تأكد من أن الخادم يعمل.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
             }
         }
 
         // ============================================================
-        // تصدير الطلبات إلى CSV
+        // التحقق من اتصال الخادم
         // ============================================================
-        async function exportOrders() {
+        async function checkServerConnection() {
             try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول', 'error');
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders/export/csv`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-
-                if (!response.ok) {
-                    const data = await response.json().catch(() => ({}));
-                    showToast('❌ ' + (data.message || 'فشل تصدير البيانات'), 'error');
-                    return;
+                if (response.ok) {
+                    console.log('✅ الخادم يعمل بشكل صحيح');
+                    return true;
                 }
-
-                const blob = await response.blob();
-                const urlBlob = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = urlBlob;
-                a.download = `طلبات_خدمات_الأعمال_${new Date().toISOString().split('T')[0]}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(urlBlob);
-
-                showToast('✅ تم تصدير البيانات بنجاح', 'success');
-
             } catch (error) {
-                console.error('❌ خطأ في تصدير البيانات:', error);
-                showToast('❌ حدث خطأ في تصدير البيانات: ' + error.message, 'error');
+                console.warn('⚠️ لا يمكن الاتصال بالخادم:', error.message);
             }
+            return false;
         }
 
         // ============================================================
-        // عرض رسائل (Toast)
-        // ============================================================
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            
-            toast.style.transition = 'none';
-            toast.style.transform = 'translateX(120%)';
-            setTimeout(() => {
-                toast.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                toast.classList.add('show');
-            }, 50);
-
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 5000);
-        }
-
-        // ============================================================
-        // التحديث التلقائي
-        // ============================================================
-        function startAutoRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(() => {
-                if (document.visibilityState === 'visible') {
-                    loadOrders();
-                }
-            }, 30000);
-        }
-
-        function stopAutoRefresh() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-                refreshInterval = null;
-            }
-        }
-
-        // ============================================================
-        // تحميل البيانات عند بدء التشغيل
+        // بدء التشغيل
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            loadOrders();
-            startAutoRefresh();
-
-            document.getElementById('searchInput').addEventListener('input', function() {
-                if (this.value.length > 2 || this.value.length === 0) {
-                    filterOrders();
-                }
-            });
-
-            window.addEventListener('beforeunload', function() {
-                stopAutoRefresh();
-            });
-
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'visible') {
-                    loadOrders();
+            checkServerConnection().then(connected => {
+                if (connected) {
+                    console.log('✅ جاهز لاستقبال الطلبات');
+                } else {
+                    showMessage('⚠️ لا يمكن الاتصال بالخادم. تأكد من تشغيل الخادم.', 'error');
                 }
             });
         });
 
-        console.log('🚀 منصة ارتقاء - إدارة خدمات كلية الأعمال');
+        console.log('🚀 منصة ارتقاء - خدمات كلية الأعمال (النسخة النهائية)');
         console.log('🌐 عنوان API:', API_BASE_URL);
-        console.log('📋 جاري تحميل الطلبات...');
+        console.log('📋 تم تحميل 7 أقسام و 28 خدمة');
+        console.log('✅ النموذج جاهز لاستقبال الطلبات مع رفع الملفات');
     </script>
 </body>
 </html>
