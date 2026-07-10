@@ -59,6 +59,7 @@ console.log('📁 مسار uploads:', uploadsDir);
 console.log('📁 مسار videos:', videosDir);
 console.log('📁 مسار summaries:', summariesDir);
 
+
 // ============================================================
 // خدمة الملفات الثابتة (Uploads)
 // ============================================================
@@ -2550,6 +2551,74 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
     }
 });
 
+// ============================================================
+// ✅ مسارات ملفات business-orders
+// ============================================================
+
+// 1. المسار الرئيسي عبر /uploads
+app.use('/uploads/business-orders', express.static(businessOrdersDir));
+
+// 2. مسار مباشر عبر /business-orders
+app.get('/business-orders/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(businessOrdersDir, filename);
+    
+    console.log(`📁 طلب ملف: ${filename}`);
+    console.log(`📁 المسار: ${filePath}`);
+    
+    if (fs.existsSync(filePath)) {
+        console.log(`✅ تم العثور على الملف: ${filename}`);
+        res.sendFile(filePath);
+    } else {
+        console.error(`❌ الملف غير موجود: ${filename}`);
+        
+        // محاولة البحث في مجلدات أخرى
+        const possiblePaths = [
+            filePath,
+            path.join(__dirname, 'uploads', 'business-orders', filename),
+            path.join(__dirname, '../uploads/business-orders', filename),
+            path.join(process.cwd(), 'uploads', 'business-orders', filename)
+        ];
+        
+        for (const p of possiblePaths) {
+            if (fs.existsSync(p)) {
+                console.log(`✅ تم العثور على الملف في مسار بديل: ${p}`);
+                res.sendFile(p);
+                return;
+            }
+        }
+        
+        res.status(404).json({
+            success: false,
+            message: 'الملف غير موجود',
+            filename: filename,
+            searchedPaths: possiblePaths
+        });
+    }
+});
+
+// 3. مسار احتياطي عبر /uploads/business-orders (مع بحث إضافي)
+app.get('/uploads/business-orders/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(businessOrdersDir, filename);
+    
+    console.log(`📁 طلب ملف (uploads): ${filename}`);
+    
+    if (fs.existsSync(filePath)) {
+        console.log(`✅ تم العثور على الملف: ${filename}`);
+        res.sendFile(filePath);
+    } else {
+        console.error(`❌ الملف غير موجود (uploads): ${filename}`);
+        res.status(404).json({
+            success: false,
+            message: 'الملف غير موجود',
+            filename: filename
+        });
+    }
+});
+
+console.log('✅ تم تهيئة مسارات ملفات business-orders');
+console.log(`📁 مسار الملفات: ${businessOrdersDir}`);
 // ============================================================
 // 10. معالجة 404
 // ============================================================
