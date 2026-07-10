@@ -1625,7 +1625,28 @@
             dateInput.min = today.toISOString().split('T')[0];
         });
 // ============================================================
-// ✅ إرسال الطلب مع الملفات - باستخدام JSON + Base64
+// ✅ دالة تحويل الملف إلى Base64 مع التحقق من الصحة
+// ============================================================
+function convertFileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // التأكد من أن البيانات صالحة
+            if (reader.result && reader.result.startsWith('data:')) {
+                resolve(reader.result);
+            } else {
+                reject(new Error('بيانات الملف غير صالحة'));
+            }
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ============================================================
+// ✅ إرسال الطلب مع الملفات - نسخة محسنة
 // ============================================================
 async function submitRequest(event) {
     event.preventDefault();
@@ -1662,22 +1683,31 @@ async function submitRequest(event) {
         return;
     }
 
+    // ✅ عرض رسالة "جاري معالجة الملفات..."
+    showMessage('⏳ جاري معالجة الملفات...', 'info');
+
     // ✅ تحويل الملفات إلى Base64
     const filesData = [];
-    for (let file of selectedFiles) {
-        try {
-            const base64 = await convertFileToBase64(file);
-            filesData.push({
-                filename: file.name,
-                fileType: file.type,
-                fileSize: file.size,
-                fileData: base64
-            });
-        } catch (error) {
-            console.error('❌ خطأ في تحويل الملف:', error);
-            showMessage(`❌ حدث خطأ في معالجة الملف: ${file.name}`, 'error');
-            return;
+    if (selectedFiles && selectedFiles.length > 0) {
+        for (let file of selectedFiles) {
+            try {
+                console.log(`📄 جاري تحويل الملف: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+                const base64 = await convertFileToBase64(file);
+                filesData.push({
+                    filename: file.name,
+                    fileType: file.type || 'application/octet-stream',
+                    fileSize: file.size,
+                    fileData: base64
+                });
+                console.log(`✅ تم تحويل الملف: ${file.name}`);
+            } catch (error) {
+                console.error('❌ خطأ في تحويل الملف:', error);
+                showMessage(`❌ حدث خطأ في معالجة الملف: ${file.name}`, 'error');
+                return;
+            }
         }
+    } else {
+        console.log('⚠️ لا توجد ملفات مرفوعة');
     }
 
     // ✅ بناء كائن البيانات
@@ -1709,6 +1739,13 @@ async function submitRequest(event) {
     console.log('  description:', data.description);
     console.log('  deliveryDate:', data.deliveryDate);
     console.log('  عدد الملفات:', filesData.length);
+    if (filesData.length > 0) {
+        filesData.forEach((f, i) => {
+            const sizeKB = (f.fileSize / 1024).toFixed(1);
+            const dataLength = f.fileData ? f.fileData.length : 0;
+            console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} characters)`);
+        });
+    }
     console.log('📤 === نهاية البيانات ===');
 
     // تعطيل الزر
@@ -1738,7 +1775,8 @@ async function submitRequest(event) {
 
         if (result.success) {
             const orderId = result.data?.id || '';
-            showMessage(`✅ ${result.message} | رقم الطلب: #${orderId.toString().slice(-6)}`, 'success');
+            const filesCount = result.data?.filesCount || 0;
+            showMessage(`✅ ${result.message} | رقم الطلب: #${orderId.toString().slice(-6)} | الملفات: ${filesCount}`, 'success');
             
             // إعادة تعيين النموذج
             document.getElementById('serviceRequestForm').reset();
@@ -1769,22 +1807,6 @@ async function submitRequest(event) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
     }
-}
-
-// ============================================================
-// ✅ دالة تحويل الملف إلى Base64
-// ============================================================
-function convertFileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            resolve(reader.result);
-        };
-        reader.onerror = (error) => {
-            reject(error);
-        };
-        reader.readAsDataURL(file);
-    });
 }
         // ============================================================
         // عرض رسائل النموذج

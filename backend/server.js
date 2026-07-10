@@ -3022,7 +3022,7 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
     }
 });
 // ============================================================
-// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (استقبال JSON)
+// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (استقبال JSON مع Base64)
 // ============================================================
 app.post('/api/business-orders', async (req, res) => {
     try {
@@ -3057,7 +3057,18 @@ app.post('/api/business-orders', async (req, res) => {
         console.log('  deliveryDate:', deliveryDate);
         console.log('  notes:', notes);
         console.log('  termsAgreed:', termsAgreed);
-        console.log('  عدد الملفات:', files ? files.length : 0);
+        console.log('  عدد الملفات المستلمة:', files ? files.length : 0);
+        
+        // ✅ عرض تفاصيل الملفات إذا وجدت
+        if (files && files.length > 0) {
+            files.forEach((f, i) => {
+                const sizeKB = (f.fileSize / 1024).toFixed(1);
+                const dataLength = f.fileData ? f.fileData.length : 0;
+                console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} characters)`);
+            });
+        } else {
+            console.log('⚠️ لا توجد ملفات مرفوعة في الطلب');
+        }
         console.log('📥 === نهاية البيانات ===');
 
         // ✅ التحقق من الحقول المطلوبة
@@ -3089,42 +3100,63 @@ app.post('/api/business-orders', async (req, res) => {
             });
         }
 
-        // ✅ معالجة الملفات (Base64)
+        // ✅ معالجة الملفات (Base64) وحفظها على الخادم
         const filesData = [];
         if (files && files.length > 0) {
             const fs = require('fs');
             const path = require('path');
             const businessOrdersDir = path.join(__dirname, 'uploads', 'business-orders');
             
+            // ✅ التأكد من وجود المجلد
             if (!fs.existsSync(businessOrdersDir)) {
                 fs.mkdirSync(businessOrdersDir, { recursive: true });
+                console.log('📁 تم إنشاء مجلد business-orders');
             }
 
             for (const file of files) {
                 try {
-                    // استخراج البيانات من Base64
+                    // ✅ التحقق من صحة البيانات
+                    if (!file.fileData) {
+                        console.error(`❌ ملف ${file.filename} لا يحتوي على بيانات`);
+                        continue;
+                    }
+                    
+                    if (!file.fileData.includes(';base64,')) {
+                        console.error(`❌ ملف ${file.filename} ليس بتنسيق Base64 صحيح`);
+                        continue;
+                    }
+                    
+                    // ✅ استخراج البيانات من Base64
                     const base64Data = file.fileData.split(';base64,').pop();
                     const buffer = Buffer.from(base64Data, 'base64');
                     
-                    // إنشاء اسم ملف فريد
+                    // ✅ التحقق من حجم الملف
+                    if (buffer.length === 0) {
+                        console.error(`❌ ملف ${file.filename} فارغ`);
+                        continue;
+                    }
+                    
+                    // ✅ إنشاء اسم ملف فريد
                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                     const ext = path.extname(file.filename);
                     const fileName = 'business-' + uniqueSuffix + ext;
                     const filePath = path.join(businessOrdersDir, fileName);
                     
-                    // حفظ الملف على الخادم
+                    // ✅ حفظ الملف على الخادم
                     fs.writeFileSync(filePath, buffer);
+                    
+                    console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
                     
                     filesData.push({
                         filename: file.filename,
                         filePath: filePath,
                         fileId: fileName,
-                        fileSize: file.fileSize,
+                        fileSize: file.fileSize || buffer.length,
                         mimeType: file.fileType || 'application/octet-stream',
                         uploadDate: new Date()
                     });
                 } catch (error) {
-                    console.error('❌ خطأ في حفظ الملف:', error);
+                    console.error(`❌ خطأ في حفظ الملف ${file.filename}:`, error);
                 }
             }
         }
@@ -3132,8 +3164,8 @@ app.post('/api/business-orders', async (req, res) => {
         // استيراد نموذج Order
         const Order = require('./models/Order');
         
-        // إنشاء الطلب
-        const order = new Order({
+        // ✅ إنشاء الطلب
+        const orderData = {
             serviceType: 'خدمة كلية الأعمال',
             title: title.trim(),
             description: description.trim(),
@@ -3152,8 +3184,11 @@ app.post('/api/business-orders', async (req, res) => {
             orderType: 'business',
             status: 'pending',
             files: filesData
-        });
+        };
 
+        console.log('📦 بيانات الطلب:', JSON.stringify(orderData, null, 2));
+
+        const order = new Order(orderData);
         await order.save();
 
         console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
@@ -3168,7 +3203,8 @@ app.post('/api/business-orders', async (req, res) => {
                 service: order.service,
                 status: order.status,
                 createdAt: order.createdAt,
-                filesCount: filesData.length
+                filesCount: filesData.length,
+                files: filesData
             }
         });
 

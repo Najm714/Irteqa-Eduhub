@@ -1343,39 +1343,40 @@
                     'revision': { label: 'مراجعة', class: 'pending' }
                 };
                 const statusInfo = statusMap[order.status] || statusMap['pending'];
+// ✅ عرض الملفات المرفوعة مع روابط تحميل
+let filesHtml = '<span style="color: var(--text-muted);">لا توجد ملفات</span>';
+if (order.files && order.files.length > 0) {
+    filesHtml = order.files.map((file, index) => {
+        const fileExtension = (file.filename || '').split('.').pop().toLowerCase();
+        const iconMap = {
+            'pdf': 'fa-file-pdf',
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'xls': 'fa-file-excel',
+            'xlsx': 'fa-file-excel',
+            'ppt': 'fa-file-powerpoint',
+            'pptx': 'fa-file-powerpoint',
+            'zip': 'fa-file-archive',
+            'rar': 'fa-file-archive',
+            'txt': 'fa-file-alt'
+        };
+        const icon = iconMap[fileExtension] || 'fa-file';
 
-                // ✅ عرض الملفات المرفوعة مع روابط تحميل
-                let filesHtml = '<span style="color: var(--text-muted);">لا توجد ملفات</span>';
-                if (order.files && order.files.length > 0) {
-                    filesHtml = order.files.map((file, index) => {
-                        const fileExtension = (file.filename || '').split('.').pop().toLowerCase();
-                        const iconMap = {
-                            'pdf': 'fa-file-pdf',
-                            'doc': 'fa-file-word',
-                            'docx': 'fa-file-word',
-                            'xls': 'fa-file-excel',
-                            'xlsx': 'fa-file-excel',
-                            'ppt': 'fa-file-powerpoint',
-                            'pptx': 'fa-file-powerpoint',
-                            'zip': 'fa-file-archive',
-                            'rar': 'fa-file-archive',
-                            'txt': 'fa-file-alt'
-                        };
-                        const icon = iconMap[fileExtension] || 'fa-file';
+        // ✅ بناء رابط الملف
+        const baseUrl = API_BASE_URL.replace('/api', '');
+        const fileUrl = `${baseUrl}/uploads/business-orders/${file.fileId}`;
+        
+        console.log('🔗 رابط الملف:', fileUrl);
 
-                        // ✅ بناء رابط الملف
-                        const fileUrl = `${API_BASE_URL.replace('/api', '')}/uploads/business-orders/${file.fileId}`;
-
-                        return `
-                            <a href="${fileUrl}" target="_blank" class="file-link" onclick="event.stopPropagation();">
-                                <i class="fas ${icon}"></i>
-                                ${file.filename || 'ملف'}
-                                <i class="fas fa-external-link-alt" style="font-size: 0.6rem;"></i>
-                            </a>
-                        `;
-                    }).join(' ');
-                }
-
+        return `
+            <a href="${fileUrl}" target="_blank" class="file-link" onclick="event.stopPropagation();">
+                <i class="fas ${icon}"></i>
+                ${file.filename || 'ملف'}
+                <i class="fas fa-external-link-alt" style="font-size: 0.6rem;"></i>
+            </a>
+        `;
+    }).join(' ');
+}
                 const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('ar-SA') : 'غير محدد';
                 const updatedAt = order.updatedAt ? new Date(order.updatedAt).toLocaleString('ar-SA') : 'غير محدد';
 
