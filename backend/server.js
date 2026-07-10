@@ -3026,25 +3026,59 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
 // ============================================================
 app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (req, res) => {
     try {
+        // استخراج البيانات من body (FormData)
         const {
             name, email, phone, department, service, requestType,
             title, description, organization, deliveryDate, notes, termsAgreed
         } = req.body;
 
-        // التحقق من الحقول المطلوبة
-        if (!name || !email || !phone || !department || !service || 
-            !requestType || !title || !description || !deliveryDate) {
+        // ✅ طباعة البيانات المستلمة للتأكد
+        console.log('📥 البيانات المستلمة:');
+        console.log('  name:', name);
+        console.log('  email:', email);
+        console.log('  phone:', phone);
+        console.log('  department:', department);
+        console.log('  service:', service);
+        console.log('  requestType:', requestType);
+        console.log('  title:', title);
+        console.log('  description:', description);
+        console.log('  organization:', organization);
+        console.log('  deliveryDate:', deliveryDate);
+        console.log('  notes:', notes);
+        console.log('  termsAgreed:', termsAgreed);
+        console.log('  files:', req.files ? req.files.length : 0);
+
+        // ✅ التحقق من الحقول المطلوبة مع رسائل محددة
+        const missingFields = [];
+        if (!name) missingFields.push('الاسم الكامل');
+        if (!email) missingFields.push('البريد الإلكتروني');
+        if (!phone) missingFields.push('رقم التواصل');
+        if (!department) missingFields.push('القسم');
+        if (!service) missingFields.push('الخدمة');
+        if (!requestType) missingFields.push('نوع الطلب');
+        if (!title) missingFields.push('عنوان الطلب');
+        if (!description) missingFields.push('وصف الطلب');
+        if (!deliveryDate) missingFields.push('موعد التسليم');
+
+        if (missingFields.length > 0) {
             // حذف الملفات المرفوعة إذا فشل التحقق
             if (req.files && req.files.length > 0) {
                 req.files.forEach(file => {
                     if (fs.existsSync(file.path)) {
-                        fs.unlinkSync(file.path);
+                        try {
+                            fs.unlinkSync(file.path);
+                            console.log(`🗑️ تم حذف الملف: ${file.path}`);
+                        } catch (err) {
+                            console.error('❌ خطأ في حذف الملف:', err);
+                        }
                     }
                 });
             }
+            
             return res.status(400).json({
                 success: false,
-                message: 'جميع الحقول المطلوبة غير مكتملة'
+                message: `الحقول المطلوبة غير مكتملة: ${missingFields.join('، ')}`,
+                missing: missingFields
             });
         }
 
