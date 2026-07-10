@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const multer = require('multer');
 const fs = require('fs');
 
 // تحميل متغيرات البيئة
@@ -31,6 +32,7 @@ const uploadsDir = path.join(__dirname, 'uploads');
 const videosDir = path.join(uploadsDir, 'videos');
 const ordersDir = path.join(uploadsDir, 'orders');
 const summariesDir = path.join(uploadsDir, 'summaries');
+const businessOrdersDir = path.join(uploadsDir, 'business-orders'); // ✅ أضف هذا
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -48,6 +50,10 @@ if (!fs.existsSync(summariesDir)) {
     fs.mkdirSync(summariesDir, { recursive: true });
     console.log('📁 تم إنشاء مجلد summaries');
 }
+if (!fs.existsSync(businessOrdersDir)) { // ✅ أضف هذا الكود
+    fs.mkdirSync(businessOrdersDir, { recursive: true });
+    console.log('📁 تم إنشاء مجلد business-orders');
+}
 
 console.log('📁 مسار uploads:', uploadsDir);
 console.log('📁 مسار videos:', videosDir);
@@ -60,6 +66,8 @@ app.use('/uploads', express.static(uploadsDir));
 app.use('/uploads/videos', express.static(videosDir));
 app.use('/uploads/orders', express.static(ordersDir));
 app.use('/uploads/summaries', express.static(summariesDir));
+app.use('/uploads/business-orders', express.static(businessOrdersDir)); // ✅ أضف هذا السطر
+
 
 // ============================================================
 // مسار مباشر للفيديوهات (حل بديل)
@@ -172,6 +180,51 @@ app.get('/', (req, res) => {
     });
 });
 
+// ============================================================
+// ✅ إضافة multer لرفع الملفات لطلبات كلية الأعمال
+// ============================================================
+const businessOrdersStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, 'uploads', 'business-orders');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, 'business-' + uniqueSuffix + ext);
+    }
+});
+
+const uploadBusinessFiles = multer({ 
+    storage: businessOrdersStorage,
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = [
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/pdf',
+            'application/zip',
+            'application/x-zip-compressed',
+            'application/x-rar-compressed',
+            'image/jpeg',
+            'image/png'
+        ];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('نوع الملف غير مدعوم: ' + file.mimetype), false);
+        }
+    }
+});
+
+console.log('📁 تم تهيئة multer لرفع ملفات كلية الأعمال');
 // ============================================================
 // مسار الصحة
 // ============================================================
@@ -2968,7 +3021,113 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
         res.status(500).json({ success: false, message: error.message });
     }
 });
+// ============================================================
+// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال مع رفع الملفات
+// ============================================================
+app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (req, res) => {
+    try {
+        const {
+            name, email, phone, department, service, requestType,
+            title, description, organization, deliveryDate, notes, termsAgreed
+        } = req.body;
 
+        // التحقق من الحقول المطلوبة
+        if (!name || !email || !phone || !department || !service || 
+            !requestType || !title || !description || !deliveryDate) {
+            // حذف الملفات المرفوعة إذا فشل التحقق
+            if (req.files && req.files.length > 0) {
+                req.files.forEach(file => {
+                    if (fs.existsSync(file.path)) {
+                        fs.unlinkSync(file.path);
+                    }
+                });
+            }
+            return res.status(400).json({
+                success: false,
+                message: 'جميع الحقول المطلوبة غير مكتملة'
+            });
+        }
+
+        // معالجة الملفات المرفوعة
+        const files = [];
+        if (req.files && req.files.length > 0) {
+            req.files.forEach(file => {
+                files.push({
+                    filename: file.originalname,
+                    filePath: file.path,
+                    fileId: file.filename,
+                    fileSize: file.size,
+                    mimeType: file.mimetype,
+                    uploadDate: new Date()
+                });
+            });
+        }
+
+        // استيراد نموذج Order
+        const Order = require('./models/Order');
+        
+        // إنشاء الطلب
+        const order = new Order({
+            serviceType: 'خدمة كلية الأعمال',
+            title: title,
+            description: description,
+            deadline: new Date(deliveryDate),
+            budget: 0,
+            name: name,
+            email: email,
+            phone: phone,
+            department: department,
+            service: service,
+            requestType: requestType,
+            organization: organization || '',
+            deliveryDate: deliveryDate,
+            notes: notes || '',
+            termsAgreed: termsAgreed === 'true' || termsAgreed === true,
+            orderType: 'business',
+            status: 'pending',
+            files: files
+        });
+
+        await order.save();
+
+        console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
+        console.log(`📁 عدد الملفات المرفوعة: ${files.length}`);
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إرسال الطلب بنجاح ✅',
+            data: {
+                id: order._id,
+                name: order.name,
+                service: order.service,
+                status: order.status,
+                createdAt: order.createdAt,
+                filesCount: files.length
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء الطلب:', error);
+        
+        // حذف الملفات المرفوعة في حالة الخطأ
+        if (req.files && req.files.length > 0) {
+            req.files.forEach(file => {
+                if (fs.existsSync(file.path)) {
+                    try {
+                        fs.unlinkSync(file.path);
+                    } catch (err) {
+                        console.error('❌ خطأ في حذف الملف:', err);
+                    }
+                }
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: error.message || 'حدث خطأ في إنشاء الطلب'
+        });
+    }
+});
 // ============================================================
 // 10. معالجة 404
 // ============================================================
