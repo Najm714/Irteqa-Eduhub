@@ -1625,12 +1625,12 @@
             dateInput.min = today.toISOString().split('T')[0];
         });
 // ============================================================
-// ✅ إرسال الطلب مع الملفات إلى قاعدة البيانات - نسخة مُصححة
+// ✅ إرسال الطلب مع الملفات - نسخة مُصححة بالكامل
 // ============================================================
 async function submitRequest(event) {
     event.preventDefault();
 
-    // جمع البيانات النصية
+    // ✅ جمع البيانات من النموذج
     const name = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
@@ -1644,45 +1644,21 @@ async function submitRequest(event) {
     const notes = document.getElementById('additionalNotes').value.trim();
     const termsAgreed = document.getElementById('termsAgree').checked;
 
-    // ✅ التحقق من جميع الحقول المطلوبة مع رسائل واضحة
-    if (!name) {
-        showMessage('❌ يرجى إدخال الاسم الكامل', 'error');
-        return;
-    }
-    if (!email) {
-        showMessage('❌ يرجى إدخال البريد الإلكتروني', 'error');
-        return;
-    }
-    if (!phone) {
-        showMessage('❌ يرجى إدخال رقم التواصل', 'error');
-        return;
-    }
-    if (!department) {
-        showMessage('❌ يرجى اختيار القسم', 'error');
-        return;
-    }
-    if (!service) {
-        showMessage('❌ يرجى اختيار الخدمة المطلوبة', 'error');
-        return;
-    }
-    if (!requestType) {
-        showMessage('❌ يرجى اختيار نوع الطلب', 'error');
-        return;
-    }
-    if (!title) {
-        showMessage('❌ يرجى إدخال عنوان الطلب', 'error');
-        return;
-    }
-    if (!description) {
-        showMessage('❌ يرجى إدخال وصف الطلب', 'error');
-        return;
-    }
-    if (!deliveryDate) {
-        showMessage('❌ يرجى اختيار موعد التسليم', 'error');
-        return;
-    }
-    if (!termsAgreed) {
-        showMessage('❌ يرجى الموافقة على الشروط والأحكام', 'error');
+    // ✅ التحقق من الحقول المطلوبة
+    const errors = [];
+    if (!name) errors.push('الاسم الكامل');
+    if (!email) errors.push('البريد الإلكتروني');
+    if (!phone) errors.push('رقم التواصل');
+    if (!department) errors.push('القسم');
+    if (!service) errors.push('الخدمة');
+    if (!requestType) errors.push('نوع الطلب');
+    if (!title) errors.push('عنوان الطلب');
+    if (!description) errors.push('وصف الطلب');
+    if (!deliveryDate) errors.push('موعد التسليم');
+    if (!termsAgreed) errors.push('الموافقة على الشروط');
+
+    if (errors.length > 0) {
+        showMessage(`❌ يرجى تعبئة الحقول التالية: ${errors.join('، ')}`, 'error');
         return;
     }
 
@@ -1707,48 +1683,40 @@ async function submitRequest(event) {
     }
 
     // ✅ طباعة البيانات للتأكد (للتطوير)
-    console.log('📤 البيانات المرسلة:');
+    console.log('📤 === البيانات المرسلة ===');
     for (let [key, value] of formData.entries()) {
         if (key === 'files') {
-            console.log(`  ${key}: ${value.name} (${value.size} bytes)`);
+            console.log(`  ${key}: ${value.name} (${(value.size / 1024).toFixed(1)} KB)`);
         } else {
             console.log(`  ${key}: ${value}`);
         }
     }
+    console.log('📤 === نهاية البيانات ===');
 
     // تعطيل الزر
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
 
-    // عرض شريط التقدم
-    const progressEl = document.getElementById('uploadProgress');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    if (progressEl) {
-        progressEl.style.display = 'block';
-        progressFill.style.width = '0%';
-        progressText.textContent = 'جاري إرسال الطلب...';
-    }
-
     try {
-        // ✅ إرسال الطلب إلى الخادم
-        const API_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:5000/api' 
+        // ✅ تحديد عنوان API
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000/api'
             : 'https://irteqa-eduhub.onrender.com/api';
 
+        console.log('🌐 إرسال إلى:', `${API_URL}/business-orders`);
+
+        // ✅ إرسال الطلب إلى الخادم
         const response = await fetch(`${API_URL}/business-orders`, {
             method: 'POST',
             body: formData
+            // ❌ لا نضيف Content-Type لأن fetch يضيفه تلقائياً مع FormData
         });
 
         const result = await response.json();
         console.log('📥 استجابة الخادم:', result);
 
         if (result.success) {
-            if (progressFill) progressFill.style.width = '100%';
-            if (progressText) progressText.textContent = '✅ تم الإرسال بنجاح!';
-            
             const orderId = result.data?.id || '';
             showMessage(`✅ ${result.message} | رقم الطلب: #${orderId.toString().slice(-6)}`, 'success');
             
@@ -1756,9 +1724,7 @@ async function submitRequest(event) {
             document.getElementById('serviceRequestForm').reset();
             document.getElementById('fileList').innerHTML = '';
             selectedFiles = [];
-            if (document.getElementById('fileCount')) {
-                document.getElementById('fileCount').textContent = 'لم يتم رفع أي ملفات';
-            }
+            updateFileCount();
             updateServices();
 
             // تعيين التاريخ الافتراضي
@@ -1768,28 +1734,18 @@ async function submitRequest(event) {
             future.setDate(future.getDate() + 7);
             dateInput.value = future.toISOString().split('T')[0];
 
-            // إخفاء شريط التقدم بعد 3 ثوانٍ
-            setTimeout(() => {
-                if (progressEl) progressEl.style.display = 'none';
-            }, 3000);
-
         } else {
-            if (progressFill) progressFill.style.width = '0%';
-            if (progressText) progressText.textContent = '❌ فشل الإرسال';
-            showMessage(`❌ ${result.message || 'حدث خطأ في إرسال الطلب'}`, 'error');
-            setTimeout(() => {
-                if (progressEl) progressEl.style.display = 'none';
-            }, 5000);
+            // عرض رسالة الخطأ التفصيلية
+            let errorMsg = result.message || 'حدث خطأ في إرسال الطلب';
+            if (result.missing && result.missing.length > 0) {
+                errorMsg += ` (الحقول المفقودة: ${result.missing.join('، ')})`;
+            }
+            showMessage(`❌ ${errorMsg}`, 'error');
         }
 
     } catch (error) {
         console.error('❌ خطأ في إرسال الطلب:', error);
-        if (progressFill) progressFill.style.width = '0%';
-        if (progressText) progressText.textContent = '❌ خطأ في الاتصال';
         showMessage('❌ حدث خطأ في الاتصال بالخادم. تأكد من أن الخادم يعمل.', 'error');
-        setTimeout(() => {
-            if (progressEl) progressEl.style.display = 'none';
-        }, 5000);
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';

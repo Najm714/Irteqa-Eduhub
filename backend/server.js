@@ -3026,14 +3026,24 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
 // ============================================================
 app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (req, res) => {
     try {
-        // استخراج البيانات من body (FormData)
+        // ✅ استخراج البيانات من req.body (multer يملأها تلقائياً)
         const {
-            name, email, phone, department, service, requestType,
-            title, description, organization, deliveryDate, notes, termsAgreed
+            name, 
+            email, 
+            phone, 
+            department, 
+            service, 
+            requestType,
+            title, 
+            description, 
+            organization, 
+            deliveryDate, 
+            notes, 
+            termsAgreed
         } = req.body;
 
-        // ✅ طباعة البيانات المستلمة للتأكد
-        console.log('📥 البيانات المستلمة:');
+        // ✅ طباعة جميع البيانات المستلمة للتأكد
+        console.log('📥 === البيانات المستلمة من النموذج ===');
         console.log('  name:', name);
         console.log('  email:', email);
         console.log('  phone:', phone);
@@ -3046,19 +3056,28 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
         console.log('  deliveryDate:', deliveryDate);
         console.log('  notes:', notes);
         console.log('  termsAgreed:', termsAgreed);
-        console.log('  files:', req.files ? req.files.length : 0);
+        console.log('  عدد الملفات:', req.files ? req.files.length : 0);
+        console.log('📥 === نهاية البيانات ===');
 
-        // ✅ التحقق من الحقول المطلوبة مع رسائل محددة
+        // ✅ التحقق من الحقول المطلوبة
+        const requiredFields = {
+            name: 'الاسم الكامل',
+            email: 'البريد الإلكتروني',
+            phone: 'رقم التواصل',
+            department: 'القسم',
+            service: 'الخدمة',
+            requestType: 'نوع الطلب',
+            title: 'عنوان الطلب',
+            description: 'وصف الطلب',
+            deliveryDate: 'موعد التسليم'
+        };
+
         const missingFields = [];
-        if (!name) missingFields.push('الاسم الكامل');
-        if (!email) missingFields.push('البريد الإلكتروني');
-        if (!phone) missingFields.push('رقم التواصل');
-        if (!department) missingFields.push('القسم');
-        if (!service) missingFields.push('الخدمة');
-        if (!requestType) missingFields.push('نوع الطلب');
-        if (!title) missingFields.push('عنوان الطلب');
-        if (!description) missingFields.push('وصف الطلب');
-        if (!deliveryDate) missingFields.push('موعد التسليم');
+        for (const [field, label] of Object.entries(requiredFields)) {
+            if (!req.body[field] || req.body[field].trim() === '') {
+                missingFields.push(label);
+            }
+        }
 
         if (missingFields.length > 0) {
             // حذف الملفات المرفوعة إذا فشل التحقق
@@ -3078,7 +3097,8 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
             return res.status(400).json({
                 success: false,
                 message: `الحقول المطلوبة غير مكتملة: ${missingFields.join('، ')}`,
-                missing: missingFields
+                missing: missingFields,
+                received: req.body
             });
         }
 
@@ -3103,19 +3123,19 @@ app.post('/api/business-orders', uploadBusinessFiles.array('files', 10), async (
         // إنشاء الطلب
         const order = new Order({
             serviceType: 'خدمة كلية الأعمال',
-            title: title,
-            description: description,
+            title: title.trim(),
+            description: description.trim(),
             deadline: new Date(deliveryDate),
             budget: 0,
-            name: name,
-            email: email,
-            phone: phone,
-            department: department,
-            service: service,
-            requestType: requestType,
-            organization: organization || '',
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            department: department.trim(),
+            service: service.trim(),
+            requestType: requestType.trim(),
+            organization: organization ? organization.trim() : '',
             deliveryDate: deliveryDate,
-            notes: notes || '',
+            notes: notes ? notes.trim() : '',
             termsAgreed: termsAgreed === 'true' || termsAgreed === true,
             orderType: 'business',
             status: 'pending',
