@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>خدمات كلية الأعمال - منصة ارتقاء</title>
+    <title>خدمات الأعمال والاقتصاد - منصة ارتقاء</title>
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -17,11 +17,10 @@
            المتغيرات
            ============================================================ */
         :root {
-            --primary: #7C3AED;
-            --primary-dark: #6D28D9;
+            --primary: #6C2BD9;
             --primary-light: #8B5CF6;
+            --primary-dark: #5B21B6;
             --secondary: #EC4899;
-            --secondary-dark: #DB2777;
             --accent: #F59E0B;
             --accent-light: #FBBF24;
             --dark: #0F172A;
@@ -30,19 +29,18 @@
             --gray: #64748B;
             --white: #FFFFFF;
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.2);
+            --shadow-hover: 0 20px 60px rgba(108, 43, 217, 0.25);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --radius: 20px;
-            --bg-body: #F1F5F9;
+            --bg-body: #F8FAFC;
             --bg-card: #FFFFFF;
             --text-color: #0F172A;
             --text-muted: #64748B;
             --border-color: #E2E8F0;
-            --gradient-main: linear-gradient(135deg, #7C3AED, #EC4899);
+            --gradient-main: linear-gradient(135deg, #6C2BD9, #EC4899);
             --gradient-secondary: linear-gradient(135deg, #F59E0B, #EC4899);
-            --gradient-business: linear-gradient(135deg, #1E40AF, #7C3AED);
-            --gradient-success: linear-gradient(135deg, #10B981, #059669);
-            --gradient-danger: linear-gradient(135deg, #EF4444, #DC2626);
+            --gradient-hero: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #2D1B69 100%);
+            --gradient-card: linear-gradient(135deg, #6C2BD9, #8B5CF6);
         }
 
         [data-theme="dark"] {
@@ -52,9 +50,12 @@
             --text-muted: #94A3B8;
             --border-color: #334155;
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.3);
+            --shadow-hover: 0 20px 60px rgba(108, 43, 217, 0.3);
         }
 
+        /* ============================================================
+           الإعدادات العامة
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -90,6 +91,9 @@
             border-radius: 10px;
         }
 
+        /* ============================================================
+           زر تبديل الوضع
+           ============================================================ */
         .theme-toggle {
             position: fixed;
             bottom: 30px;
@@ -118,6 +122,9 @@
             color: #fff;
         }
 
+        /* ============================================================
+           زر العودة للأعلى
+           ============================================================ */
         .back-to-top {
             position: fixed;
             bottom: 95px;
@@ -147,6 +154,9 @@
             box-shadow: var(--shadow-hover);
         }
 
+        /* ============================================================
+           الهيدر
+           ============================================================ */
         .header {
             background: var(--bg-card);
             box-shadow: var(--shadow);
@@ -216,27 +226,69 @@
             transform: translateX(-5px);
         }
 
-        .business-hero {
-            background: var(--gradient-business);
+        .contact-badge {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .contact-badge a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: var(--bg-body);
+        }
+
+        .contact-badge a:hover {
+            color: var(--primary);
+            background: rgba(108, 43, 217, 0.1);
+        }
+
+        .contact-badge a i {
+            font-size: 1rem;
+        }
+
+        .contact-badge .whatsapp:hover {
+            color: #25D366;
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        .contact-badge .telegram:hover {
+            color: #0088CC;
+            background: rgba(0, 136, 204, 0.1);
+        }
+
+        /* ============================================================
+           القسم الرئيسي (Hero)
+           ============================================================ */
+        .hero {
+            background: var(--gradient-hero);
             color: #fff;
             padding: 100px 0 80px;
             position: relative;
             overflow: hidden;
         }
 
-        .business-hero::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: -50%;
             right: -20%;
             width: 700px;
             height: 700px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+            background: radial-gradient(circle, rgba(108, 43, 217, 0.3), transparent 70%);
             border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
+            animation: floatHero 8s ease-in-out infinite;
         }
 
-        .business-hero::after {
+        .hero::after {
             content: '';
             position: absolute;
             bottom: -30%;
@@ -245,63 +297,265 @@
             height: 600px;
             background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
             border-radius: 50%;
-            animation: float 8s ease-in-out infinite reverse;
+            animation: floatHero 10s ease-in-out infinite reverse;
         }
 
-        @keyframes float {
+        @keyframes floatHero {
             0% { transform: translate(0, 0) rotate(0deg); }
             50% { transform: translate(30px, -30px) rotate(5deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
 
-        .business-hero .container {
+        .hero .container {
             position: relative;
             z-index: 1;
-            text-align: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
         }
 
-        .business-hero h1 {
-            font-size: 3.5rem;
+        .hero-content h1 {
+            font-size: 3.8rem;
             font-weight: 900;
+            line-height: 1.2;
             margin-bottom: 20px;
         }
 
-        .business-hero h1 span {
+        .hero-content h1 span {
             background: var(--gradient-secondary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .business-hero p {
+        .hero-content p {
             font-size: 1.2rem;
             opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 30px;
+            margin-bottom: 30px;
             line-height: 1.8;
         }
 
-        .business-hero .badges {
+        .hero-badges {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
+            margin-bottom: 30px;
         }
 
-        .business-hero .badge {
+        .hero-badge {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 50px;
+            font-size: 0.85rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .business-hero .badge i {
+        .hero-badge i {
             color: var(--accent);
         }
 
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            color: #fff !important;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(108, 43, 217, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #fff !important;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: var(--secondary);
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: floatImage 6s ease-in-out infinite;
+        }
+
+        @keyframes floatImage {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero-image .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: floatCard 4s ease-in-out infinite;
+        }
+
+        .floating-card i {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        .floating-card.card-1 {
+            top: 10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .floating-card.card-2 {
+            bottom: 20%;
+            right: -5%;
+            animation-delay: 1.5s;
+        }
+
+        .floating-card.card-3 {
+            top: 50%;
+            left: -15%;
+            animation-delay: 3s;
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ============================================================
+           إحصائيات سريعة
+           ============================================================ */
+        .stats-section {
+            padding: 60px 0;
+            background: var(--bg-body);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-main);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-box .number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .stat-box .label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .stat-box .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* ============================================================
+           أقسام الخدمات
+           ============================================================ */
         .services-section {
             padding: 80px 0;
             background: var(--bg-body);
@@ -328,98 +582,113 @@
         .section-header p {
             font-size: 1.1rem;
             color: var(--text-muted);
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
+            line-height: 1.8;
         }
 
         .service-category {
             margin-bottom: 60px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
 
-        .service-category:last-child {
-            margin-bottom: 0;
+        .service-category:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
         }
 
-        .category-title {
+        .category-header {
             display: flex;
             align-items: center;
             gap: 15px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-color);
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 3px solid var(--border-color);
             position: relative;
         }
 
-        .category-title::after {
+        .category-header::after {
             content: '';
             position: absolute;
             bottom: -3px;
             right: 0;
-            width: 100px;
+            width: 80px;
             height: 3px;
             background: var(--gradient-main);
             border-radius: 3px;
         }
 
-        .category-title i {
-            color: var(--primary);
-            font-size: 2rem;
+        .category-header .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .category-header .info h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .category-header .info .en-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
         }
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 25px;
         }
 
         .service-item {
-            background: var(--bg-card);
+            background: var(--bg-body);
             border-radius: var(--radius);
             padding: 25px 30px;
-            box-shadow: var(--shadow);
             transition: var(--transition);
-            border: 1px solid var(--border-color);
+            border: 1px solid transparent;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
-        }
-
-        .service-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-main);
-            transform: scaleX(0);
-            transition: var(--transition);
-        }
-
-        .service-item:hover::before {
-            transform: scaleX(1);
         }
 
         .service-item:hover {
+            border-color: var(--primary-light);
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
-            border-color: var(--primary-light);
+            background: var(--bg-card);
         }
 
-        .service-item .icon {
-            font-size: 2.5rem;
+        .service-item .service-icon {
+            font-size: 2rem;
             color: var(--primary);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: inline-block;
         }
 
         .service-item h4 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: var(--text-color);
             margin-bottom: 8px;
+        }
+
+        .service-item .en-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: block;
         }
 
         .service-item p {
@@ -428,24 +697,47 @@
             line-height: 1.7;
         }
 
+        .service-item .sub-services {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .service-item .sub-services .sub-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding: 3px 0;
+        }
+
+        .service-item .sub-services .sub-item i {
+            color: var(--primary);
+            font-size: 0.6rem;
+        }
+
         .service-item .tag {
             display: inline-block;
             margin-top: 10px;
             padding: 3px 15px;
-            background: rgba(124, 58, 237, 0.1);
+            background: rgba(108, 43, 217, 0.1);
             color: var(--primary);
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
+        /* ============================================================
+           نموذج الطلب
+           ============================================================ */
         .request-form-section {
             padding: 80px 0;
             background: var(--bg-card);
         }
 
         .request-form-wrapper {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             background: var(--bg-body);
             padding: 50px;
@@ -476,6 +768,12 @@
             margin-top: 10px;
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
         .form-group {
             margin-bottom: 25px;
         }
@@ -490,6 +788,12 @@
         .form-group label .required {
             color: #EF4444;
             margin-right: 3px;
+        }
+
+        .form-group label .field-note {
+            font-weight: 400;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
         .form-group input,
@@ -511,7 +815,7 @@
         .form-group textarea:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+            box-shadow: 0 0 0 4px rgba(108, 43, 217, 0.15);
         }
 
         .form-group textarea {
@@ -531,7 +835,7 @@
 
         .form-group .file-upload:hover {
             border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.05);
+            background: rgba(108, 43, 217, 0.05);
         }
 
         .form-group .file-upload i {
@@ -544,6 +848,12 @@
         .form-group .file-upload p {
             color: var(--text-muted);
             font-size: 0.9rem;
+        }
+
+        .form-group .file-upload .supported-formats {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
         }
 
         .form-group .file-list {
@@ -578,18 +888,12 @@
             transform: scale(1.2);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
         .form-group .checkbox-group {
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            padding: 15px;
-            background: rgba(124, 58, 237, 0.05);
+            padding: 18px;
+            background: rgba(108, 43, 217, 0.05);
             border-radius: 12px;
             border: 2px solid var(--border-color);
             transition: var(--transition);
@@ -613,6 +917,7 @@
             font-size: 0.95rem;
             margin-bottom: 0;
             cursor: pointer;
+            line-height: 1.6;
         }
 
         .form-group .checkbox-group label strong {
@@ -652,7 +957,7 @@
 
         .btn-submit:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 10px 30px rgba(108, 43, 217, 0.4);
         }
 
         .btn-submit:disabled {
@@ -661,6 +966,38 @@
             transform: none !important;
         }
 
+        .form-message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #34D399;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #F87171;
+        }
+
+        .form-message.info {
+            display: block;
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 2px solid #60A5FA;
+        }
+
+        /* ============================================================
+           الشروط والأحكام
+           ============================================================ */
         .terms-section {
             padding: 60px 0;
             background: var(--bg-body);
@@ -696,7 +1033,7 @@
         .terms-card h3 {
             font-size: 1.3rem;
             color: var(--text-color);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .terms-card ul {
@@ -709,7 +1046,7 @@
             border-bottom: 1px solid var(--border-color);
             color: var(--text-muted);
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.7;
             display: flex;
             align-items: flex-start;
             gap: 10px;
@@ -725,35 +1062,9 @@
             flex-shrink: 0;
         }
 
-        .form-message {
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: none;
-            font-weight: 600;
-        }
-
-        .form-message.success {
-            display: block;
-            background: #D1FAE5;
-            color: #065F46;
-            border: 2px solid #34D399;
-        }
-
-        .form-message.error {
-            display: block;
-            background: #FEE2E2;
-            color: #991B1B;
-            border: 2px solid #F87171;
-        }
-
-        .form-message.info {
-            display: block;
-            background: #DBEAFE;
-            color: #1E40AF;
-            border: 2px solid #60A5FA;
-        }
-
+        /* ============================================================
+           الفوتر
+           ============================================================ */
         .footer {
             background: #0F172A;
             color: #94A3B8;
@@ -774,6 +1085,36 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .footer .footer-contact {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .footer .footer-contact a {
+            color: #94A3B8;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .footer .footer-contact a:hover {
+            color: #fff;
+        }
+
+        .footer .footer-contact a.whatsapp:hover {
+            color: #25D366;
+        }
+
+        .footer .footer-contact a.telegram:hover {
+            color: #0088CC;
+        }
+
         .footer .footer-links {
             display: flex;
             justify-content: center;
@@ -786,7 +1127,7 @@
             color: #94A3B8;
             text-decoration: none;
             transition: var(--transition);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .footer .footer-links a:hover {
@@ -794,46 +1135,85 @@
         }
 
         .footer .copyright {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-top: 1px solid rgba(255,255,255,0.05);
             padding-top: 20px;
             margin-top: 10px;
         }
 
+        /* ============================================================
+           التجاوب
+           ============================================================ */
         @media (max-width: 992px) {
-            .business-hero h1 {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
                 font-size: 2.8rem;
             }
-            .request-form-wrapper {
-                padding: 30px;
+
+            .hero-badges {
+                justify-content: center;
             }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .floating-card {
+                display: none;
+            }
+
+            .service-category {
+                padding: 25px;
+            }
+
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .business-hero h1 {
+            .hero-content h1 {
                 font-size: 2.2rem;
             }
-            .business-hero {
+
+            .hero {
                 padding: 60px 0 50px;
             }
+
             .section-header h2 {
                 font-size: 2rem;
             }
-            .category-title {
-                font-size: 1.4rem;
-            }
+
             .services-grid {
                 grid-template-columns: 1fr;
             }
+
             .request-form-wrapper {
                 padding: 20px;
             }
+
             .terms-grid {
                 grid-template-columns: 1fr;
             }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .header .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .contact-badge {
+                justify-content: center;
+            }
+
             .theme-toggle,
             .back-to-top {
                 width: 45px;
@@ -842,25 +1222,58 @@
                 bottom: 20px;
                 left: 20px;
             }
+
             .back-to-top {
                 bottom: 75px;
+            }
+
+            .category-header .info h3 {
+                font-size: 1.2rem;
+            }
+
+            .category-header .icon-wrapper {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
             }
         }
 
         @media (max-width: 480px) {
-            .business-hero h1 {
+            .hero-content h1 {
                 font-size: 1.8rem;
             }
-            .business-hero .badges {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-category {
+                padding: 15px;
+            }
+
+            .request-form-wrapper {
+                padding: 15px;
+            }
+
+            .hero-badges {
                 flex-direction: column;
                 align-items: center;
             }
-            .business-hero .badge {
+
+            .hero-badge {
                 width: 100%;
                 justify-content: center;
             }
-            .request-form-wrapper {
-                padding: 15px;
+
+            .footer .footer-contact {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer .footer-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
             }
         }
     </style>
@@ -886,28 +1299,93 @@
                 <i class="fas fa-graduation-cap"></i>
                 منصة <span>ارتقاء</span>
             </a>
-            <a href="index.html" class="back-link">
-                <i class="fas fa-arrow-right"></i> العودة للرئيسية
-            </a>
+
+            <div class="contact-badge">
+                <a href="https://t.me/edu_shehap" target="_blank" class="telegram">
+                    <i class="fab fa-telegram"></i> @edu_shehap
+                </a>
+                <a href="https://wa.me/966548504018" target="_blank" class="whatsapp">
+                    <i class="fab fa-whatsapp"></i> +966 54 850 4018
+                </a>
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-arrow-right"></i> الرئيسية
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- ============================================================
-    القسم الرئيسي
+    القسم الرئيسي (Hero)
     ============================================================ -->
-    <section class="business-hero" id="hero">
+    <section class="hero" id="hero">
         <div class="container">
-            <div data-aos="fade-up" data-aos-duration="1000">
-                <h1>خدمات <span>كلية الأعمال والاقتصاد</span></h1>
+            <div class="hero-content" data-aos="fade-right" data-aos-duration="1000">
+                <div class="hero-badges">
+                    <span class="hero-badge"><i class="fas fa-check-circle"></i> 7 أقسام متخصصة</span>
+                    <span class="hero-badge"><i class="fas fa-star"></i> خدمات أكاديمية احترافية</span>
+                    <span class="hero-badge"><i class="fas fa-users"></i> خبراء معتمدون</span>
+                </div>
+                <h1>خدمات <span>الأعمال والاقتصاد</span></h1>
                 <p>
                     نقدم مجموعة متكاملة من الخدمات الأكاديمية والاستشارية المتخصصة في مجالات
                     الإدارة، التسويق، المالية، المحاسبة، الاقتصاد، والموارد البشرية،
                     بأيدي خبراء أكاديميين وممارسين محترفين.
                 </p>
-                <div class="badges">
-                    <span class="badge"><i class="fas fa-check-circle"></i> 7 أقسام متخصصة</span>
-                    <span class="badge"><i class="fas fa-star"></i> أكثر من 40 خدمة</span>
-                    <span class="badge"><i class="fas fa-users"></i> خبراء معتمدون</span>
+                <p style="font-size: 0.95rem; opacity: 0.7;">
+                    <i class="fas fa-graduation-cap"></i> College of Business and Economics Services
+                </p>
+                <div class="hero-actions">
+                    <a href="#services" class="btn-primary">
+                        <i class="fas fa-briefcase"></i> استكشف الخدمات
+                    </a>
+                    <a href="#request-form" class="btn-secondary">
+                        <i class="fas fa-paper-plane"></i> طلب خدمة
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image" data-aos="fade-left" data-aos-duration="1000">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=450&fit=crop&crop=center" alt="خدمات الأعمال والاقتصاد" />
+                <div class="floating-card card-1">
+                    <i class="fas fa-chart-line"></i>
+                    <span>تحليل مالي</span>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-handshake"></i>
+                    <span>استشارات إدارية</span>
+                </div>
+                <div class="floating-card card-3">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>تسويق واستراتيجية</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    الإحصائيات
+    ============================================================ -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid" data-aos="fade-up" data-aos-duration="800">
+                <div class="stat-box">
+                    <span class="icon"><i class="fas fa-building"></i></span>
+                    <span class="number">7</span>
+                    <span class="label">أقسام متخصصة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="icon"><i class="fas fa-tasks"></i></span>
+                    <span class="number">35+</span>
+                    <span class="label">خدمة متخصصة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span>
+                    <span class="number">50+</span>
+                    <span class="label">خبير معتمد</span>
+                </div>
+                <div class="stat-box">
+                    <span class="icon"><i class="fas fa-globe"></i></span>
+                    <span class="number">20+</span>
+                    <span class="label">دولة حول العالم</span>
                 </div>
             </div>
         </div>
@@ -919,250 +1397,500 @@
     <section class="services-section" id="services">
         <div class="container">
             <div class="section-header" data-aos="fade-up" data-aos-duration="800">
-                <h2>أقسام وخدمات <span>كلية الأعمال</span></h2>
+                <h2>أقسام وخدمات <span>الأعمال والاقتصاد</span></h2>
                 <p>اختر القسم المناسب لتخصصك واستكشف الخدمات المتاحة</p>
             </div>
 
-            <!-- القسم 1 -->
+            <!-- ============================================================
+            القسم 1: الإدارة والاستراتيجية وإدارة المشاريع
+            ============================================================ -->
             <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-briefcase"></i>
-                    القسم 1: الإدارة والاستراتيجية وإدارة المشاريع
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-briefcase"></i></div>
+                    <div class="info">
+                        <h3>قسم الإدارة والاستراتيجية وإدارة المشاريع</h3>
+                        <span class="en-title">Department of Management, Strategy & Project Management</span>
+                    </div>
                 </div>
                 <div class="services-grid">
                     <div class="service-item" onclick="openRequestForm('إدارة الجودة')">
-                        <div class="icon"><i class="fas fa-certificate"></i></div>
+                        <div class="service-icon"><i class="fas fa-certificate"></i></div>
                         <h4>إدارة الجودة</h4>
+                        <span class="en-name">Quality Management</span>
                         <p>تقديم حلول شاملة لتحسين وتطوير الأداء المؤسسي وضمان تطبيق أعلى معايير الجودة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل أنظمة الجودة الشاملة</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تقييم الأداء المؤسسي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة أدوات التحسين المستمر وتطوير العمليات</div>
+                        </div>
                         <span class="tag">جودة • تحسين • تطوير</span>
                     </div>
+
                     <div class="service-item" onclick="openRequestForm('إدارة المشاريع')">
-                        <div class="icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="service-icon"><i class="fas fa-project-diagram"></i></div>
                         <h4>إدارة المشاريع</h4>
+                        <span class="en-name">Project Management</span>
                         <p>دعم تخطيط وتنفيذ المشاريع لضمان تحقيق الأهداف بكفاءة وفعالية ضمن الموارد المتاحة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تخطيط المشاريع وتنظيم مراحل العمل</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل المخاطر</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد الهياكل التنظيمية للمشاريع</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> متابعة مؤشرات الأداء</div>
+                        </div>
                         <span class="tag">تخطيط • مخاطر • أداء</span>
                     </div>
+
                     <div class="service-item" onclick="openRequestForm('الإدارة الاستراتيجية')">
-                        <div class="icon"><i class="fas fa-chess-queen"></i></div>
+                        <div class="service-icon"><i class="fas fa-chess-queen"></i></div>
                         <h4>الإدارة الاستراتيجية</h4>
+                        <span class="en-name">Strategic Management</span>
                         <p>صياغة وتوجيه الخطط طويلة المدى لمساعدة المنظمات في التكيف مع بيئتها وتحقيق الميزة التنافسية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل البيئة الداخلية والخارجية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تطبيق أدوات التحليل الاستراتيجي (SWOT و PESTEL)</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة البدائل الاستراتيجية وتقييم الخيارات</div>
+                        </div>
                         <span class="tag">استراتيجية • نمو • تنافسية</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('الحوكمة')">
-                        <div class="icon"><i class="fas fa-balance-scale"></i></div>
-                        <h4>الحوكمة</h4>
+
+                    <div class="service-item" onclick="openRequestForm('حوكمة الشركات')">
+                        <div class="service-icon"><i class="fas fa-balance-scale"></i></div>
+                        <h4>حوكمة الشركات</h4>
+                        <span class="en-name">Corporate Governance</span>
                         <p>وضع الأطر التنظيمية التي تضمن الشفافية والمساءلة وحفظ حقوق أصحاب المصلحة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل مبادئ الحوكمة</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> هيكلة المسؤوليات والصلاحيات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة آليات الشفافية والامتثال</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد التقارير المرتبطة بالحوكمة</div>
+                        </div>
                         <span class="tag">حوكمة • شفافية • امتثال</span>
                     </div>
+
                     <div class="service-item" onclick="openRequestForm('القيادة واتخاذ القرار')">
-                        <div class="icon"><i class="fas fa-people-arrows"></i></div>
+                        <div class="service-icon"><i class="fas fa-people-arrows"></i></div>
                         <h4>القيادة واتخاذ القرار</h4>
+                        <span class="en-name">Leadership & Decision Making</span>
                         <p>تقديم رؤى تحليلية لفهم السلوك القيادي وتدعيم آليات صنع القرار الإداري</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الأساليب القيادية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة المواقف الإدارية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل نماذج اتخاذ القرار</div>
+                        </div>
                         <span class="tag">قيادة • قرار • إدارة</span>
                     </div>
                 </div>
             </div>
 
-            <!-- القسم 2 -->
+            <!-- ============================================================
+            القسم 2: إدارة الأعمال والتسويق
+            ============================================================ -->
             <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-store"></i>
-                    القسم 2: إدارة الأعمال والتسويق
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-store"></i></div>
+                    <div class="info">
+                        <h3>قسم إدارة الأعمال والتسويق</h3>
+                        <span class="en-title">Department of Business Administration & Marketing</span>
+                    </div>
                 </div>
                 <div class="services-grid">
                     <div class="service-item" onclick="openRequestForm('إدارة الأعمال')">
-                        <div class="icon"><i class="fas fa-building"></i></div>
+                        <div class="service-icon"><i class="fas fa-building"></i></div>
                         <h4>إدارة الأعمال</h4>
+                        <span class="en-name">Business Administration</span>
                         <p>دراسة وتحليل المبادئ والعمليات الإدارية التي تساهم في تنظيم وقيادة الأعمال بنجاح</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل المفاهيم الإدارية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة التطبيقات العملية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الحالات الإدارية (Case Studies)</div>
+                        </div>
                         <span class="tag">أعمال • إدارة • تنظيم</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('التسويق')">
-                        <div class="icon"><i class="fas fa-bullhorn"></i></div>
-                        <h4>التسويق</h4>
-                        <p>تحليل استراتيجيات التسويق، إدارة العلامات التجارية، أبحاث السوق، التسويق الرقمي</p>
-                        <span class="tag">تسويق • علامات • أبحاث</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('سلوك المستهلك')">
-                        <div class="icon"><i class="fas fa-user-friends"></i></div>
-                        <h4>سلوك المستهلك</h4>
-                        <p>تحليل العوامل المؤثرة في سلوك المستهلك، أنماط الشراء، التنبؤ بالاتجاهات</p>
-                        <span class="tag">مستهلك • أنماط • اتجاهات</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('إدارة المبيعات')">
-                        <div class="icon"><i class="fas fa-handshake"></i></div>
-                        <h4>إدارة المبيعات</h4>
-                        <p>تخطيط المبيعات، إدارة فرق المبيعات، تحليل أداء المبيعات وتطويره</p>
-                        <span class="tag">مبيعات • أداء • تخطيط</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- القسم 3 -->
-            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-coins"></i>
-                    القسم 3: المالية والمحاسبة
-                </div>
-                <div class="services-grid">
-                    <div class="service-item" onclick="openRequestForm('المحاسبة المالية')">
-                        <div class="icon"><i class="fas fa-file-invoice"></i></div>
-                        <h4>المحاسبة المالية</h4>
-                        <p>إعداد القوائم المالية، تحليل البيانات المحاسبية، تطبيق المعايير المحاسبية</p>
-                        <span class="tag">محاسبة • قوائم • معايير</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('المحاسبة الإدارية')">
-                        <div class="icon"><i class="fas fa-chart-pie"></i></div>
-                        <h4>المحاسبة الإدارية</h4>
-                        <p>تحليل التكاليف، إعداد الموازنات، تقييم الأداء المالي للوحدات الإدارية</p>
-                        <span class="tag">تكاليف • موازنات • أداء</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('التمويل')">
-                        <div class="icon"><i class="fas fa-chart-line"></i></div>
-                        <h4>التمويل</h4>
-                        <p>تحليل الأسواق المالية، تقييم الاستثمارات، إدارة المخاطر المالية، هيكل رأس المال</p>
-                        <span class="tag">استثمار • مخاطر • أسواق</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('الرقابة المالية')">
-                        <div class="icon"><i class="fas fa-shield-alt"></i></div>
-                        <h4>الرقابة المالية</h4>
-                        <p>تحليل أنظمة الرقابة الداخلية، تدقيق الحسابات، تطوير آليات المراقبة المالية</p>
-                        <span class="tag">رقابة • تدقيق • مراقبة</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- القسم 4 -->
-            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-globe-asia"></i>
-                    القسم 4: الاقتصاد
-                </div>
-                <div class="services-grid">
-                    <div class="service-item" onclick="openRequestForm('الاقتصاد الكلي')">
-                        <div class="icon"><i class="fas fa-globe"></i></div>
-                        <h4>الاقتصاد الكلي</h4>
-                        <p>تحليل السياسات الاقتصادية، النمو الاقتصادي، التضخم، البطالة، التجارة الدولية</p>
-                        <span class="tag">كلي • سياسات • نمو</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('الاقتصاد الجزئي')">
-                        <div class="icon"><i class="fas fa-cubes"></i></div>
-                        <h4>الاقتصاد الجزئي</h4>
-                        <p>تحليل سلوك المستهلكين والمنتجين، هياكل السوق، نظرية التسعير، التوازن الاقتصادي</p>
-                        <span class="tag">جزئي • أسواق • تسعير</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('الاقتصاد القياسي')">
-                        <div class="icon"><i class="fas fa-calculator"></i></div>
-                        <h4>الاقتصاد القياسي</h4>
-                        <p>تحليل البيانات الاقتصادية، النمذجة الإحصائية، التنبؤ بالمتغيرات الاقتصادية</p>
-                        <span class="tag">قياسي • نمذجة • تنبؤ</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('الاقتصاد الدولي')">
-                        <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
-                        <h4>الاقتصاد الدولي</h4>
-                        <p>تحليل التجارة الدولية، تدفقات رأس المال، السياسات النقدية الدولية، أسعار الصرف</p>
-                        <span class="tag">دولي • تجارة • صرف</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- القسم 5 -->
-            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-users-cog"></i>
-                    القسم 5: الموارد البشرية
-                </div>
-                <div class="services-grid">
                     <div class="service-item" onclick="openRequestForm('إدارة الموارد البشرية')">
-                        <div class="icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="service-icon"><i class="fas fa-users-cog"></i></div>
                         <h4>إدارة الموارد البشرية</h4>
-                        <p>تخطيط القوى العاملة، التوظيف والاختيار، تطوير الموظفين، إدارة الأداء</p>
-                        <span class="tag">توظيف • أداء • تطوير</span>
+                        <span class="en-name">Human Resources Management</span>
+                        <p>تصميم سياسات متكاملة لتعظيم الاستفادة من رأس المال البشري وتطوير بيئة العمل</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الوظائف وتخطيط الموارد البشرية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تطوير السياسات والإجراءات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الهياكل التنظيمية</div>
+                        </div>
+                        <span class="tag">موارد • توظيف • تطوير</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('التدريب والتطوير')">
-                        <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                        <h4>التدريب والتطوير</h4>
-                        <p>تصميم برامج تدريبية، تقييم الاحتياجات التدريبية، قياس فعالية التدريب</p>
-                        <span class="tag">تدريب • تطوير • تقييم</span>
+
+                    <div class="service-item" onclick="openRequestForm('الأعمال الدولية')">
+                        <div class="service-icon"><i class="fas fa-globe-asia"></i></div>
+                        <h4>الأعمال الدولية</h4>
+                        <span class="en-name">International Business</span>
+                        <p>توجيه وتطوير استراتيجيات المنظمات للعمل وفهم ديناميكيات الأسواق العالمية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل بيئات الأعمال العالمية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> استراتيجيات التوسع</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة الأسواق الدولية</div>
+                        </div>
+                        <span class="tag">دولي • أسواق • توسع</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('التعويضات والحوافز')">
-                        <div class="icon"><i class="fas fa-money-check-alt"></i></div>
-                        <h4>التعويضات والحوافز</h4>
-                        <p>تحليل أنظمة التعويضات، تصميم برامج الحوافز، تقييم الفوائد والمزايا</p>
-                        <span class="tag">تعويضات • حوافز • فوائد</span>
+
+                    <div class="service-item" onclick="openRequestForm('التسويق الرقمي وإدارة المبيعات')">
+                        <div class="service-icon"><i class="fas fa-bullhorn"></i></div>
+                        <h4>التسويق الرقمي وإدارة المبيعات</h4>
+                        <span class="en-name">Digital Marketing & Sales Management</span>
+                        <p>دراسة السوق وتطوير الاستراتيجيات الفعالة للوصول للعملاء وزيادة الحصة السوقية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الأسواق ودراسة سلوك المستهلك</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الخطط التسويقية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تطوير المحتوى التسويقي</div>
+                        </div>
+                        <span class="tag">تسويق • مبيعات • رقمي</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('العلاقات الصناعية')">
-                        <div class="icon"><i class="fas fa-handshake"></i></div>
-                        <h4>العلاقات الصناعية</h4>
-                        <p>تحليل علاقات العمل، التفاوض الجماعي، حل النزاعات العمالية، ثقافة العمل</p>
-                        <span class="tag">علاقات • تفاوض • نزاعات</span>
+
+                    <div class="service-item" onclick="openRequestForm('السلوك التنظيمي')">
+                        <div class="service-icon"><i class="fas fa-users"></i></div>
+                        <h4>السلوك التنظيمي</h4>
+                        <span class="en-name">Organizational Behavior</span>
+                        <p>تحليل ديناميكيات العمل وفهم التفاعلات الإنسانية داخل المنظمات وتأثيرها على الأداء</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة السلوك الفردي والجماعي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل بيئة العمل والثقافة التنظيمية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة العلاقات داخل المؤسسات</div>
+                        </div>
+                        <span class="tag">سلوك • تنظيم • ثقافة</span>
                     </div>
                 </div>
             </div>
 
-            <!-- القسم 6 -->
+            <!-- ============================================================
+            القسم 3: التمويل والاستثمار
+            ============================================================ -->
             <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-cogs"></i>
-                    القسم 6: إدارة العمليات والخدمات
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-coins"></i></div>
+                    <div class="info">
+                        <h3>قسم التمويل والاستثمار</h3>
+                        <span class="en-title">Department of Finance & Investment</span>
+                    </div>
                 </div>
                 <div class="services-grid">
-                    <div class="service-item" onclick="openRequestForm('إدارة العمليات')">
-                        <div class="icon"><i class="fas fa-industry"></i></div>
-                        <h4>إدارة العمليات</h4>
-                        <p>تحليل العمليات الإنتاجية، إدارة سلسلة التوريد، تحسين كفاءة العمليات</p>
-                        <span class="tag">عمليات • توريد • كفاءة</span>
+                    <div class="service-item" onclick="openRequestForm('التمويل')">
+                        <div class="service-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                        <h4>التمويل</h4>
+                        <span class="en-name">Finance</span>
+                        <p>دراسة وتقييم القرارات المرتبطة بتوفير السيولة النقدية وإدارتها بأفضل الطرق الممكنة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل القرارات المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة مصادر التمويل</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل البدائل المالية</div>
+                        </div>
+                        <span class="tag">تمويل • سيولة • قرارات</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('إدارة الخدمات')">
-                        <div class="icon"><i class="fas fa-concierge-bell"></i></div>
-                        <h4>إدارة الخدمات</h4>
-                        <p>تحليل جودة الخدمة، إدارة تجربة العملاء، تطوير نماذج تقديم الخدمات</p>
-                        <span class="tag">خدمات • جودة • تجربة</span>
+
+                    <div class="service-item" onclick="openRequestForm('تمويل الشركات')">
+                        <div class="service-icon"><i class="fas fa-building"></i></div>
+                        <h4>تمويل الشركات</h4>
+                        <span class="en-name">Corporate Finance</span>
+                        <p>تحليل وإدارة الهياكل المالية لتعظيم قيمة الشركة وتقليل تكلفة رأس المال</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الهيكل المالي ومصادر التمويل</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل القرارات الرأسمالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تقييم البدائل التمويلية</div>
+                        </div>
+                        <span class="tag">شركات • هيكل • رأسمال</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('إدارة المخزون واللوجستيات')">
-                        <div class="icon"><i class="fas fa-truck"></i></div>
-                        <h4>إدارة المخزون واللوجستيات</h4>
-                        <p>تخطيط المخزون، إدارة المستودعات، توزيع المنتجات، سلاسل الإمداد</p>
-                        <span class="tag">مخزون • لوجستيات • توزيع</span>
+
+                    <div class="service-item" onclick="openRequestForm('التحليل المالي وتحليل القوائم المالية')">
+                        <div class="service-icon"><i class="fas fa-chart-pie"></i></div>
+                        <h4>التحليل المالي وتحليل القوائم المالية</h4>
+                        <span class="en-name">Financial Analysis & Financial Statements</span>
+                        <p>قراءة وتفسير البيانات المحاسبية لتشخيص وتقييم الأداء المالي للمؤسسات</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل البيانات المالية واحتساب المؤشرات والنسب</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تفسير النتائج المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد التقارير التحليلية</div>
+                        </div>
+                        <span class="tag">تحليل • نسب • تقارير</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('الاستثمار وإدارة المحافظ الاستثمارية')">
+                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                        <h4>الاستثمار وإدارة المحافظ الاستثمارية</h4>
+                        <span class="en-name">Investment & Portfolio Management</span>
+                        <p>تصميم استراتيجيات لتوجيه الأموال نحو أفضل الفرص المتاحة لتعظيم العوائد</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة الفرص الاستثمارية وتقييم البدائل</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الأدوات الاستثمارية وتقييم الأداء</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة توزيع الأصول وتحليل العائد والمخاطر</div>
+                        </div>
+                        <span class="tag">استثمار • محافظ • عوائد</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('إدارة المخاطر المالية ومخاطر الائتمان')">
+                        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>إدارة المخاطر المالية ومخاطر الائتمان</h4>
+                        <span class="en-name">Financial Risk & Credit Risk Management</span>
+                        <p>التحديد المسبق للتهديدات المالية وتطوير سياسات وقائية للحد من آثارها السلبية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل المخاطر المالية وتقييم مصادرها</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تقييم الجدارة الائتمانية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة أساليب الحد من المخاطر وسياسات إدارتها</div>
+                        </div>
+                        <span class="tag">مخاطر • ائتمان • وقائية</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('التخطيط المالي وتقييم المشروعات')">
+                        <div class="service-icon"><i class="fas fa-calculator"></i></div>
+                        <h4>التخطيط المالي وتقييم المشروعات</h4>
+                        <span class="en-name">Financial Planning & Project Evaluation</span>
+                        <p>إعداد التوقعات المالية ودراسة الجدوى الاقتصادية للمبادرات والمشاريع المستقبلية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد وتحليل الخطط المالية والسيناريوهات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الجدوى المالية للمشروعات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة المؤشرات المالية (NPV و IRR)</div>
+                        </div>
+                        <span class="tag">تخطيط • جدوى • NPV</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('الريادة المالية')">
+                        <div class="service-icon"><i class="fas fa-rocket"></i></div>
+                        <h4>الريادة المالية</h4>
+                        <span class="en-name">Financial Entrepreneurship</span>
+                        <p>دعم المشاريع الناشئة وتقديم النماذج المالية والحلول التمويلية المبتكرة لضمان استدامتها</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل النماذج المالية للمشاريع الناشئة</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة خيارات التمويل للشركات الناشئة</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الابتكار المالي</div>
+                        </div>
+                        <span class="tag">ريادة • ناشئة • ابتكار</span>
                     </div>
                 </div>
             </div>
 
-            <!-- القسم 7 -->
+            <!-- ============================================================
+            القسم 4: العمليات والدراسات الكمية
+            ============================================================ -->
             <div class="service-category" data-aos="fade-up" data-aos-duration="600">
-                <div class="category-title">
-                    <i class="fas fa-chart-bar"></i>
-                    القسم 7: الإحصاء والأبحاث الاقتصادية
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-cogs"></i></div>
+                    <div class="info">
+                        <h3>قسم العمليات والدراسات الكمية</h3>
+                        <span class="en-title">Department of Operations & Quantitative Studies</span>
+                    </div>
                 </div>
                 <div class="services-grid">
-                    <div class="service-item" onclick="openRequestForm('الإحصاء التطبيقي')">
-                        <div class="icon"><i class="fas fa-chart-pie"></i></div>
-                        <h4>الإحصاء التطبيقي</h4>
-                        <p>تحليل البيانات الإحصائية، اختبار الفروض، تصميم الدراسات الإحصائية</p>
-                        <span class="tag">إحصاء • تحليل • اختبار</span>
+                    <div class="service-item" onclick="openRequestForm('الاقتصاد')">
+                        <div class="service-icon"><i class="fas fa-globe"></i></div>
+                        <h4>الاقتصاد</h4>
+                        <span class="en-name">Economics</span>
+                        <p>دراسة وتحليل البيئة الاقتصادية الكلية والجزئية واستيعاب تأثير المتغيرات على بيئة الأعمال</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة المؤشرات الاقتصادية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل العرض والطلب</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> فهم وتحليل تأثير المتغيرات الاقتصادية</div>
+                        </div>
+                        <span class="tag">اقتصاد • كلي • جزئي</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('أبحاث السوق')">
-                        <div class="icon"><i class="fas fa-search-dollar"></i></div>
-                        <h4>أبحاث السوق</h4>
-                        <p>تصميم وتحليل استبيانات السوق، تحليل المنافسين، تقدير حجم السوق</p>
-                        <span class="tag">سوق • استبيانات • تحليل</span>
+
+                    <div class="service-item" onclick="openRequestForm('إدارة سلاسل الإمداد والعمليات')">
+                        <div class="service-icon"><i class="fas fa-truck"></i></div>
+                        <h4>إدارة سلاسل الإمداد والعمليات</h4>
+                        <span class="en-name">Supply Chain & Operations Management</span>
+                        <p>تحسين تدفق العمليات والمواد لضمان الكفاءة التشغيلية وتقليل الهدر</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> دراسة المخزون وتخطيطه</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> التخطيط التشغيلي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحسين كفاءة العمليات وسلاسل الإمداد</div>
+                        </div>
+                        <span class="tag">سلسلة • إمداد • عمليات</span>
                     </div>
-                    <div class="service-item" onclick="openRequestForm('النمذجة الاقتصادية')">
-                        <div class="icon"><i class="fas fa-project-diagram"></i></div>
-                        <h4>النمذجة الاقتصادية</h4>
-                        <p>بناء نماذج اقتصادية، تحليل النظم الاقتصادية، التنبؤ بالاتجاهات</p>
-                        <span class="tag">نمذجة • نظم • تنبؤ</span>
-                    </div>
-                    <div class="service-item" onclick="openRequestForm('تحليل البيانات الكبيرة')">
-                        <div class="icon"><i class="fas fa-database"></i></div>
-                        <h4>تحليل البيانات الكبيرة</h4>
-                        <p>معالجة وتحليل البيانات الاقتصادية الضخمة، استخراج الأنماط والرؤى</p>
-                        <span class="tag">بيانات • ضخمة • رؤى</span>
+
+                    <div class="service-item" onclick="openRequestForm('التحليل الكمي ودعم اتخاذ القرار')">
+                        <div class="service-icon"><i class="fas fa-chart-bar"></i></div>
+                        <h4>التحليل الكمي ودعم اتخاذ القرار</h4>
+                        <span class="en-name">Quantitative Analysis & Decision Support</span>
+                        <p>توظيف النماذج الرياضية والإحصائية لتحويل البيانات إلى قرارات دقيقة وعلمية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> استخدام الأساليب الكمية لتحليل البيانات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> بناء النماذج الكمية لدعم اتخاذ القرار</div>
+                        </div>
+                        <span class="tag">كمي • نماذج • قرار</span>
                     </div>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 50px;" data-aos="fade-up" data-aos-duration="800">
-                <a href="#request-form" class="btn-submit" style="width: auto; padding: 16px 60px; display: inline-block; text-decoration: none;">
+            <!-- ============================================================
+            القسم 5: المحاسبة
+            ============================================================ -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-file-invoice"></i></div>
+                    <div class="info">
+                        <h3>قسم المحاسبة</h3>
+                        <span class="en-title">Department of Accounting</span>
+                    </div>
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('المحاسبة العامة والمالية')">
+                        <div class="service-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <h4>المحاسبة العامة والمالية</h4>
+                        <span class="en-name">General & Financial Accounting</span>
+                        <p>تسجيل وتلخيص وتحليل العمليات المالية لضمان الشفافية ودقة التقارير للمستفيدين</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل العمليات المحاسبية وتنظيم البيانات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> المراجعة الفنية والمعالجات المحاسبية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد التقارير المالية</div>
+                        </div>
+                        <span class="tag">محاسبة • تقارير • مالية</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('المحاسبة الإدارية ومحاسبة التكاليف')">
+                        <div class="service-icon"><i class="fas fa-chart-pie"></i></div>
+                        <h4>المحاسبة الإدارية ومحاسبة التكاليف</h4>
+                        <span class="en-name">Managerial & Cost Accounting</span>
+                        <p>توفير البيانات والمعلومات الداخلية لدعم إدارة الشركة في مهام التخطيط والرقابة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل البيانات لدعم التخطيط والرقابة واتخاذ القرار</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل عناصر التكاليف وأساليب القياس والتخصيص</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد التقارير المرتبطة بالتكاليف</div>
+                        </div>
+                        <span class="tag">تكاليف • إدارية • رقابة</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('التدقيق والمراجعة والتقارير')">
+                        <div class="service-icon"><i class="fas fa-search-dollar"></i></div>
+                        <h4>التدقيق والمراجعة والتقارير</h4>
+                        <span class="en-name">Auditing & Reporting</span>
+                        <p>فحص وتقييم السجلات المحاسبية بشكل مستقل لضمان النزاهة والموثوقية المالية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد وتنظيم ومراجعة التقارير المالية وتحليل محتواها</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> مراجعة البيانات والمحتوى المحاسبي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> التحقق من الاتساق والدقة المالية</div>
+                        </div>
+                        <span class="tag">تدقيق • مراجعة • تقارير</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            القسم 6: الإدارة المالية
+            ============================================================ -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="info">
+                        <h3>قسم الإدارة المالية</h3>
+                        <span class="en-title">Department of Financial Management</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    تقديم خدمات متخصصة في تطوير الممارسات المالية الإدارية، وتحليل الأداء المالي، ودعم التخطيط واتخاذ القرارات المالية داخل المؤسسات.
+                </p>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('التخطيط والتحليل المالي')">
+                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                        <h4>التخطيط والتحليل المالي</h4>
+                        <span class="en-name">Financial Planning & Analysis</span>
+                        <p>تحليل البيانات المالية وتطوير أدوات المتابعة، ومراجعة النماذج والتقارير لتقديم رؤى تحسن القرارات</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> التخطيط المالي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الأداء المالي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد المؤشرات المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل الانحرافات المالية</div>
+                        </div>
+                        <span class="tag">تخطيط • تحليل • مؤشرات</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('النمذجة المالية ودعم القرار')">
+                        <div class="service-icon"><i class="fas fa-cubes"></i></div>
+                        <h4>النمذجة المالية ودعم القرار</h4>
+                        <span class="en-name">Financial Modeling & Decision Support</span>
+                        <p>تطوير النماذج التحليلية والقوالب المالية وتنظيم البيانات لدعم عمليات التخطيط</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> بناء النماذج المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل السيناريوهات المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> التنبؤات المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> إعداد لوحات المعلومات المالية</div>
+                        </div>
+                        <span class="tag">نمذجة • سيناريوهات • تنبؤ</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('إدارة الأداء والمخاطر المالية')">
+                        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>إدارة الأداء والمخاطر المالية</h4>
+                        <span class="en-name">Performance & Financial Risk Management</span>
+                        <p>تقييم الأداء المالي وتحليل المخاطر ومراجعة الإجراءات لتعزيز الكفاءة والاستدامة</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل المخاطر المالية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تقييم الأداء المالي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تطوير مؤشرات الأداء</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> متابعة كفاءة استخدام الموارد</div>
+                        </div>
+                        <span class="tag">أداء • مخاطر • كفاءة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            القسم 7: الإدارة الهندسية
+            ============================================================ -->
+            <div class="service-category" data-aos="fade-up" data-aos-duration="600">
+                <div class="category-header">
+                    <div class="icon-wrapper"><i class="fas fa-hard-hat"></i></div>
+                    <div class="info">
+                        <h3>قسم الإدارة الهندسية</h3>
+                        <span class="en-title">Department of Engineering Management</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    تقديم خدمات متخصصة في تطبيق المبادئ الإدارية على المشاريع والعمليات الهندسية بهدف تحسين التخطيط والكفاءة والجودة التشغيلية.
+                </p>
+                <div class="services-grid">
+                    <div class="service-item" onclick="openRequestForm('إدارة المشاريع الهندسية')">
+                        <div class="service-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h4>إدارة المشاريع الهندسية</h4>
+                        <span class="en-name">Engineering Project Management</span>
+                        <p>مراجعة خطط المشاريع وتحليل الجداول الزمنية وتنظيم البيانات لتقديم توصيات تحسن التنفيذ</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تخطيط المشاريع الهندسية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> متابعة مراحل التنفيذ</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل مخاطر المشاريع</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تقييم أداء المشاريع</div>
+                        </div>
+                        <span class="tag">هندسي • مشاريع • تنفيذ</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('إدارة الجودة والتحسين الهندسي')">
+                        <div class="service-icon"><i class="fas fa-certificate"></i></div>
+                        <h4>إدارة الجودة والتحسين الهندسي</h4>
+                        <span class="en-name">Quality Management & Engineering Improvement</span>
+                        <p>مراجعة إجراءات الجودة وتحليل فرص التحسين وتطوير المؤشرات لرفع الكفاءة التشغيلية</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل أنظمة الجودة الهندسية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحسين العمليات</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> قياس الأداء التشغيلي</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تطبيق منهجيات التحسين المستمر</div>
+                        </div>
+                        <span class="tag">جودة • تحسين • تشغيلي</span>
+                    </div>
+
+                    <div class="service-item" onclick="openRequestForm('التخطيط والعمليات الهندسية')">
+                        <div class="service-icon"><i class="fas fa-drafting-compass"></i></div>
+                        <h4>التخطيط والعمليات الهندسية</h4>
+                        <span class="en-name">Engineering Planning & Operations</span>
+                        <p>تحليل العمليات والبيانات وتنظيم المعلومات التشغيلية لإعداد تقارير تحسن الأداء واتخاذ القرار</p>
+                        <div class="sub-services">
+                            <div class="sub-item"><i class="fas fa-circle"></i> تخطيط الموارد الهندسية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحليل العمليات التشغيلية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> تحسين الإنتاجية</div>
+                            <div class="sub-item"><i class="fas fa-circle"></i> دعم اتخاذ القرار الهندسي</div>
+                        </div>
+                        <span class="tag">تخطيط • عمليات • إنتاجية</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;" data-aos="fade-up" data-aos-duration="800">
+                <a href="#request-form" class="btn-primary" style="padding: 16px 60px; font-size: 1.1rem;">
                     <i class="fas fa-paper-plane"></i> تقديم طلب خدمة
                 </a>
             </div>
@@ -1181,6 +1909,10 @@
                 </div>
 
                 <form id="serviceRequestForm" onsubmit="submitRequest(event)">
+
+                    <!-- ============================================ -->
+                    <!-- معلومات العميل -->
+                    <!-- ============================================ -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>الاسم الكامل <span class="required">*</span></label>
@@ -1197,6 +1929,9 @@
                         <input type="tel" id="phone" placeholder="+966 54 850 4018" required />
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- القسم والخدمة -->
+                    <!-- ============================================ -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>القسم <span class="required">*</span></label>
@@ -1204,11 +1939,11 @@
                                 <option value="">اختر القسم</option>
                                 <option value="الإدارة والاستراتيجية وإدارة المشاريع">الإدارة والاستراتيجية وإدارة المشاريع</option>
                                 <option value="إدارة الأعمال والتسويق">إدارة الأعمال والتسويق</option>
-                                <option value="المالية والمحاسبة">المالية والمحاسبة</option>
-                                <option value="الاقتصاد">الاقتصاد</option>
-                                <option value="الموارد البشرية">الموارد البشرية</option>
-                                <option value="إدارة العمليات والخدمات">إدارة العمليات والخدمات</option>
-                                <option value="الإحصاء والأبحاث الاقتصادية">الإحصاء والأبحاث الاقتصادية</option>
+                                <option value="التمويل والاستثمار">التمويل والاستثمار</option>
+                                <option value="العمليات والدراسات الكمية">العمليات والدراسات الكمية</option>
+                                <option value="المحاسبة">المحاسبة</option>
+                                <option value="الإدارة المالية">الإدارة المالية</option>
+                                <option value="الإدارة الهندسية">الإدارة الهندسية</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1219,6 +1954,9 @@
                         </div>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- نوع الطلب -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>نوع الطلب <span class="required">*</span></label>
                         <select id="requestType" required>
@@ -1234,9 +1972,12 @@
                         </select>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- عنوان الطلب ووصفه -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>عنوان الطلب <span class="required">*</span></label>
-                        <input type="text" id="requestTitle" placeholder="مثال: تحليل استراتيجيات التسويق لشركة X" required />
+                        <input type="text" id="requestTitle" placeholder="مثال: تحليل استراتيجيات التسويق" required />
                     </div>
 
                     <div class="form-group">
@@ -1244,39 +1985,47 @@
                         <textarea id="requestDescription" placeholder="صف طلبك بالتفصيل، واذكر المتطلبات والتوقعات..." required></textarea>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- الجهة محل التطبيق (اختياري) -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>الجهة أو الشركة محل التطبيق (اختياري)</label>
                         <input type="text" id="organization" placeholder="اسم الجهة أو الشركة إن وجدت" />
                     </div>
 
-                    <!-- ============================================================
-                    ✅ رفع الملفات - الجزء الأهم
-                    ============================================================ -->
+                    <!-- ============================================ -->
+                    <!-- رفع الملفات -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>الملفات المرفقة</label>
                         <div class="file-upload" onclick="document.getElementById('fileInput').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p><strong>اضغط لرفع الملفات</strong> أو اسحبها هنا</p>
-                            <p style="font-size: 0.8rem;">الصيغ المدعومة: Word, Excel, PowerPoint, PDF, ZIP</p>
-                            <p style="font-size: 0.75rem; color: var(--primary); margin-top: 8px;" id="fileCount">لم يتم رفع أي ملفات</p>
+                            <p class="supported-formats">الصيغ المدعومة: PDF, Word, Excel, PowerPoint, ZIP</p>
                         </div>
-                        <input type="file" id="fileInput" name="files" multiple 
-                               accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.zip" 
-                               style="display: none;" 
-                               onchange="handleFiles(this.files)" />
+                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip" style="display: none;" onchange="handleFiles(this.files)" />
                         <div class="file-list" id="fileList"></div>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- موعد التسليم -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>موعد التسليم المطلوب <span class="required">*</span></label>
                         <input type="date" id="deliveryDate" required />
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- ملاحظات إضافية -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>ملاحظات إضافية (اختياري)</label>
                         <textarea id="additionalNotes" placeholder="أي تعليمات أو ملاحظات إضافية تود إضافتها..."></textarea>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- الموافقة على الشروط -->
+                    <!-- ============================================ -->
                     <div class="form-group">
                         <div class="checkbox-group">
                             <input type="checkbox" id="termsAgree" required />
@@ -1287,6 +2036,9 @@
                         </div>
                     </div>
 
+                    <!-- ============================================ -->
+                    <!-- زر الإرسال -->
+                    <!-- ============================================ -->
                     <button type="submit" class="btn-submit" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> إرسال الطلب
                     </button>
@@ -1306,34 +2058,76 @@
                 <h2>الشروط <span>والأحكام</span></h2>
                 <p>نلتزم بتقديم خدماتنا وفق أعلى معايير الشفافية والاحترافية</p>
             </div>
+
             <div class="terms-grid">
+
+                <!-- 1. سياسة طلب الخدمات -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="600">
                     <div class="icon"><i class="fas fa-clipboard-list"></i></div>
                     <h3>سياسة طلب الخدمات والاعتماد</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> <strong>دقة البيانات:</strong> يلتزم العميل بتعبئة نموذج طلب الخدمة بدقة</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>اكتمال المرفقات:</strong> يجب إرفاق جميع الملفات والتعليمات</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>اعتماد الطلب:</strong> لا يُعتبر الطلب مؤكداً إلا بعد مراجعته وتحديد التكلفة</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>دقة البيانات:</strong> يلتزم العميل بتعبئة نموذج طلب الخدمة بدقة، بما في ذلك بيانات التواصل والبريد الإلكتروني لضمان استلام العمل في الوقت المحدد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اكتمال المرفقات:</strong> يجب إرفاق جميع الملفات، التعليمات، والأدلة الإرشادية الخاصة بالجامعة أو الجهة وقت تقديم الطلب.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اعتماد الطلب:</strong> لا يُعتبر الطلب مؤكداً أو قيد التنفيذ إلا بعد مراجعته من قبل فريقنا، وتحديد التكلفة النهائية، وتأكيد العميل بدفع الرسوم المتفق عليها.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الطلبات المستعجلة:</strong> تخضع الطلبات ذات التسليم الفوري أو المستعجل (أقل من 48 ساعة) لرسوم إضافية يتم توضيحها للعميل قبل البدء.</li>
                     </ul>
                 </div>
+
+                <!-- 2. سياسة الدفع والاسترجاع -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="700">
                     <div class="icon"><i class="fas fa-credit-card"></i></div>
                     <h3>سياسة الدفع والاسترجاع</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> <strong>آلية الدفع:</strong> يتم الاتفاق على آلية الدفع بناءً على حجم العمل</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب قبل التنفيذ:</strong> استرجاع المبلغ بالكامل</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب بعد التنفيذ:</strong> لا يحق للعميل المطالبة باسترجاع المبلغ</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>آلية الدفع:</strong> يتم الاتفاق على آلية الدفع (عربون مقدم أو دفع كامل) بناءً على حجم العمل ونوعه، ويتم سدادها عبر وسائل الدفع المعتمدة لدى المنصة.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب قبل التنفيذ:</strong> يحق للعميل إلغاء الطلب واسترجاع المبلغ بالكامل إذا لم يبدأ الفريق المتخصص في العمل الفعلي على الطلب.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب بعد التنفيذ:</strong> لا يحق للعميل المطالبة باسترجاع المبلغ بعد بدء الفريق بالعمل، حيث يتم تخصيص الوقت والموارد فور الاعتماد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الاعتذار عن التنفيذ:</strong> في حال واجهت المنصة أي ظرف يمنع تنفيذ الطلب بالجودة المطلوبة، يتم إبلاغ العميل فوراً واسترجاع كامل المبلغ المدفوع.</li>
                     </ul>
                 </div>
+
+                <!-- 3. سياسة التسليم والمواعيد -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="800">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <h3>سياسة التسليم والمواعيد</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>الالتزام بالمواعيد:</strong> تلتزم منصة ارتقاء إديو هوب بتسليم الأعمال المطلوبة في أو قبل الموعد النهائي المحدد في نموذج الطلب المعتمد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>صيغ التسليم:</strong> يتم تسليم الأعمال بصيغتها النهائية (PDF) والصيغة القابلة للتعديل (Word, Excel, PowerPoint) حسب طبيعة الطلب والاتفاق المسبق.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>التأخير من طرف العميل:</strong> في حال تأخر العميل في تزويدنا بمعلومات جوهرية أو ملفات ناقصة تم طلبها لاحقاً، يتم تمديد موعد التسليم تلقائياً بما يتناسب مع مدة التأخير.</li>
+                    </ul>
+                </div>
+
+                <!-- 4. سياسة التعديلات والمراجعات -->
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="900">
+                    <div class="icon"><i class="fas fa-edit"></i></div>
+                    <h3>سياسة التعديلات والمراجعات</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>التعديلات المجانية:</strong> يحق للعميل طلب تعديلات مجانية على العمل المُسَلَّم في حال وجود أي قصور أو عدم مطابقة للتعليمات المرفقة في وصف الطلب الأساسي.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>فترة طلب التعديل:</strong> يتم استقبال طلبات التعديل المجانية خلال فترة أقصاها (72 ساعة) من وقت تسليم العمل للعميل.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الطلبات الإضافية:</strong> أي متطلبات، نقاط إضافية، أو تعديلات جذرية لم يتم ذكرها في نموذج الطلب الأساسي تُعتبر طلباً جديداً وتخضع لرسوم إضافية ووقت تسليم جديد.</li>
+                    </ul>
+                </div>
+
+                <!-- 5. الخصوصية وسرية المعلومات -->
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="1000">
                     <div class="icon"><i class="fas fa-lock"></i></div>
                     <h3>الخصوصية وسرية المعلومات</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> <strong>حماية البيانات:</strong> التزام تام بسرية بيانات العميل</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>ملكية العمل:</strong> جميع الملفات والبيانات ملك للعميل</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>الهدف الاسترشادي:</strong> المخرجات هي خدمات استشارية وبحثية</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>حماية البيانات:</strong> نلتزم التزاماً تاماً بالحفاظ على سرية بيانات العميل الشخصية والأكاديمية، ولا يتم مشاركتها مع أي أطراف خارجية تحت أي ظرف.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>ملكية العمل:</strong> كافة الملفات والبيانات التي يتم تحليلها ومعالجتها هي ملك للعميل بالكامل.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إتلاف الملفات:</strong> يتم إتلاف جميع ملفات العميل من قواعد بياناتنا بعد فترة زمنية محددة من تسليم واعتماد العمل، وذلك لضمان أعلى معايير السرية.</li>
                     </ul>
                 </div>
+
+                <!-- 6. طبيعة الخدمات والالتزام الأكاديمي -->
+                <div class="terms-card" data-aos="fade-up" data-aos-duration="1100">
+                    <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>طبيعة الخدمات والالتزام الأكاديمي</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>الهدف الاسترشادي:</strong> تُقدم المنصة مخرجاتها كخدمات استشارية وبحثية تهدف حصراً إلى مساعدة الطلاب والباحثين، وتسهيل فهمهم للمادة العلمية للارتقاء بمستواهم الأكاديمي.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>حدود الاستخدام:</strong> تُعد الملفات والأعمال المُسَلَّمة مراجع داعمة ونماذج استرشادية، وتؤكد المنصة على ضرورة التزام العميل بضوابط الأمانة العلمية المعمول بها في جهته الأكاديمية عند الاستفادة منها.</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </section>
@@ -1346,11 +2140,20 @@
             <div class="footer-brand">
                 منصة <span>ارتقاء</span> إديو هوب
             </div>
+            <div class="footer-contact">
+                <a href="https://t.me/edu_shehap" target="_blank" class="telegram">
+                    <i class="fab fa-telegram"></i> تيليجرام: @edu_shehap
+                </a>
+                <a href="https://wa.me/966548504018" target="_blank" class="whatsapp">
+                    <i class="fab fa-whatsapp"></i> واتساب: +966 54 850 4018
+                </a>
+            </div>
             <div class="footer-links">
                 <a href="index.html">الرئيسية</a>
                 <a href="dmca.html">سياسات وأحكام</a>
                 <a href="privacy-policy.html">سياسة الخصوصية</a>
                 <a href="terms-of-service.html">شروط الاستخدام</a>
+                <a href="contact.html">اتصل بنا</a>
             </div>
             <div class="copyright">
                 &copy; 2026 منصة ارتقاء إديو هوب. جميع الحقوق محفوظة.
@@ -1359,7 +2162,7 @@
     </footer>
 
     <!-- ============================================================
-    الجافا سكريبت - الكود النهائي
+    الجافا سكريبت
     ============================================================ -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -1404,7 +2207,7 @@
         });
 
         // ============================================================
-        // تحديد عنوان API
+        // عنوان API
         // ============================================================
         const API_BASE_URL = (() => {
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -1413,32 +2216,54 @@
             return 'https://irteqa-eduhub.onrender.com/api';
         })();
 
-        console.log('🌐 عنوان API المستخدم:', API_BASE_URL);
+        console.log('🌐 عنوان API:', API_BASE_URL);
 
         // ============================================================
-        // بيانات الخدمات
+        // بيانات الخدمات حسب القسم
         // ============================================================
         const servicesData = {
             'الإدارة والاستراتيجية وإدارة المشاريع': [
-                'إدارة الجودة', 'إدارة المشاريع', 'الإدارة الاستراتيجية', 'الحوكمة', 'القيادة واتخاذ القرار'
+                'إدارة الجودة',
+                'إدارة المشاريع',
+                'الإدارة الاستراتيجية',
+                'حوكمة الشركات',
+                'القيادة واتخاذ القرار'
             ],
             'إدارة الأعمال والتسويق': [
-                'إدارة الأعمال', 'التسويق', 'سلوك المستهلك', 'إدارة المبيعات'
+                'إدارة الأعمال',
+                'إدارة الموارد البشرية',
+                'الأعمال الدولية',
+                'التسويق الرقمي وإدارة المبيعات',
+                'السلوك التنظيمي'
             ],
-            'المالية والمحاسبة': [
-                'المحاسبة المالية', 'المحاسبة الإدارية', 'التمويل', 'الرقابة المالية'
+            'التمويل والاستثمار': [
+                'التمويل',
+                'تمويل الشركات',
+                'التحليل المالي وتحليل القوائم المالية',
+                'الاستثمار وإدارة المحافظ الاستثمارية',
+                'إدارة المخاطر المالية ومخاطر الائتمان',
+                'التخطيط المالي وتقييم المشروعات',
+                'الريادة المالية'
             ],
-            'الاقتصاد': [
-                'الاقتصاد الكلي', 'الاقتصاد الجزئي', 'الاقتصاد القياسي', 'الاقتصاد الدولي'
+            'العمليات والدراسات الكمية': [
+                'الاقتصاد',
+                'إدارة سلاسل الإمداد والعمليات',
+                'التحليل الكمي ودعم اتخاذ القرار'
             ],
-            'الموارد البشرية': [
-                'إدارة الموارد البشرية', 'التدريب والتطوير', 'التعويضات والحوافز', 'العلاقات الصناعية'
+            'المحاسبة': [
+                'المحاسبة العامة والمالية',
+                'المحاسبة الإدارية ومحاسبة التكاليف',
+                'التدقيق والمراجعة والتقارير'
             ],
-            'إدارة العمليات والخدمات': [
-                'إدارة العمليات', 'إدارة الخدمات', 'إدارة المخزون واللوجستيات'
+            'الإدارة المالية': [
+                'التخطيط والتحليل المالي',
+                'النمذجة المالية ودعم القرار',
+                'إدارة الأداء والمخاطر المالية'
             ],
-            'الإحصاء والأبحاث الاقتصادية': [
-                'الإحصاء التطبيقي', 'أبحاث السوق', 'النمذجة الاقتصادية', 'تحليل البيانات الكبيرة'
+            'الإدارة الهندسية': [
+                'إدارة المشاريع الهندسية',
+                'إدارة الجودة والتحسين الهندسي',
+                'التخطيط والعمليات الهندسية'
             ]
         };
 
@@ -1485,38 +2310,30 @@
         }
 
         // ============================================================
-        // ✅ متغير تخزين الملفات المرفوعة
+        // معالجة الملفات
         // ============================================================
         let selectedFiles = [];
 
-        // ============================================================
-        // ✅ معالجة الملفات المرفوعة
-        // ============================================================
         function handleFiles(files) {
             console.log('📁 تم اختيار ملفات:', files);
-            console.log('📁 عدد الملفات:', files.length);
             
-            // مسح القائمة السابقة
             const list = document.getElementById('fileList');
             list.innerHTML = '';
             selectedFiles = [];
-            
+
             for (let file of files) {
                 console.log(`📄 ملف: ${file.name}, النوع: ${file.type}, الحجم: ${(file.size / 1024).toFixed(1)} KB`);
                 selectedFiles.push(file);
                 addFileToList(file);
             }
-            
+
             updateFileCount();
-            
+
             if (selectedFiles.length > 0) {
                 showMessage(`✅ تم رفع ${selectedFiles.length} ملف بنجاح`, 'success');
             }
         }
 
-        // ============================================================
-        // ✅ إضافة ملف إلى القائمة
-        // ============================================================
         function addFileToList(file) {
             const list = document.getElementById('fileList');
             const item = document.createElement('div');
@@ -1530,9 +2347,6 @@
             list.appendChild(item);
         }
 
-        // ============================================================
-        // ✅ حذف ملف من القائمة
-        // ============================================================
         function removeFile(fileName) {
             selectedFiles = selectedFiles.filter(f => f.name !== fileName);
             const items = document.getElementById('fileList').children;
@@ -1545,9 +2359,6 @@
             updateFileCount();
         }
 
-        // ============================================================
-        // ✅ تحديث عدد الملفات
-        // ============================================================
         function updateFileCount() {
             const count = selectedFiles.length;
             const fileCountEl = document.getElementById('fileCount');
@@ -1555,14 +2366,13 @@
                 if (count === 0) {
                     fileCountEl.textContent = 'لم يتم رفع أي ملفات';
                 } else {
-                    const names = selectedFiles.map(f => f.name).join(', ');
-                    fileCountEl.innerHTML = `✅ <strong>${count}</strong> ملف: ${names}`;
+                    fileCountEl.innerHTML = `✅ <strong>${count}</strong> ملف: ${selectedFiles.map(f => f.name).join(', ')}`;
                 }
             }
         }
 
         // ============================================================
-        // ✅ دالة تحويل الملف إلى Base64
+        // تحويل الملف إلى Base64
         // ============================================================
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
@@ -1582,7 +2392,7 @@
         }
 
         // ============================================================
-        // ✅ تعيين التاريخ الافتراضي
+        // تعيين التاريخ الافتراضي
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.getElementById('deliveryDate');
@@ -1594,7 +2404,7 @@
         });
 
         // ============================================================
-        // ✅ عرض رسائل النموذج
+        // عرض الرسائل
         // ============================================================
         function showMessage(text, type) {
             const messageEl = document.getElementById('formMessage');
@@ -1609,12 +2419,12 @@
         }
 
         // ============================================================
-        // ✅ إرسال الطلب - النسخة النهائية
+        // إرسال الطلب
         // ============================================================
         async function submitRequest(event) {
             event.preventDefault();
 
-            // جمع البيانات من النموذج
+            // جمع البيانات
             const name = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -1646,26 +2456,14 @@
                 return;
             }
 
-            console.log('📁 === معلومات الملفات ===');
-            console.log('  عدد الملفات المرفوعة:', selectedFiles.length);
-            if (selectedFiles.length > 0) {
-                selectedFiles.forEach((file, i) => {
-                    console.log(`  ملف ${i+1}: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)} KB)`);
-                });
-            } else {
-                console.log('  ⚠️ لا توجد ملفات مرفوعة');
-            }
-
-            showMessage('⏳ جاري معالجة الملفات...', 'info');
+            showMessage('⏳ جاري معالجة الطلب...', 'info');
 
             // تحويل الملفات إلى Base64
             const filesData = [];
             if (selectedFiles && selectedFiles.length > 0) {
                 for (let file of selectedFiles) {
                     try {
-                        console.log(`📄 جاري تحويل الملف: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
                         const base64 = await convertFileToBase64(file);
-                        
                         if (base64 && base64.startsWith('data:')) {
                             filesData.push({
                                 filename: file.name,
@@ -1673,9 +2471,6 @@
                                 fileSize: file.size,
                                 fileData: base64
                             });
-                            console.log(`✅ تم تحويل الملف: ${file.name} (${(base64.length / 1024).toFixed(1)} KB Base64)`);
-                        } else {
-                            console.error(`❌ بيانات الملف ${file.name} غير صالحة`);
                         }
                     } catch (error) {
                         console.error('❌ خطأ في تحويل الملف:', error);
@@ -1685,42 +2480,15 @@
                 }
             }
 
-            // بناء كائن البيانات
             const data = {
-                name: name,
-                email: email,
-                phone: phone,
-                department: department,
-                service: service,
-                requestType: requestType,
-                title: title,
-                description: description,
-                organization: organization || '',
-                deliveryDate: deliveryDate,
-                notes: notes || '',
-                termsAgreed: termsAgreed,
-                files: filesData
+                name, email, phone, department, service, requestType,
+                title, description, organization: organization || '',
+                deliveryDate, notes: notes || '',
+                termsAgreed, files: filesData
             };
 
-            console.log('📤 === البيانات المرسلة ===');
-            console.log('  name:', data.name);
-            console.log('  email:', data.email);
-            console.log('  phone:', data.phone);
-            console.log('  department:', data.department);
-            console.log('  service:', data.service);
-            console.log('  requestType:', data.requestType);
-            console.log('  title:', data.title);
-            console.log('  description:', data.description);
-            console.log('  deliveryDate:', data.deliveryDate);
-            console.log('  عدد الملفات في البيانات:', filesData.length);
-            if (filesData.length > 0) {
-                filesData.forEach((f, i) => {
-                    console.log(`    ملف ${i+1}: ${f.filename} (${(f.fileSize / 1024).toFixed(1)} KB)`);
-                });
-            }
-            console.log('📤 === نهاية البيانات ===');
+            console.log('📤 إرسال الطلب:', data);
 
-            // تعطيل الزر
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
@@ -1728,9 +2496,7 @@
             try {
                 const response = await fetch(`${API_BASE_URL}/business-orders`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
@@ -1741,15 +2507,13 @@
                     const orderId = result.data?.id || '';
                     const filesCount = result.data?.filesCount || 0;
                     showMessage(`✅ ${result.message} | رقم الطلب: #${orderId.toString().slice(-6)} | الملفات: ${filesCount}`, 'success');
-                    
-                    // إعادة تعيين النموذج
+
                     document.getElementById('serviceRequestForm').reset();
                     document.getElementById('fileList').innerHTML = '';
                     selectedFiles = [];
                     updateFileCount();
                     updateServices();
 
-                    // تعيين التاريخ الافتراضي
                     const dateInput = document.getElementById('deliveryDate');
                     const today = new Date();
                     const future = new Date(today);
@@ -1757,16 +2521,11 @@
                     dateInput.value = future.toISOString().split('T')[0];
 
                 } else {
-                    let errorMsg = result.message || 'حدث خطأ في إرسال الطلب';
-                    if (result.missing && result.missing.length > 0) {
-                        errorMsg += ` (الحقول المفقودة: ${result.missing.join('، ')})`;
-                    }
-                    showMessage(`❌ ${errorMsg}`, 'error');
+                    showMessage(`❌ ${result.message || 'حدث خطأ في إرسال الطلب'}`, 'error');
                 }
-
             } catch (error) {
-                console.error('❌ خطأ في إرسال الطلب:', error);
-                showMessage('❌ حدث خطأ في الاتصال بالخادم. تأكد من أن الخادم يعمل.', 'error');
+                console.error('❌ خطأ:', error);
+                showMessage('❌ حدث خطأ في الاتصال بالخادم.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
@@ -1778,16 +2537,13 @@
         // ============================================================
         async function checkServerConnection() {
             try {
-                const response = await fetch(`${API_BASE_URL}/health`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                const response = await fetch(`${API_BASE_URL}/health`);
                 if (response.ok) {
-                    console.log('✅ الخادم يعمل بشكل صحيح');
+                    console.log('✅ الخادم يعمل');
                     return true;
                 }
             } catch (error) {
-                console.warn('⚠️ لا يمكن الاتصال بالخادم:', error.message);
+                console.warn('⚠️ لا يمكن الاتصال بالخادم');
             }
             return false;
         }
@@ -1805,10 +2561,9 @@
             });
         });
 
-        console.log('🚀 منصة ارتقاء - خدمات كلية الأعمال (النسخة النهائية)');
-        console.log('🌐 عنوان API:', API_BASE_URL);
-        console.log('📋 تم تحميل 7 أقسام و 28 خدمة');
-        console.log('✅ النموذج جاهز لاستقبال الطلبات مع رفع الملفات');
+        console.log('🚀 منصة ارتقاء - خدمات الأعمال والاقتصاد');
+        console.log('📋 7 أقسام و 35+ خدمة');
+        console.log('✅ النموذج جاهز لاستقبال الطلبات');
     </script>
 </body>
 </html>
