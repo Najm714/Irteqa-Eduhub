@@ -32,7 +32,7 @@ const uploadsDir = path.join(__dirname, 'uploads');
 const videosDir = path.join(uploadsDir, 'videos');
 const ordersDir = path.join(uploadsDir, 'orders');
 const summariesDir = path.join(uploadsDir, 'summaries');
-const businessOrdersDir = path.join(uploadsDir, 'business-orders'); // ✅ أضف هذا
+const businessOrdersDir = path.join(uploadsDir, 'business-orders');
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -50,7 +50,7 @@ if (!fs.existsSync(summariesDir)) {
     fs.mkdirSync(summariesDir, { recursive: true });
     console.log('📁 تم إنشاء مجلد summaries');
 }
-if (!fs.existsSync(businessOrdersDir)) { // ✅ أضف هذا الكود
+if (!fs.existsSync(businessOrdersDir)) {
     fs.mkdirSync(businessOrdersDir, { recursive: true });
     console.log('📁 تم إنشاء مجلد business-orders');
 }
@@ -66,8 +66,7 @@ app.use('/uploads', express.static(uploadsDir));
 app.use('/uploads/videos', express.static(videosDir));
 app.use('/uploads/orders', express.static(ordersDir));
 app.use('/uploads/summaries', express.static(summariesDir));
-app.use('/uploads/business-orders', express.static(businessOrdersDir)); // ✅ أضف هذا السطر
-
+app.use('/uploads/business-orders', express.static(businessOrdersDir));
 
 // ============================================================
 // مسار مباشر للفيديوهات (حل بديل)
@@ -81,7 +80,6 @@ app.get('/uploads/videos/:filename', (req, res) => {
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
-        // محاولة البحث في مسار آخر
         const altPath = path.join(__dirname, '../uploads/videos', filename);
         console.log('📁 محاولة بديلة:', altPath);
         
@@ -153,34 +151,6 @@ const upload = require('./middleware/upload');
 const { protect, authorize } = require('./middleware/auth');
 
 // ============================================================
-// المسار الرئيسي
-// ============================================================
-app.get('/', (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: '🚀 مرحباً بك في منصة ارتقاء - الخادم يعمل بنجاح!',
-        version: '1.0.0',
-        endpoints: {
-            auth: '/api/auth',
-            orders: '/api/orders',
-            videos: '/api/videos',
-            models: '/api/models',
-            users: '/api/users',
-            universities: '/api/universities',
-            explanations: '/api/explanations/materials',
-            summaries: '/api/summaries',
-            subscriptions: '/api/subscriptions',
-            health: '/api/health'
-        },
-        status: {
-            server: 'running',
-            database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-            time: new Date().toISOString()
-        }
-    });
-});
-
-// ============================================================
 // ✅ إضافة multer لرفع الملفات لطلبات كلية الأعمال
 // ============================================================
 const businessOrdersStorage = multer.diskStorage({
@@ -225,6 +195,36 @@ const uploadBusinessFiles = multer({
 });
 
 console.log('📁 تم تهيئة multer لرفع ملفات كلية الأعمال');
+
+// ============================================================
+// المسار الرئيسي
+// ============================================================
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: '🚀 مرحباً بك في منصة ارتقاء - الخادم يعمل بنجاح!',
+        version: '1.0.0',
+        endpoints: {
+            auth: '/api/auth',
+            orders: '/api/orders',
+            videos: '/api/videos',
+            models: '/api/models',
+            users: '/api/users',
+            universities: '/api/universities',
+            explanations: '/api/explanations/materials',
+            summaries: '/api/summaries',
+            subscriptions: '/api/subscriptions',
+            health: '/api/health',
+            businessOrders: '/api/business-orders'
+        },
+        status: {
+            server: 'running',
+            database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+            time: new Date().toISOString()
+        }
+    });
+});
+
 // ============================================================
 // مسار الصحة
 // ============================================================
@@ -235,6 +235,504 @@ app.get('/api/health', (req, res) => {
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
     });
+});
+
+// ============================================================
+// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال - النسخة النهائية
+// ============================================================
+app.post('/api/business-orders', async (req, res) => {
+    try {
+        // ✅ استخراج البيانات من req.body
+        const {
+            name, 
+            email, 
+            phone, 
+            department, 
+            service, 
+            requestType,
+            title, 
+            description, 
+            organization, 
+            deliveryDate, 
+            notes, 
+            termsAgreed,
+            files
+        } = req.body;
+
+        // ✅ طباعة البيانات المستلمة مع تفاصيل الملفات
+        console.log('📥 === البيانات المستلمة ===');
+        console.log('  name:', name);
+        console.log('  email:', email);
+        console.log('  phone:', phone);
+        console.log('  department:', department);
+        console.log('  service:', service);
+        console.log('  requestType:', requestType);
+        console.log('  title:', title);
+        console.log('  description:', description);
+        console.log('  deliveryDate:', deliveryDate);
+        console.log('  typeof files:', typeof files);
+        console.log('  files is Array:', Array.isArray(files));
+        console.log('  files length:', files ? (Array.isArray(files) ? files.length : 'not array') : 0);
+        
+        // ✅ عرض تفاصيل الملفات
+        if (files && Array.isArray(files) && files.length > 0) {
+            console.log(`  ✅ عدد الملفات المستلمة: ${files.length}`);
+            files.forEach((f, i) => {
+                const sizeKB = (f.fileSize / 1024).toFixed(1);
+                console.log(`    ملف ${i+1}: ${f.filename || 'بدون اسم'} (${sizeKB} KB)`);
+                console.log(`      - fileData موجود: ${!!f.fileData}`);
+                console.log(`      - يبدأ بـ data: ${f.fileData ? f.fileData.startsWith('data:') : false}`);
+            });
+        } else {
+            console.log('  ⚠️ لا توجد ملفات في الطلب');
+        }
+
+        // ✅ التحقق من الحقول المطلوبة
+        const requiredFields = {
+            name: 'الاسم الكامل',
+            email: 'البريد الإلكتروني',
+            phone: 'رقم التواصل',
+            department: 'القسم',
+            service: 'الخدمة',
+            requestType: 'نوع الطلب',
+            title: 'عنوان الطلب',
+            description: 'وصف الطلب',
+            deliveryDate: 'موعد التسليم'
+        };
+
+        const missingFields = [];
+        for (const [field, label] of Object.entries(requiredFields)) {
+            if (!req.body[field] || req.body[field].trim() === '') {
+                missingFields.push(label);
+            }
+        }
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `الحقول المطلوبة غير مكتملة: ${missingFields.join('، ')}`,
+                missing: missingFields
+            });
+        }
+
+        // ✅ معالجة الملفات - حفظها على الخادم
+        const filesData = [];
+        
+        // ✅ إنشاء مجلد business-orders إذا لم يكن موجوداً
+        if (!fs.existsSync(businessOrdersDir)) {
+            fs.mkdirSync(businessOrdersDir, { recursive: true });
+            console.log('📁 تم إنشاء مجلد business-orders');
+        }
+
+        // ✅ معالجة كل ملف على حدة
+        if (files && Array.isArray(files) && files.length > 0) {
+            console.log(`📁 جاري معالجة ${files.length} ملف...`);
+            
+            for (const file of files) {
+                try {
+                    // التحقق من وجود البيانات
+                    if (!file.fileData) {
+                        console.error(`❌ ملف ${file.filename} لا يحتوي على بيانات`);
+                        continue;
+                    }
+                    
+                    // التحقق من صحة Base64
+                    if (!file.fileData.includes(';base64,')) {
+                        console.error(`❌ ملف ${file.filename} ليس بتنسيق Base64 صحيح`);
+                        continue;
+                    }
+                    
+                    // استخراج البيانات
+                    const base64Data = file.fileData.split(';base64,').pop();
+                    const buffer = Buffer.from(base64Data, 'base64');
+                    
+                    if (buffer.length === 0) {
+                        console.error(`❌ ملف ${file.filename} فارغ`);
+                        continue;
+                    }
+                    
+                    // إنشاء اسم ملف فريد
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                    const ext = path.extname(file.filename);
+                    const fileName = 'business-' + uniqueSuffix + ext;
+                    const filePath = path.join(businessOrdersDir, fileName);
+                    
+                    // حفظ الملف
+                    fs.writeFileSync(filePath, buffer);
+                    
+                    console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
+                    
+                    filesData.push({
+                        filename: file.filename,
+                        filePath: filePath,
+                        fileId: fileName,
+                        fileSize: file.fileSize || buffer.length,
+                        mimeType: file.fileType || 'application/octet-stream',
+                        uploadDate: new Date()
+                    });
+                    
+                } catch (error) {
+                    console.error(`❌ خطأ في حفظ الملف ${file.filename}:`, error);
+                }
+            }
+        }
+
+        console.log(`📁 عدد الملفات المحفوظة: ${filesData.length}`);
+
+        // ✅ إنشاء الطلب
+        const order = new Order({
+            serviceType: 'خدمة كلية الأعمال',
+            title: title.trim(),
+            description: description.trim(),
+            deadline: new Date(deliveryDate),
+            budget: 0,
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            department: department.trim(),
+            service: service.trim(),
+            requestType: requestType.trim(),
+            organization: organization ? organization.trim() : '',
+            deliveryDate: deliveryDate,
+            notes: notes ? notes.trim() : '',
+            termsAgreed: termsAgreed === true || termsAgreed === 'true',
+            orderType: 'business',
+            status: 'pending',
+            files: filesData
+        });
+
+        await order.save();
+
+        console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
+        console.log(`📁 عدد الملفات المرفوعة: ${filesData.length}`);
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إرسال الطلب بنجاح ✅',
+            data: {
+                id: order._id,
+                name: order.name,
+                service: order.service,
+                status: order.status,
+                createdAt: order.createdAt,
+                filesCount: filesData.length,
+                files: filesData
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء الطلب:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'حدث خطأ في إنشاء الطلب'
+        });
+    }
+});
+
+// ============================================================
+// ✅ جلب جميع طلبات كلية الأعمال (للمدير)
+// ============================================================
+app.get('/api/business-orders', protect, authorize('admin'), async (req, res) => {
+    try {
+        const orders = await Order.find({
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } },
+                { service: { $exists: true, $ne: '' } }
+            ]
+        })
+        .populate('userId', 'name email')
+        .populate('user', 'name email')
+        .populate('assignedExpert', 'name email')
+        .sort({ createdAt: -1 });
+        
+        res.status(200).json({
+            success: true,
+            count: orders.length,
+            data: orders
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب طلبات الأعمال:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ✅ جلب طلب معين
+// ============================================================
+app.get('/api/business-orders/:id', protect, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate('userId', 'name email')
+            .populate('user', 'name email')
+            .populate('assignedExpert', 'name email');
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'الطلب غير موجود'
+            });
+        }
+
+        const isAuthorized = 
+            req.user.role === 'admin' || 
+            (order.userId && req.user.id === order.userId.toString()) ||
+            (order.user && req.user.id === order.user.toString()) ||
+            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
+
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لعرض هذا الطلب'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: order
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الطلب:', error);
+        if (error.name === 'CastError' || error.kind === 'ObjectId') {
+            return res.status(404).json({
+                success: false,
+                message: 'الطلب غير موجود'
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ✅ تحديث حالة الطلب
+// ============================================================
+app.put('/api/business-orders/:id/status', protect, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['pending', 'in-progress', 'completed', 'revision', 'cancelled'];
+        
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'حالة غير صالحة. الحالات المتاحة: ' + validStatuses.join(', ')
+            });
+        }
+
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'الطلب غير موجود ❌'
+            });
+        }
+
+        const isAuthorized = 
+            req.user.role === 'admin' || 
+            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
+
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لتحديث حالة هذا الطلب'
+            });
+        }
+
+        order.status = status;
+        order.updatedAt = new Date();
+        await order.save();
+
+        res.status(200).json({
+            success: true,
+            message: `تم تحديث حالة الطلب إلى ${status} ✅`,
+            data: order
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحديث حالة الطلب:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ✅ حذف طلب (للمدير فقط)
+// ============================================================
+app.delete('/api/business-orders/:id', protect, authorize('admin'), async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'الطلب غير موجود ❌'
+            });
+        }
+
+        if (order.files && order.files.length > 0) {
+            for (const file of order.files) {
+                if (file.filePath && fs.existsSync(file.filePath)) {
+                    try {
+                        fs.unlinkSync(file.filePath);
+                        console.log(`🗑️ تم حذف الملف: ${file.filePath}`);
+                    } catch (err) {
+                        console.error('❌ خطأ في حذف الملف:', err);
+                    }
+                }
+            }
+        }
+
+        await order.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف الطلب بنجاح 🗑️'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف الطلب:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ✅ تصدير الطلبات إلى CSV
+// ============================================================
+app.get('/api/business-orders/export/csv', protect, authorize('admin'), async (req, res) => {
+    try {
+        const orders = await Order.find({
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        }).sort({ createdAt: -1 });
+        
+        if (orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'لا توجد طلبات لتصديرها'
+            });
+        }
+
+        const headers = [
+            'رقم الطلب', 'الاسم', 'البريد الإلكتروني', 'رقم التواصل',
+            'القسم', 'الخدمة', 'نوع الطلب', 'عنوان الطلب',
+            'وصف الطلب', 'الجهة', 'موعد التسليم', 'الحالة',
+            'تاريخ الإنشاء', 'آخر تحديث', 'عدد الملفات'
+        ];
+
+        const statusMap = {
+            'pending': 'قيد الانتظار',
+            'in-progress': 'قيد التنفيذ',
+            'completed': 'مكتملة',
+            'cancelled': 'ملغية',
+            'revision': 'مراجعة'
+        };
+
+        let csv = '\uFEFF' + headers.join(',') + '\n';
+        
+        orders.forEach(order => {
+            const row = [
+                order._id.toString().slice(-6),
+                `"${(order.name || '').replace(/"/g, '""')}"`,
+                order.email || '',
+                order.phone || '',
+                `"${(order.department || '').replace(/"/g, '""')}"`,
+                `"${(order.service || '').replace(/"/g, '""')}"`,
+                `"${(order.requestType || '').replace(/"/g, '""')}"`,
+                `"${(order.title || '').replace(/"/g, '""')}"`,
+                `"${(order.description || '').replace(/"/g, '""')}"`,
+                `"${(order.organization || '').replace(/"/g, '""')}"`,
+                order.deliveryDate || '',
+                statusMap[order.status] || order.status,
+                new Date(order.createdAt).toLocaleString('ar-SA'),
+                new Date(order.updatedAt).toLocaleString('ar-SA'),
+                order.files?.length || 0
+            ];
+            csv += row.join(',') + '\n';
+        });
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename=طلبات_خدمات_الأعمال_${new Date().toISOString().split('T')[0]}.csv`);
+        res.send(csv);
+        
+    } catch (error) {
+        console.error('❌ خطأ في تصدير الطلبات:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ✅ إحصائيات الطلبات
+// ============================================================
+app.get('/api/business-orders/stats', protect, authorize('admin'), async (req, res) => {
+    try {
+        const total = await Order.countDocuments({
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        });
+        
+        const pending = await Order.countDocuments({ 
+            status: 'pending',
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        });
+        
+        const inProgress = await Order.countDocuments({ 
+            status: 'in-progress',
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        });
+        
+        const completed = await Order.countDocuments({ 
+            status: 'completed',
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        });
+        
+        const cancelled = await Order.countDocuments({ 
+            status: 'cancelled',
+            $or: [
+                { orderType: 'business' },
+                { department: { $exists: true, $ne: '' } }
+            ]
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                total,
+                pending,
+                inProgress,
+                completed,
+                cancelled
+            }
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الإحصائيات:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 // ============================================================
@@ -370,7 +868,6 @@ app.get('/api/auth/me', protect, async (req, res) => {
 // ============================================================
 // 2. مسارات الفيديوهات (VIDEOS)
 // ============================================================
-// في server.js - مسار رفع الفيديو
 app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('video'), async (req, res) => {
     try {
         console.log('📁 استلام فيديو:', req.file);
@@ -392,7 +889,6 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
             });
         }
 
-        // ✅ استخدام ffprobe للحصول على مدة الفيديو
         let duration = '00:00';
         try {
             const ffprobe = require('ffprobe');
@@ -416,7 +912,7 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
 
         const video = new Video({
             title: title,
-            subjectId: String(subjectId), // ✅ حفظ كـ String
+            subjectId: String(subjectId),
             subjectName: subjectName,
             specialtyName: specialtyName || '',
             universityName: universityName || '',
@@ -448,6 +944,7 @@ app.post('/api/videos/upload', protect, authorize('admin'), uploadVideo.single('
         });
     }
 });
+
 // جلب جميع الفيديوهات
 app.get('/api/videos/all', async (req, res) => {
     try {
@@ -1393,973 +1890,6 @@ app.put('/api/orders/:id/assign-expert', protect, authorize('admin'), async (req
         });
     }
 });
-// ============================================================
-// 4.5 مسارات طلبات خدمات كلية الأعمال (BUSINESS ORDERS)
-// ============================================================
-
-// جلب جميع طلبات كلية الأعمال (للمدير)
-app.get('/api/business-orders/admin/all', protect, authorize('admin'), async (req, res) => {
-    try {
-        const orders = await Order.findBusinessOrders()
-            .populate('userId', 'name email')
-            .populate('user', 'name email')
-            .populate('assignedExpert', 'name email');
-        
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات الأعمال:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// جلب طلبات مستخدم معين
-app.get('/api/business-orders/user/:userId', protect, async (req, res) => {
-    try {
-        const orders = await Order.findByUser(req.params.userId)
-            .populate('assignedExpert', 'name email');
-        
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات المستخدم:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// جلب طلبات زائر (بالبريد الإلكتروني)
-app.get('/api/business-orders/guest/:email', async (req, res) => {
-    try {
-        const orders = await Order.find({ 
-            email: req.params.email,
-            orderType: 'business'
-        }).sort({ createdAt: -1 });
-        
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات الزائر:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// جلب طلب محدد
-app.get('/api/business-orders/:id', protect, async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id)
-            .populate('userId', 'name email')
-            .populate('user', 'name email')
-            .populate('assignedExpert', 'name email');
-        
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (order.userId && req.user.id === order.userId.toString()) ||
-            (order.user && req.user.id === order.user.toString()) ||
-            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لعرض هذا الطلب'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: order
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب الطلب:', error);
-        if (error.name === 'CastError' || error.kind === 'ObjectId') {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود'
-            });
-        }
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// إنشاء طلب جديد لخدمات كلية الأعمال
-app.post('/api/business-orders', async (req, res) => {
-    try {
-        const {
-            name,
-            email,
-            phone,
-            department,
-            service,
-            requestType,
-            title,
-            description,
-            organization,
-            deliveryDate,
-            notes,
-            termsAgreed,
-            userId
-        } = req.body;
-
-        // التحقق من الحقول المطلوبة
-        if (!name || !email || !phone || !department || !service || 
-            !requestType || !title || !description || !deliveryDate) {
-            return res.status(400).json({
-                success: false,
-                message: 'جميع الحقول المطلوبة غير مكتملة'
-            });
-        }
-
-        // التحقق من وجود المستخدم إذا تم توفير userId
-        let userExists = null;
-        if (userId) {
-            userExists = await User.findById(userId);
-        }
-
-        // إنشاء الطلب
-        const order = new Order({
-            // الحقول الأساسية (مطلوبة)
-            serviceType: 'خدمة كلية الأعمال',
-            title: title,
-            description: description,
-            deadline: new Date(deliveryDate),
-            budget: 0,
-            
-            // الحقول الجديدة
-            name: name,
-            email: email,
-            phone: phone,
-            department: department,
-            service: service,
-            requestType: requestType,
-            organization: organization || '',
-            deliveryDate: deliveryDate,
-            notes: notes || '',
-            termsAgreed: termsAgreed || true,
-            userId: userId || null,
-            user: userId || null,
-            orderType: 'business',
-            status: 'pending'
-        });
-
-        await order.save();
-
-        console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
-
-        res.status(201).json({
-            success: true,
-            message: 'تم إرسال الطلب بنجاح ✅',
-            data: {
-                id: order._id,
-                name: order.name,
-                service: order.service,
-                status: order.status,
-                createdAt: order.createdAt
-            }
-        });
-    } catch (error) {
-        console.error('❌ خطأ في إنشاء الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// رفع ملفات للطلب (مع دعم الملفات المتعددة)
-app.post('/api/business-orders/:orderId/upload', protect, upload.array('files', 10), async (req, res) => {
-    try {
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'يرجى رفع ملف واحد على الأقل'
-            });
-        }
-
-        const order = await Order.findById(req.params.orderId);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (order.userId && req.user.id === order.userId.toString()) ||
-            (order.user && req.user.id === order.user.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لرفع ملفات لهذا الطلب'
-            });
-        }
-
-        const fileData = req.files.map(file => ({
-            filename: file.originalname,
-            filePath: file.path ? file.path.replace(/\\/g, '/') : null,
-            fileId: file.filename || `file_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-            fileSize: file.size,
-            mimeType: file.mimetype,
-            uploadDate: new Date()
-        }));
-
-        order.files.push(...fileData);
-        order.updatedAt = new Date();
-        await order.save();
-
-        res.status(200).json({
-            success: true,
-            message: `تم رفع ${req.files.length} ملف بنجاح ✅`,
-            data: {
-                files: fileData,
-                order: order
-            }
-        });
-    } catch (error) {
-        console.error('❌ خطأ في رفع الملفات:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// تحميل ملف من الطلب
-app.get('/api/business-orders/:orderId/files/:fileIndex', protect, async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.orderId);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (order.userId && req.user.id === order.userId.toString()) ||
-            (order.user && req.user.id === order.user.toString()) ||
-            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لتحميل هذا الملف'
-            });
-        }
-
-        const fileIndex = parseInt(req.params.fileIndex);
-        if (isNaN(fileIndex) || fileIndex < 0 || fileIndex >= order.files.length) {
-            return res.status(404).json({
-                success: false,
-                message: 'الملف غير موجود'
-            });
-        }
-
-        const file = order.files[fileIndex];
-        
-        // البحث عن الملف
-        let foundPath = null;
-        const fs = require('fs');
-        const path = require('path');
-        
-        // 1. التحقق من المسار المخزن
-        if (file.filePath && fs.existsSync(file.filePath)) {
-            foundPath = file.filePath;
-        } else {
-            // 2. البحث في مجلد uploads
-            const uploadsDir = path.join(__dirname, 'uploads');
-            const ordersDir = path.join(uploadsDir, 'orders');
-            
-            const searchDirs = [uploadsDir, ordersDir];
-            for (const dir of searchDirs) {
-                if (fs.existsSync(dir)) {
-                    const files = fs.readdirSync(dir);
-                    for (const f of files) {
-                        if (f.includes(file.fileId) || f === file.filename) {
-                            const fullPath = path.join(dir, f);
-                            if (fs.existsSync(fullPath)) {
-                                foundPath = fullPath;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (foundPath) break;
-            }
-        }
-
-        if (!foundPath) {
-            return res.status(404).json({
-                success: false,
-                message: 'الملف غير موجود على الخادم'
-            });
-        }
-
-        res.download(foundPath, file.filename);
-
-    } catch (error) {
-        console.error('❌ خطأ في تحميل الملف:', error);
-        res.status(500).json({
-            success: false,
-            message: 'حدث خطأ في تحميل الملف'
-        });
-    }
-});
-
-// تحديث حالة الطلب
-app.put('/api/business-orders/:id/status', protect, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const validStatuses = ['pending', 'in-progress', 'completed', 'revision', 'cancelled'];
-        
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'حالة غير صالحة. الحالات المتاحة: ' + validStatuses.join(', ')
-            });
-        }
-
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لتحديث حالة هذا الطلب'
-            });
-        }
-
-        order.status = status;
-        order.updatedAt = new Date();
-        await order.save();
-
-        res.status(200).json({
-            success: true,
-            message: `تم تحديث حالة الطلب إلى ${status} ✅`,
-            data: order
-        });
-    } catch (error) {
-        console.error('❌ خطأ في تحديث حالة الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// حذف طلب (للمدير فقط)
-app.delete('/api/business-orders/:id', protect, authorize('admin'), async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        // حذف الملفات المرتبطة
-        if (order.files && order.files.length > 0) {
-            const fs = require('fs');
-            for (const file of order.files) {
-                if (file.filePath && fs.existsSync(file.filePath)) {
-                    try {
-                        fs.unlinkSync(file.filePath);
-                        console.log(`🗑️ تم حذف الملف: ${file.filePath}`);
-                    } catch (err) {
-                        console.error('❌ خطأ في حذف الملف:', err);
-                    }
-                }
-            }
-        }
-
-        await order.deleteOne();
-
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف الطلب بنجاح 🗑️'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في حذف الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// تصدير الطلبات إلى CSV
-app.get('/api/business-orders/export/csv', protect, authorize('admin'), async (req, res) => {
-    try {
-        const orders = await Order.findBusinessOrders();
-        
-        if (orders.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'لا توجد طلبات لتصديرها'
-            });
-        }
-
-        const headers = [
-            'رقم الطلب', 'الاسم', 'البريد الإلكتروني', 'رقم التواصل',
-            'القسم', 'الخدمة', 'نوع الطلب', 'عنوان الطلب',
-            'وصف الطلب', 'الجهة', 'موعد التسليم', 'الحالة',
-            'تاريخ الإنشاء', 'آخر تحديث', 'عدد الملفات'
-        ];
-
-        const statusMap = {
-            'pending': 'قيد الانتظار',
-            'in-progress': 'قيد التنفيذ',
-            'completed': 'مكتملة',
-            'cancelled': 'ملغية',
-            'revision': 'مراجعة'
-        };
-
-        let csv = '\uFEFF' + headers.join(',') + '\n';
-        
-        orders.forEach(order => {
-            const row = [
-                order._id.toString().slice(-6),
-                `"${(order.name || order.getCustomerName()).replace(/"/g, '""')}"`,
-                order.email || order.getCustomerEmail(),
-                order.phone || order.getCustomerPhone(),
-                `"${(order.department || '').replace(/"/g, '""')}"`,
-                `"${(order.service || '').replace(/"/g, '""')}"`,
-                `"${(order.requestType || '').replace(/"/g, '""')}"`,
-                `"${order.title.replace(/"/g, '""')}"`,
-                `"${order.description.replace(/"/g, '""')}"`,
-                `"${(order.organization || '').replace(/"/g, '""')}"`,
-                order.deliveryDate || order.deadline?.toISOString().split('T')[0] || '',
-                statusMap[order.status] || order.status,
-                new Date(order.createdAt).toLocaleString('ar-SA'),
-                new Date(order.updatedAt).toLocaleString('ar-SA'),
-                order.files?.length || 0
-            ];
-            csv += row.join(',') + '\n';
-        });
-
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename=طلبات_خدمات_الأعمال_${new Date().toISOString().split('T')[0]}.csv`);
-        res.send(csv);
-        
-    } catch (error) {
-        console.error('❌ خطأ في تصدير الطلبات:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// إحصائيات الطلبات
-app.get('/api/business-orders/stats', protect, authorize('admin'), async (req, res) => {
-    try {
-        const stats = await Order.getStats();
-        const departmentStats = await Order.getDepartmentStats();
-        const serviceStats = await Order.getServiceStats();
-
-        res.status(200).json({
-            success: true,
-            data: {
-                status: stats,
-                departments: departmentStats,
-                services: serviceStats
-            }
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب الإحصائيات:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// تعيين خبير للطلب (للمدير فقط)
-app.put('/api/business-orders/:id/assign-expert', protect, authorize('admin'), async (req, res) => {
-    try {
-        const { expertId, notes } = req.body;
-        
-        if (!expertId) {
-            return res.status(400).json({
-                success: false,
-                message: 'يرجى اختيار خبير'
-            });
-        }
-
-        const expert = await User.findById(expertId);
-        if (!expert) {
-            return res.status(404).json({
-                success: false,
-                message: 'الخبير غير موجود'
-            });
-        }
-
-        if (expert.role !== 'expert') {
-            return res.status(400).json({
-                success: false,
-                message: 'المستخدم المحدد ليس خبيراً'
-            });
-        }
-
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        order.assignedExpert = expertId;
-        order.assignedAt = new Date();
-        order.expertNotes = notes || order.expertNotes;
-        if (order.status === 'pending') {
-            order.status = 'in-progress';
-        }
-        await order.save();
-
-        const populatedOrder = await Order.findById(order._id)
-            .populate('user', 'name email')
-            .populate('assignedExpert', 'name email');
-
-        console.log(`✅ تم تعيين الخبير ${expert.name} للطلب ${order._id}`);
-
-        res.status(200).json({
-            success: true,
-            message: `تم تعيين الخبير ${expert.name} بنجاح ✅`,
-            data: populatedOrder
-        });
-    } catch (error) {
-        console.error('❌ خطأ في تعيين الخبير:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ============================================================
-// 4.6 مسارات طلبات خدمات كلية الأعمال (BUSINESS ORDERS) - مسار مخصص
-// ============================================================
-
-// ✅ جلب جميع طلبات كلية الأعمال (للمدير) - مسار مبسط
-app.get('/api/business-orders', protect, authorize('admin'), async (req, res) => {
-    try {
-        // جلب الطلبات التي تحمل علامة business أو التي تحتوي على حقول الأعمال
-        const orders = await Order.find({
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } },
-                { service: { $exists: true, $ne: '' } }
-            ]
-        })
-        .populate('userId', 'name email')
-        .populate('user', 'name email')
-        .populate('assignedExpert', 'name email')
-        .sort({ createdAt: -1 });
-        
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب طلبات الأعمال:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ جلب طلب معين
-app.get('/api/business-orders/:id', protect, async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id)
-            .populate('userId', 'name email')
-            .populate('user', 'name email')
-            .populate('assignedExpert', 'name email');
-        
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (order.userId && req.user.id === order.userId.toString()) ||
-            (order.user && req.user.id === order.user.toString()) ||
-            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لعرض هذا الطلب'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: order
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب الطلب:', error);
-        if (error.name === 'CastError' || error.kind === 'ObjectId') {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود'
-            });
-        }
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ إنشاء طلب جديد لخدمات كلية الأعمال
-app.post('/api/business-orders', async (req, res) => {
-    try {
-        const {
-            name,
-            email,
-            phone,
-            department,
-            service,
-            requestType,
-            title,
-            description,
-            organization,
-            deliveryDate,
-            notes,
-            termsAgreed,
-            userId
-        } = req.body;
-
-        // التحقق من الحقول المطلوبة
-        if (!name || !email || !phone || !department || !service || 
-            !requestType || !title || !description || !deliveryDate) {
-            return res.status(400).json({
-                success: false,
-                message: 'جميع الحقول المطلوبة غير مكتملة'
-            });
-        }
-
-        // إنشاء الطلب
-        const order = new Order({
-            // الحقول الأساسية (مطلوبة)
-            serviceType: 'خدمة كلية الأعمال',
-            title: title,
-            description: description,
-            deadline: new Date(deliveryDate),
-            budget: 0,
-            
-            // الحقول الجديدة
-            name: name,
-            email: email,
-            phone: phone,
-            department: department,
-            service: service,
-            requestType: requestType,
-            organization: organization || '',
-            deliveryDate: deliveryDate,
-            notes: notes || '',
-            termsAgreed: termsAgreed || true,
-            userId: userId || null,
-            user: userId || null,
-            orderType: 'business',
-            status: 'pending'
-        });
-
-        await order.save();
-
-        console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
-
-        res.status(201).json({
-            success: true,
-            message: 'تم إرسال الطلب بنجاح ✅',
-            data: {
-                id: order._id,
-                name: order.name,
-                service: order.service,
-                status: order.status,
-                createdAt: order.createdAt
-            }
-        });
-    } catch (error) {
-        console.error('❌ خطأ في إنشاء الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ تحديث حالة الطلب
-app.put('/api/business-orders/:id/status', protect, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const validStatuses = ['pending', 'in-progress', 'completed', 'revision', 'cancelled'];
-        
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'حالة غير صالحة. الحالات المتاحة: ' + validStatuses.join(', ')
-            });
-        }
-
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        // التحقق من الصلاحية
-        const isAuthorized = 
-            req.user.role === 'admin' || 
-            (req.user.role === 'expert' && order.assignedExpert && req.user.id === order.assignedExpert.toString());
-
-        if (!isAuthorized) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لتحديث حالة هذا الطلب'
-            });
-        }
-
-        order.status = status;
-        order.updatedAt = new Date();
-        await order.save();
-
-        res.status(200).json({
-            success: true,
-            message: `تم تحديث حالة الطلب إلى ${status} ✅`,
-            data: order
-        });
-    } catch (error) {
-        console.error('❌ خطأ في تحديث حالة الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ حذف طلب (للمدير فقط)
-app.delete('/api/business-orders/:id', protect, authorize('admin'), async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'الطلب غير موجود ❌'
-            });
-        }
-
-        // حذف الملفات المرتبطة
-        if (order.files && order.files.length > 0) {
-            const fs = require('fs');
-            for (const file of order.files) {
-                if (file.filePath && fs.existsSync(file.filePath)) {
-                    try {
-                        fs.unlinkSync(file.filePath);
-                        console.log(`🗑️ تم حذف الملف: ${file.filePath}`);
-                    } catch (err) {
-                        console.error('❌ خطأ في حذف الملف:', err);
-                    }
-                }
-            }
-        }
-
-        await order.deleteOne();
-
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف الطلب بنجاح 🗑️'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في حذف الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ تصدير الطلبات إلى CSV
-app.get('/api/business-orders/export/csv', protect, authorize('admin'), async (req, res) => {
-    try {
-        const orders = await Order.find({
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        }).sort({ createdAt: -1 });
-        
-        if (orders.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'لا توجد طلبات لتصديرها'
-            });
-        }
-
-        const headers = [
-            'رقم الطلب', 'الاسم', 'البريد الإلكتروني', 'رقم التواصل',
-            'القسم', 'الخدمة', 'نوع الطلب', 'عنوان الطلب',
-            'وصف الطلب', 'الجهة', 'موعد التسليم', 'الحالة',
-            'تاريخ الإنشاء', 'آخر تحديث', 'عدد الملفات'
-        ];
-
-        const statusMap = {
-            'pending': 'قيد الانتظار',
-            'in-progress': 'قيد التنفيذ',
-            'completed': 'مكتملة',
-            'cancelled': 'ملغية',
-            'revision': 'مراجعة'
-        };
-
-        let csv = '\uFEFF' + headers.join(',') + '\n';
-        
-        orders.forEach(order => {
-            const row = [
-                order._id.toString().slice(-6),
-                `"${(order.name || '').replace(/"/g, '""')}"`,
-                order.email || '',
-                order.phone || '',
-                `"${(order.department || '').replace(/"/g, '""')}"`,
-                `"${(order.service || '').replace(/"/g, '""')}"`,
-                `"${(order.requestType || '').replace(/"/g, '""')}"`,
-                `"${(order.title || '').replace(/"/g, '""')}"`,
-                `"${(order.description || '').replace(/"/g, '""')}"`,
-                `"${(order.organization || '').replace(/"/g, '""')}"`,
-                order.deliveryDate || '',
-                statusMap[order.status] || order.status,
-                new Date(order.createdAt).toLocaleString('ar-SA'),
-                new Date(order.updatedAt).toLocaleString('ar-SA'),
-                order.files?.length || 0
-            ];
-            csv += row.join(',') + '\n';
-        });
-
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename=طلبات_خدمات_الأعمال_${new Date().toISOString().split('T')[0]}.csv`);
-        res.send(csv);
-        
-    } catch (error) {
-        console.error('❌ خطأ في تصدير الطلبات:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ✅ إحصائيات الطلبات
-app.get('/api/business-orders/stats', protect, authorize('admin'), async (req, res) => {
-    try {
-        const total = await Order.countDocuments({
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        });
-        
-        const pending = await Order.countDocuments({ 
-            status: 'pending',
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        });
-        
-        const inProgress = await Order.countDocuments({ 
-            status: 'in-progress',
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        });
-        
-        const completed = await Order.countDocuments({ 
-            status: 'completed',
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        });
-        
-        const cancelled = await Order.countDocuments({ 
-            status: 'cancelled',
-            $or: [
-                { orderType: 'business' },
-                { department: { $exists: true, $ne: '' } }
-            ]
-        });
-
-        res.status(200).json({
-            success: true,
-            data: {
-                total,
-                pending,
-                inProgress,
-                completed,
-                cancelled
-            }
-        });
-    } catch (error) {
-        console.error('❌ خطأ في جلب الإحصائيات:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
 
 // ============================================================
 // 5. مسارات المستخدمين (USERS)
@@ -2539,6 +2069,7 @@ app.delete('/api/universities/:id', protect, authorize('admin'), async (req, res
         res.status(500).json({ success: false, message: error.message });
     }
 });
+
 // ============================================================
 // 7. مسارات المواد التعليمية (EXPLANATIONS MATERIALS)
 // ============================================================
@@ -2558,9 +2089,7 @@ app.get('/api/explanations/materials', async (req, res) => {
     }
 });
 
-// ============================================================
-// ✅ جلب مادة محددة - هذا المسار كان مفقوداً
-// ============================================================
+// جلب مادة محددة
 app.get('/api/explanations/materials/:id', async (req, res) => {
     try {
         const material = await ExplanationMaterial.findById(req.params.id);
@@ -2643,7 +2172,6 @@ app.put('/api/explanations/materials/:id', protect, authorize('admin'), async (r
             });
         }
 
-        // تحديث الحقول
         Object.keys(updateData).forEach(key => {
             if (updateData[key] !== undefined) {
                 material[key] = updateData[key];
@@ -2686,6 +2214,7 @@ app.delete('/api/explanations/materials/:id', protect, authorize('admin'), async
         res.status(500).json({ success: false, message: error.message });
     }
 });
+
 // ============================================================
 // 8. مسارات الملخصات (SUMMARIES)
 // ============================================================
@@ -2882,7 +2411,6 @@ app.post('/api/subscriptions', async (req, res) => {
             });
         }
 
-        // البحث عن المستخدم أو إنشاؤه
         let user = await User.findOne({ email });
         if (!user) {
             const bcrypt = require('bcryptjs');
@@ -3021,206 +2549,7 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
         res.status(500).json({ success: false, message: error.message });
     }
 });
-// ============================================================
-// ✅ مسار إنشاء طلب جديد لخدمات كلية الأعمال (نسخة محسنة)
-// ============================================================
-app.post('/api/business-orders', async (req, res) => {
-    try {
-        // ✅ استخراج البيانات من req.body (JSON)
-        const {
-            name, 
-            email, 
-            phone, 
-            department, 
-            service, 
-            requestType,
-            title, 
-            description, 
-            organization, 
-            deliveryDate, 
-            notes, 
-            termsAgreed,
-            files
-        } = req.body;
 
-        // ✅ طباعة جميع البيانات المستلمة
-        console.log('📥 === البيانات المستلمة من النموذج (JSON) ===');
-        console.log('  name:', name);
-        console.log('  email:', email);
-        console.log('  phone:', phone);
-        console.log('  department:', department);
-        console.log('  service:', service);
-        console.log('  requestType:', requestType);
-        console.log('  title:', title);
-        console.log('  description:', description);
-        console.log('  organization:', organization);
-        console.log('  deliveryDate:', deliveryDate);
-        console.log('  notes:', notes);
-        console.log('  termsAgreed:', termsAgreed);
-        console.log('  typeof files:', typeof files);
-        console.log('  files is array:', Array.isArray(files));
-        console.log('  عدد الملفات:', files ? (Array.isArray(files) ? files.length : 'not array') : 0);
-        
-        // ✅ عرض تفاصيل الملفات إذا وجدت
-        if (files && Array.isArray(files) && files.length > 0) {
-            files.forEach((f, i) => {
-                const sizeKB = (f.fileSize / 1024).toFixed(1);
-                const dataLength = f.fileData ? f.fileData.length : 0;
-                const hasBase64 = f.fileData && f.fileData.includes(';base64,');
-                console.log(`    ملف ${i+1}: ${f.filename} (${sizeKB} KB, Base64: ${dataLength} chars, صالح: ${hasBase64})`);
-            });
-        } else {
-            console.log('⚠️ لا توجد ملفات مرفوعة في الطلب');
-            console.log('   files value:', files);
-        }
-        console.log('📥 === نهاية البيانات ===');
-
-        // ✅ التحقق من الحقول المطلوبة
-        const requiredFields = {
-            name: 'الاسم الكامل',
-            email: 'البريد الإلكتروني',
-            phone: 'رقم التواصل',
-            department: 'القسم',
-            service: 'الخدمة',
-            requestType: 'نوع الطلب',
-            title: 'عنوان الطلب',
-            description: 'وصف الطلب',
-            deliveryDate: 'موعد التسليم'
-        };
-
-        const missingFields = [];
-        for (const [field, label] of Object.entries(requiredFields)) {
-            if (!req.body[field] || req.body[field].trim() === '') {
-                missingFields.push(label);
-            }
-        }
-
-        if (missingFields.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: `الحقول المطلوبة غير مكتملة: ${missingFields.join('، ')}`,
-                missing: missingFields,
-                received: req.body
-            });
-        }
-
-        // ✅ معالجة الملفات (Base64) وحفظها على الخادم
-        const filesData = [];
-        if (files && Array.isArray(files) && files.length > 0) {
-            const fs = require('fs');
-            const path = require('path');
-            const businessOrdersDir = path.join(__dirname, 'uploads', 'business-orders');
-            
-            // ✅ التأكد من وجود المجلد
-            if (!fs.existsSync(businessOrdersDir)) {
-                fs.mkdirSync(businessOrdersDir, { recursive: true });
-                console.log('📁 تم إنشاء مجلد business-orders');
-            }
-
-            for (const file of files) {
-                try {
-                    // ✅ التحقق من صحة البيانات
-                    if (!file.fileData) {
-                        console.error(`❌ ملف ${file.filename} لا يحتوي على بيانات`);
-                        continue;
-                    }
-                    
-                    if (!file.fileData.includes(';base64,')) {
-                        console.error(`❌ ملف ${file.filename} ليس بتنسيق Base64 صحيح`);
-                        console.log(`   بداية البيانات: ${file.fileData.substring(0, 50)}...`);
-                        continue;
-                    }
-                    
-                    // ✅ استخراج البيانات من Base64
-                    const base64Data = file.fileData.split(';base64,').pop();
-                    const buffer = Buffer.from(base64Data, 'base64');
-                    
-                    // ✅ التحقق من حجم الملف
-                    if (buffer.length === 0) {
-                        console.error(`❌ ملف ${file.filename} فارغ`);
-                        continue;
-                    }
-                    
-                    // ✅ إنشاء اسم ملف فريد
-                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                    const ext = path.extname(file.filename);
-                    const fileName = 'business-' + uniqueSuffix + ext;
-                    const filePath = path.join(businessOrdersDir, fileName);
-                    
-                    // ✅ حفظ الملف على الخادم
-                    fs.writeFileSync(filePath, buffer);
-                    
-                    console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
-                    
-                    filesData.push({
-                        filename: file.filename,
-                        filePath: filePath,
-                        fileId: fileName,
-                        fileSize: file.fileSize || buffer.length,
-                        mimeType: file.fileType || 'application/octet-stream',
-                        uploadDate: new Date()
-                    });
-                } catch (error) {
-                    console.error(`❌ خطأ في حفظ الملف ${file.filename}:`, error);
-                }
-            }
-        }
-
-        // استيراد نموذج Order
-        const Order = require('./models/Order');
-        
-        // ✅ إنشاء الطلب
-        const orderData = {
-            serviceType: 'خدمة كلية الأعمال',
-            title: title.trim(),
-            description: description.trim(),
-            deadline: new Date(deliveryDate),
-            budget: 0,
-            name: name.trim(),
-            email: email.trim(),
-            phone: phone.trim(),
-            department: department.trim(),
-            service: service.trim(),
-            requestType: requestType.trim(),
-            organization: organization ? organization.trim() : '',
-            deliveryDate: deliveryDate,
-            notes: notes ? notes.trim() : '',
-            termsAgreed: termsAgreed === true || termsAgreed === 'true',
-            orderType: 'business',
-            status: 'pending',
-            files: filesData
-        };
-
-        console.log(`📦 عدد الملفات المحفوظة في الطلب: ${filesData.length}`);
-
-        const order = new Order(orderData);
-        await order.save();
-
-        console.log(`✅ تم إنشاء طلب جديد #${order._id} - ${order.name}`);
-        console.log(`📁 عدد الملفات المرفوعة: ${filesData.length}`);
-
-        res.status(201).json({
-            success: true,
-            message: 'تم إرسال الطلب بنجاح ✅',
-            data: {
-                id: order._id,
-                name: order.name,
-                service: order.service,
-                status: order.status,
-                createdAt: order.createdAt,
-                filesCount: filesData.length,
-                files: filesData
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ خطأ في إنشاء الطلب:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message || 'حدث خطأ في إنشاء الطلب'
-        });
-    }
-});
 // ============================================================
 // 10. معالجة 404
 // ============================================================
@@ -3251,5 +2580,6 @@ app.listen(PORT, () => {
     console.log(`📁 مجلد الفيديوهات: ${videosDir}`);
     console.log(`📁 مجلد الطلبات: ${ordersDir}`);
     console.log(`📁 مجلد الملخصات: ${summariesDir}`);
+    console.log(`📁 مجلد طلبات الأعمال: ${businessOrdersDir}`);
     console.log(`🌐 بيئة التشغيل: ${process.env.NODE_ENV || 'development'}`);
 });
