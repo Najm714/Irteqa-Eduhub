@@ -11,7 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
 
     <style>
-        /* نفس الستايلات السابقة - تم حذفها للاختصار */
+        /* ============================================================
+           المتغيرات
+           ============================================================ */
         :root {
             --primary: #7C3AED;
             --primary-dark: #6D28D9;
@@ -1041,7 +1043,7 @@
     </footer>
 
     <!-- ============================================================
-    الجافا سكريبت - الاتصال بقاعدة البيانات (مصحح)
+    الجافا سكريبت - الاتصال بقاعدة البيانات
     ============================================================ -->
     <script>
         // ============================================================
@@ -1064,11 +1066,16 @@
         }
 
         // ============================================================
-        // ✅ تكوين عنوان API الصحيح
+        // ✅ تحديد عنوان API - يعمل محلياً وعن بعد
         // ============================================================
-        // استخدم العنوان الفعلي للخادم
-        const API_BASE_URL = 'https://irteqa-eduhub.onrender.com/api';
-        // للتجربة المحلية: const API_BASE_URL = 'http://localhost:5000/api';
+        const API_BASE_URL = (() => {
+            // إذا كنت تعمل محلياً
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'http://localhost:5000/api';
+            }
+            // ✅ العنوان الفعلي للخادم على Render
+            return 'https://irteqa-eduhub.onrender.com/api';
+        })();
 
         console.log('🌐 عنوان API المستخدم:', API_BASE_URL);
 
@@ -1087,7 +1094,7 @@
         }
 
         // ============================================================
-        // ✅ تحميل الطلبات من قاعدة البيانات - مسار مبسط
+        // تحميل الطلبات من قاعدة البيانات
         // ============================================================
         async function loadOrders() {
             const spinner = document.getElementById('loadingSpinner');
@@ -1101,19 +1108,14 @@
                     return;
                 }
 
-                // ✅ استخدام المسار المبسط /api/business-orders
                 const url = `${API_BASE_URL}/business-orders`;
                 console.log('📡 جلب الطلبات من:', url);
 
                 const response = await fetch(url, {
-                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${token}`
                     }
                 });
-
-                console.log('📡 حالة الاستجابة:', response.status);
 
                 if (!response.ok) {
                     if (response.status === 401) {
@@ -1131,7 +1133,6 @@
                 }
 
                 const data = await response.json();
-                console.log('📊 عدد الطلبات المستلمة:', data.count || 0);
 
                 if (data.success) {
                     orders = data.data || [];
@@ -1147,7 +1148,6 @@
                 }
             } catch (error) {
                 console.error('❌ خطأ في تحميل الطلبات:', error);
-                
                 let errorMessage = 'حدث خطأ في الاتصال بالخادم';
                 if (error.message.includes('Failed to fetch')) {
                     errorMessage = '❌ لا يمكن الاتصال بالخادم. تأكد من أن الخادم يعمل على ' + API_BASE_URL;
@@ -1301,7 +1301,7 @@
         }
 
         // ============================================================
-        // عرض تفاصيل الطلب
+        // عرض تفاصيل الطلب مع الملفات
         // ============================================================
         async function viewOrder(id) {
             try {
@@ -1344,7 +1344,7 @@
                 };
                 const statusInfo = statusMap[order.status] || statusMap['pending'];
 
-                // عرض الملفات
+                // ✅ عرض الملفات المرفوعة مع روابط تحميل
                 let filesHtml = '<span style="color: var(--text-muted);">لا توجد ملفات</span>';
                 if (order.files && order.files.length > 0) {
                     filesHtml = order.files.map((file, index) => {
@@ -1363,11 +1363,14 @@
                         };
                         const icon = iconMap[fileExtension] || 'fa-file';
 
+                        // ✅ بناء رابط الملف
+                        const fileUrl = `${API_BASE_URL.replace('/api', '')}/uploads/business-orders/${file.fileId}`;
+
                         return `
-                            <a href="#" class="file-link" onclick="downloadFile('${order._id}', ${index}); return false;">
+                            <a href="${fileUrl}" target="_blank" class="file-link" onclick="event.stopPropagation();">
                                 <i class="fas ${icon}"></i>
                                 ${file.filename || 'ملف'}
-                                <i class="fas fa-download" style="font-size: 0.6rem;"></i>
+                                <i class="fas fa-external-link-alt" style="font-size: 0.6rem;"></i>
                             </a>
                         `;
                     }).join(' ');
@@ -1430,7 +1433,7 @@
                         </div>
                     ` : ''}
                     <div class="detail-item full-width">
-                        <span class="label">الملفات المرفقة <span style="font-size: 0.7rem; color: var(--text-muted);">(اضغط للتحميل)</span></span>
+                        <span class="label">الملفات المرفقة <span style="font-size: 0.7rem; color: var(--text-muted);">(${order.files?.length || 0} ملف)</span></span>
                         <span class="value" style="display: flex; flex-wrap: wrap; gap: 8px;">${filesHtml}</span>
                     </div>
                     <div class="detail-item full-width">
@@ -1488,59 +1491,6 @@
         }
 
         // ============================================================
-        // تحميل ملف
-        // ============================================================
-        async function downloadFile(orderId, fileIndex) {
-            try {
-                const token = getToken();
-                if (!token) {
-                    showToast('❌ يرجى تسجيل الدخول', 'error');
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/business-orders/${orderId}/files/${fileIndex}`;
-                console.log('📥 تحميل ملف من:', url);
-
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const data = await response.json().catch(() => ({}));
-                    showToast('❌ ' + (data.message || 'فشل تحميل الملف'), 'error');
-                    return;
-                }
-
-                const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'ملف';
-                if (contentDisposition) {
-                    const match = contentDisposition.match(/filename="?(.+)"?/);
-                    if (match) {
-                        filename = decodeURIComponent(match[1]);
-                    }
-                }
-
-                const blob = await response.blob();
-                const urlBlob = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = urlBlob;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(urlBlob);
-
-                showToast(`✅ تم تحميل الملف: ${filename}`, 'success');
-
-            } catch (error) {
-                console.error('❌ خطأ في تحميل الملف:', error);
-                showToast('❌ حدث خطأ في تحميل الملف', 'error');
-            }
-        }
-
-        // ============================================================
         // إغلاق المودال
         // ============================================================
         function closeModal() {
@@ -1564,7 +1514,6 @@
                 }
 
                 const url = `${API_BASE_URL}/business-orders/${id}/status`;
-                console.log('📡 تحديث الحالة:', url);
 
                 const response = await fetch(url, {
                     method: 'PUT',
@@ -1608,7 +1557,6 @@
                 }
 
                 const url = `${API_BASE_URL}/business-orders/${id}`;
-                console.log('🗑️ حذف الطلب:', url);
 
                 const response = await fetch(url, {
                     method: 'DELETE',
@@ -1643,7 +1591,6 @@
                 }
 
                 const url = `${API_BASE_URL}/business-orders/export/csv`;
-                console.log('📤 تصدير البيانات:', url);
 
                 const response = await fetch(url, {
                     headers: {
@@ -1716,7 +1663,7 @@
         }
 
         // ============================================================
-        // ✅ تحميل البيانات عند بدء التشغيل
+        // تحميل البيانات عند بدء التشغيل
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             loadOrders();
