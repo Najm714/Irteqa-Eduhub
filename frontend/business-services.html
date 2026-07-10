@@ -392,7 +392,7 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
         }
 
@@ -431,14 +431,14 @@
         }
 
         .service-item .icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: inline-block;
         }
 
         .service-item h4 {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: var(--text-color);
             margin-bottom: 8px;
         }
@@ -446,7 +446,7 @@
         .service-item p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .service-item .tag {
@@ -965,7 +965,7 @@
     </section>
 
     <!-- ============================================================
-    أقسام الخدمات
+    أقسام الخدمات - جميع الأقسام والخدمات بالتفصيل
     ============================================================ -->
     <section class="services-section" id="services">
         <div class="container">
@@ -983,36 +983,47 @@
                     القسم 1: الإدارة والاستراتيجية وإدارة المشاريع
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. إدارة الجودة -->
                     <div class="service-item" onclick="openRequestForm('إدارة الجودة')">
                         <div class="icon"><i class="fas fa-certificate"></i></div>
                         <h4>إدارة الجودة</h4>
-                        <p>تحليل أنظمة الجودة الشاملة، تقييم الأداء المؤسسي، دراسة أدوات التحسين المستمر وتطوير العمليات.</p>
+                        <p>تقديم حلول شاملة لتحسين وتطوير الأداء المؤسسي وضمان تطبيق أعلى معايير الجودة</p>
                         <span class="tag">جودة • تحسين • تطوير</span>
                     </div>
+
+                    <!-- 2. إدارة المشاريع -->
                     <div class="service-item" onclick="openRequestForm('إدارة المشاريع')">
                         <div class="icon"><i class="fas fa-project-diagram"></i></div>
                         <h4>إدارة المشاريع</h4>
-                        <p>تخطيط المشاريع، تحليل المخاطر، إعداد الهياكل التنظيمية، متابعة مؤشرات الأداء.</p>
+                        <p>دعم تخطيط وتنفيذ المشاريع لضمان تحقيق الأهداف بكفاءة وفعالية ضمن الموارد المتاحة</p>
                         <span class="tag">تخطيط • مخاطر • أداء</span>
                     </div>
+
+                    <!-- 3. الإدارة الاستراتيجية -->
                     <div class="service-item" onclick="openRequestForm('الإدارة الاستراتيجية')">
                         <div class="icon"><i class="fas fa-chess-queen"></i></div>
                         <h4>الإدارة الاستراتيجية</h4>
-                        <p>صياغة وتوجيه الخطط طويلة المدى، تحليل البيئة التنافسية، وضع استراتيجيات النمو.</p>
+                        <p>صياغة وتوجيه الخطط طويلة المدى لمساعدة المنظمات في التكيف مع بيئتها وتحقيق الميزة التنافسية</p>
                         <span class="tag">استراتيجية • نمو • تنافسية</span>
                     </div>
+
+                    <!-- 4. الحوكمة -->
                     <div class="service-item" onclick="openRequestForm('الحوكمة')">
                         <div class="icon"><i class="fas fa-balance-scale"></i></div>
                         <h4>الحوكمة</h4>
-                        <p>تحليل مبادئ الحوكمة، هيكلة المسؤوليات، دراسة آليات الشفافية والامتثال.</p>
+                        <p>وضع الأطر التنظيمية التي تضمن الشفافية والمساءلة وحفظ حقوق أصحاب المصلحة</p>
                         <span class="tag">حوكمة • شفافية • امتثال</span>
                     </div>
+
+                    <!-- 5. القيادة واتخاذ القرار -->
                     <div class="service-item" onclick="openRequestForm('القيادة واتخاذ القرار')">
                         <div class="icon"><i class="fas fa-people-arrows"></i></div>
                         <h4>القيادة واتخاذ القرار</h4>
-                        <p>تحليل الأساليب القيادية، دراسة المواقف الإدارية، تحليل نماذج اتخاذ القرار.</p>
+                        <p>تقديم رؤى تحليلية لفهم السلوك القيادي وتدعيم آليات صنع القرار الإداري</p>
                         <span class="tag">قيادة • قرار • إدارة</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1025,30 +1036,39 @@
                     القسم 2: إدارة الأعمال والتسويق
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. إدارة الأعمال -->
                     <div class="service-item" onclick="openRequestForm('إدارة الأعمال')">
                         <div class="icon"><i class="fas fa-building"></i></div>
                         <h4>إدارة الأعمال</h4>
-                        <p>دراسة المبادئ والعمليات الإدارية، تحليل الهياكل التنظيمية، تطوير استراتيجيات الأعمال.</p>
+                        <p>دراسة وتحليل المبادئ والعمليات الإدارية التي تساهم في تنظيم وقيادة الأعمال بنجاح</p>
                         <span class="tag">أعمال • إدارة • تنظيم</span>
                     </div>
+
+                    <!-- 2. التسويق -->
                     <div class="service-item" onclick="openRequestForm('التسويق')">
                         <div class="icon"><i class="fas fa-bullhorn"></i></div>
                         <h4>التسويق</h4>
-                        <p>تحليل استراتيجيات التسويق، إدارة العلامات التجارية، أبحاث السوق، التسويق الرقمي.</p>
+                        <p>تحليل استراتيجيات التسويق، إدارة العلامات التجارية، أبحاث السوق، التسويق الرقمي</p>
                         <span class="tag">تسويق • علامات • أبحاث</span>
                     </div>
+
+                    <!-- 3. سلوك المستهلك -->
                     <div class="service-item" onclick="openRequestForm('سلوك المستهلك')">
                         <div class="icon"><i class="fas fa-user-friends"></i></div>
                         <h4>سلوك المستهلك</h4>
-                        <p>تحليل العوامل المؤثرة في سلوك المستهلك، أنماط الشراء، التنبؤ بالاتجاهات.</p>
+                        <p>تحليل العوامل المؤثرة في سلوك المستهلك، أنماط الشراء، التنبؤ بالاتجاهات</p>
                         <span class="tag">مستهلك • أنماط • اتجاهات</span>
                     </div>
+
+                    <!-- 4. إدارة المبيعات -->
                     <div class="service-item" onclick="openRequestForm('إدارة المبيعات')">
                         <div class="icon"><i class="fas fa-handshake"></i></div>
                         <h4>إدارة المبيعات</h4>
-                        <p>تخطيط المبيعات، إدارة فرق المبيعات، تحليل أداء المبيعات وتطويره.</p>
+                        <p>تخطيط المبيعات، إدارة فرق المبيعات، تحليل أداء المبيعات وتطويره</p>
                         <span class="tag">مبيعات • أداء • تخطيط</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1061,30 +1081,39 @@
                     القسم 3: المالية والمحاسبة
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. المحاسبة المالية -->
                     <div class="service-item" onclick="openRequestForm('المحاسبة المالية')">
                         <div class="icon"><i class="fas fa-file-invoice"></i></div>
                         <h4>المحاسبة المالية</h4>
-                        <p>إعداد القوائم المالية، تحليل البيانات المحاسبية، تطبيق المعايير المحاسبية.</p>
+                        <p>إعداد القوائم المالية، تحليل البيانات المحاسبية، تطبيق المعايير المحاسبية</p>
                         <span class="tag">محاسبة • قوائم • معايير</span>
                     </div>
+
+                    <!-- 2. المحاسبة الإدارية -->
                     <div class="service-item" onclick="openRequestForm('المحاسبة الإدارية')">
                         <div class="icon"><i class="fas fa-chart-pie"></i></div>
                         <h4>المحاسبة الإدارية</h4>
-                        <p>تحليل التكاليف، إعداد الموازنات، تقييم الأداء المالي للوحدات الإدارية.</p>
+                        <p>تحليل التكاليف، إعداد الموازنات، تقييم الأداء المالي للوحدات الإدارية</p>
                         <span class="tag">تكاليف • موازنات • أداء</span>
                     </div>
+
+                    <!-- 3. التمويل -->
                     <div class="service-item" onclick="openRequestForm('التمويل')">
                         <div class="icon"><i class="fas fa-chart-line"></i></div>
                         <h4>التمويل</h4>
-                        <p>تحليل الأسواق المالية، تقييم الاستثمارات، إدارة المخاطر المالية، هيكل رأس المال.</p>
+                        <p>تحليل الأسواق المالية، تقييم الاستثمارات، إدارة المخاطر المالية، هيكل رأس المال</p>
                         <span class="tag">استثمار • مخاطر • أسواق</span>
                     </div>
+
+                    <!-- 4. الرقابة المالية -->
                     <div class="service-item" onclick="openRequestForm('الرقابة المالية')">
                         <div class="icon"><i class="fas fa-shield-alt"></i></div>
                         <h4>الرقابة المالية</h4>
-                        <p>تحليل أنظمة الرقابة الداخلية، تدقيق الحسابات، تطوير آليات المراقبة المالية.</p>
+                        <p>تحليل أنظمة الرقابة الداخلية، تدقيق الحسابات، تطوير آليات المراقبة المالية</p>
                         <span class="tag">رقابة • تدقيق • مراقبة</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1097,30 +1126,39 @@
                     القسم 4: الاقتصاد
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. الاقتصاد الكلي -->
                     <div class="service-item" onclick="openRequestForm('الاقتصاد الكلي')">
                         <div class="icon"><i class="fas fa-globe"></i></div>
                         <h4>الاقتصاد الكلي</h4>
-                        <p>تحليل السياسات الاقتصادية، النمو الاقتصادي، التضخم، البطالة، التجارة الدولية.</p>
+                        <p>تحليل السياسات الاقتصادية، النمو الاقتصادي، التضخم، البطالة، التجارة الدولية</p>
                         <span class="tag">كلي • سياسات • نمو</span>
                     </div>
+
+                    <!-- 2. الاقتصاد الجزئي -->
                     <div class="service-item" onclick="openRequestForm('الاقتصاد الجزئي')">
                         <div class="icon"><i class="fas fa-cubes"></i></div>
                         <h4>الاقتصاد الجزئي</h4>
-                        <p>تحليل سلوك المستهلكين والمنتجين، هياكل السوق، نظرية التسعير، التوازن الاقتصادي.</p>
+                        <p>تحليل سلوك المستهلكين والمنتجين، هياكل السوق، نظرية التسعير، التوازن الاقتصادي</p>
                         <span class="tag">جزئي • أسواق • تسعير</span>
                     </div>
+
+                    <!-- 3. الاقتصاد القياسي -->
                     <div class="service-item" onclick="openRequestForm('الاقتصاد القياسي')">
                         <div class="icon"><i class="fas fa-calculator"></i></div>
                         <h4>الاقتصاد القياسي</h4>
-                        <p>تحليل البيانات الاقتصادية، النمذجة الإحصائية، التنبؤ بالمتغيرات الاقتصادية.</p>
+                        <p>تحليل البيانات الاقتصادية، النمذجة الإحصائية، التنبؤ بالمتغيرات الاقتصادية</p>
                         <span class="tag">قياسي • نمذجة • تنبؤ</span>
                     </div>
+
+                    <!-- 4. الاقتصاد الدولي -->
                     <div class="service-item" onclick="openRequestForm('الاقتصاد الدولي')">
                         <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
                         <h4>الاقتصاد الدولي</h4>
-                        <p>تحليل التجارة الدولية، تدفقات رأس المال، السياسات النقدية الدولية، أسعار الصرف.</p>
+                        <p>تحليل التجارة الدولية، تدفقات رأس المال، السياسات النقدية الدولية، أسعار الصرف</p>
                         <span class="tag">دولي • تجارة • صرف</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1133,30 +1171,39 @@
                     القسم 5: الموارد البشرية
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. إدارة الموارد البشرية -->
                     <div class="service-item" onclick="openRequestForm('إدارة الموارد البشرية')">
                         <div class="icon"><i class="fas fa-user-tie"></i></div>
                         <h4>إدارة الموارد البشرية</h4>
-                        <p>تخطيط القوى العاملة، التوظيف والاختيار، تطوير الموظفين، إدارة الأداء.</p>
+                        <p>تخطيط القوى العاملة، التوظيف والاختيار، تطوير الموظفين، إدارة الأداء</p>
                         <span class="tag">توظيف • أداء • تطوير</span>
                     </div>
+
+                    <!-- 2. التدريب والتطوير -->
                     <div class="service-item" onclick="openRequestForm('التدريب والتطوير')">
                         <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
                         <h4>التدريب والتطوير</h4>
-                        <p>تصميم برامج تدريبية، تقييم الاحتياجات التدريبية، قياس فعالية التدريب.</p>
+                        <p>تصميم برامج تدريبية، تقييم الاحتياجات التدريبية، قياس فعالية التدريب</p>
                         <span class="tag">تدريب • تطوير • تقييم</span>
                     </div>
+
+                    <!-- 3. التعويضات والحوافز -->
                     <div class="service-item" onclick="openRequestForm('التعويضات والحوافز')">
                         <div class="icon"><i class="fas fa-money-check-alt"></i></div>
                         <h4>التعويضات والحوافز</h4>
-                        <p>تحليل أنظمة التعويضات، تصميم برامج الحوافز، تقييم الفوائد والمزايا.</p>
+                        <p>تحليل أنظمة التعويضات، تصميم برامج الحوافز، تقييم الفوائد والمزايا</p>
                         <span class="tag">تعويضات • حوافز • فوائد</span>
                     </div>
+
+                    <!-- 4. العلاقات الصناعية -->
                     <div class="service-item" onclick="openRequestForm('العلاقات الصناعية')">
                         <div class="icon"><i class="fas fa-handshake"></i></div>
                         <h4>العلاقات الصناعية</h4>
-                        <p>تحليل علاقات العمل، التفاوض الجماعي، حل النزاعات العمالية، ثقافة العمل.</p>
+                        <p>تحليل علاقات العمل، التفاوض الجماعي، حل النزاعات العمالية، ثقافة العمل</p>
                         <span class="tag">علاقات • تفاوض • نزاعات</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1169,24 +1216,31 @@
                     القسم 6: إدارة العمليات والخدمات
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. إدارة العمليات -->
                     <div class="service-item" onclick="openRequestForm('إدارة العمليات')">
                         <div class="icon"><i class="fas fa-industry"></i></div>
                         <h4>إدارة العمليات</h4>
-                        <p>تحليل العمليات الإنتاجية، إدارة سلسلة التوريد، تحسين كفاءة العمليات.</p>
+                        <p>تحليل العمليات الإنتاجية، إدارة سلسلة التوريد، تحسين كفاءة العمليات</p>
                         <span class="tag">عمليات • توريد • كفاءة</span>
                     </div>
+
+                    <!-- 2. إدارة الخدمات -->
                     <div class="service-item" onclick="openRequestForm('إدارة الخدمات')">
                         <div class="icon"><i class="fas fa-concierge-bell"></i></div>
                         <h4>إدارة الخدمات</h4>
-                        <p>تحليل جودة الخدمة، إدارة تجربة العملاء، تطوير نماذج تقديم الخدمات.</p>
+                        <p>تحليل جودة الخدمة، إدارة تجربة العملاء، تطوير نماذج تقديم الخدمات</p>
                         <span class="tag">خدمات • جودة • تجربة</span>
                     </div>
+
+                    <!-- 3. إدارة المخزون واللوجستيات -->
                     <div class="service-item" onclick="openRequestForm('إدارة المخزون واللوجستيات')">
                         <div class="icon"><i class="fas fa-truck"></i></div>
                         <h4>إدارة المخزون واللوجستيات</h4>
-                        <p>تخطيط المخزون، إدارة المستودعات، توزيع المنتجات، سلاسل الإمداد.</p>
+                        <p>تخطيط المخزون، إدارة المستودعات، توزيع المنتجات، سلاسل الإمداد</p>
                         <span class="tag">مخزون • لوجستيات • توزيع</span>
                     </div>
+
                 </div>
             </div>
 
@@ -1199,38 +1253,49 @@
                     القسم 7: الإحصاء والأبحاث الاقتصادية
                 </div>
                 <div class="services-grid">
+
+                    <!-- 1. الإحصاء التطبيقي -->
                     <div class="service-item" onclick="openRequestForm('الإحصاء التطبيقي')">
                         <div class="icon"><i class="fas fa-chart-pie"></i></div>
                         <h4>الإحصاء التطبيقي</h4>
-                        <p>تحليل البيانات الإحصائية، اختبار الفروض، تصميم الدراسات الإحصائية.</p>
+                        <p>تحليل البيانات الإحصائية، اختبار الفروض، تصميم الدراسات الإحصائية</p>
                         <span class="tag">إحصاء • تحليل • اختبار</span>
                     </div>
+
+                    <!-- 2. أبحاث السوق -->
                     <div class="service-item" onclick="openRequestForm('أبحاث السوق')">
                         <div class="icon"><i class="fas fa-search-dollar"></i></div>
                         <h4>أبحاث السوق</h4>
-                        <p>تصميم وتحليل استبيانات السوق، تحليل المنافسين، تقدير حجم السوق.</p>
+                        <p>تصميم وتحليل استبيانات السوق، تحليل المنافسين، تقدير حجم السوق</p>
                         <span class="tag">سوق • استبيانات • تحليل</span>
                     </div>
+
+                    <!-- 3. النمذجة الاقتصادية -->
                     <div class="service-item" onclick="openRequestForm('النمذجة الاقتصادية')">
                         <div class="icon"><i class="fas fa-project-diagram"></i></div>
                         <h4>النمذجة الاقتصادية</h4>
-                        <p>بناء نماذج اقتصادية، تحليل النظم الاقتصادية، التنبؤ بالاتجاهات.</p>
+                        <p>بناء نماذج اقتصادية، تحليل النظم الاقتصادية، التنبؤ بالاتجاهات</p>
                         <span class="tag">نمذجة • نظم • تنبؤ</span>
                     </div>
+
+                    <!-- 4. تحليل البيانات الكبيرة -->
                     <div class="service-item" onclick="openRequestForm('تحليل البيانات الكبيرة')">
                         <div class="icon"><i class="fas fa-database"></i></div>
                         <h4>تحليل البيانات الكبيرة</h4>
-                        <p>معالجة وتحليل البيانات الاقتصادية الضخمة، استخراج الأنماط والرؤى.</p>
+                        <p>معالجة وتحليل البيانات الاقتصادية الضخمة، استخراج الأنماط والرؤى</p>
                         <span class="tag">بيانات • ضخمة • رؤى</span>
                     </div>
+
                 </div>
             </div>
 
+            <!-- زر التقديم -->
             <div style="text-align: center; margin-top: 50px;" data-aos="fade-up" data-aos-duration="800">
                 <a href="#request-form" class="btn-submit" style="width: auto; padding: 16px 60px; display: inline-block; text-decoration: none;">
                     <i class="fas fa-paper-plane"></i> تقديم طلب خدمة
                 </a>
             </div>
+
         </div>
     </section>
 
@@ -1246,9 +1311,8 @@
                 </div>
 
                 <form id="serviceRequestForm" onsubmit="submitRequest(event)">
-                    <!-- ============================================ -->
-                    <!-- الصف 1: الاسم، البريد الإلكتروني، رقم التواصل -->
-                    <!-- ============================================ -->
+
+                    <!-- الصف 1: الاسم، البريد الإلكتروني -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>الاسم الكامل <span class="required">*</span></label>
@@ -1260,14 +1324,13 @@
                         </div>
                     </div>
 
+                    <!-- رقم التواصل -->
                     <div class="form-group">
                         <label>رقم التواصل (واتساب) <span class="required">*</span></label>
                         <input type="tel" id="phone" placeholder="+966 54 850 4018" required />
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- الصف 2: القسم والخدمة ونوع الطلب -->
-                    <!-- ============================================ -->
+                    <!-- الصف 2: القسم والخدمة -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>القسم <span class="required">*</span></label>
@@ -1290,6 +1353,7 @@
                         </div>
                     </div>
 
+                    <!-- نوع الطلب -->
                     <div class="form-group">
                         <label>نوع الطلب <span class="required">*</span></label>
                         <select id="requestType" required>
@@ -1305,30 +1369,25 @@
                         </select>
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- عنوان الطلب ووصفه -->
-                    <!-- ============================================ -->
+                    <!-- عنوان الطلب -->
                     <div class="form-group">
                         <label>عنوان الطلب <span class="required">*</span></label>
                         <input type="text" id="requestTitle" placeholder="مثال: تحليل استراتيجيات التسويق لشركة X" required />
                     </div>
 
+                    <!-- وصف الطلب -->
                     <div class="form-group">
                         <label>وصف الطلب <span class="required">*</span></label>
                         <textarea id="requestDescription" placeholder="صف طلبك بالتفصيل، واذكر المتطلبات والتوقعات..." required></textarea>
                     </div>
 
-                    <!-- ============================================ -->
                     <!-- الجهة محل التطبيق (اختياري) -->
-                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>الجهة أو الشركة محل التطبيق (اختياري)</label>
                         <input type="text" id="organization" placeholder="اسم الجهة أو الشركة إن وجدت" />
                     </div>
 
-                    <!-- ============================================ -->
                     <!-- رفع الملفات -->
-                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>الملفات المرفقة</label>
                         <div class="file-upload" onclick="document.getElementById('fileInput').click()">
@@ -1340,25 +1399,19 @@
                         <div class="file-list" id="fileList"></div>
                     </div>
 
-                    <!-- ============================================ -->
                     <!-- موعد التسليم -->
-                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>موعد التسليم المطلوب <span class="required">*</span></label>
                         <input type="date" id="deliveryDate" required />
                     </div>
 
-                    <!-- ============================================ -->
                     <!-- ملاحظات إضافية -->
-                    <!-- ============================================ -->
                     <div class="form-group">
                         <label>ملاحظات إضافية (اختياري)</label>
                         <textarea id="additionalNotes" placeholder="أي تعليمات أو ملاحظات إضافية تود إضافتها..."></textarea>
                     </div>
 
-                    <!-- ============================================ -->
                     <!-- الموافقة على الشروط -->
-                    <!-- ============================================ -->
                     <div class="form-group">
                         <div class="checkbox-group">
                             <input type="checkbox" id="termsAgree" required />
@@ -1369,14 +1422,13 @@
                         </div>
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- زر الإرسال ورسائل النجاح/الخطأ -->
-                    <!-- ============================================ -->
+                    <!-- زر الإرسال -->
                     <button type="submit" class="btn-submit" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> إرسال الطلب
                     </button>
 
                     <div class="form-message" id="formMessage"></div>
+
                 </form>
             </div>
         </div>
@@ -1393,53 +1445,58 @@
             </div>
 
             <div class="terms-grid">
-                <!-- سياسة طلب الخدمات -->
+
+                <!-- 1. سياسة طلب الخدمات -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="600">
                     <div class="icon"><i class="fas fa-clipboard-list"></i></div>
                     <h3>سياسة طلب الخدمات والاعتماد</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> دقة البيانات: يلتزم العميل بتعبئة نموذج طلب الخدمة بدقة</li>
-                        <li><i class="fas fa-check-circle"></i> اكتمال المرفقات: يجب إرفاق جميع الملفات والتعليمات</li>
-                        <li><i class="fas fa-check-circle"></i> اعتماد الطلب: لا يُعتبر الطلب مؤكداً إلا بعد مراجعته وتحديد التكلفة</li>
-                        <li><i class="fas fa-check-circle"></i> الطلبات المستعجلة: تخضع لرسوم إضافية يتم توضيحها</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>دقة البيانات:</strong> يلتزم العميل بتعبئة نموذج طلب الخدمة بدقة، بما في ذلك بيانات التواصل والبريد الإلكتروني لضمان استلام العمل في الوقت المحدد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اكتمال المرفقات:</strong> يجب إرفاق جميع الملفات، التعليمات، والأدلة الإرشادية الخاصة بالجامعة أو الجهة وقت تقديم الطلب.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>اعتماد الطلب:</strong> لا يُعتبر الطلب مؤكداً أو قيد التنفيذ إلا بعد مراجعته من قبل فريقنا، وتحديد التكلفة النهائية، وتأكيد العميل بدفع الرسوم المتفق عليها.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الطلبات المستعجلة:</strong> تخضع الطلبات ذات التسليم الفوري أو المستعجل (أقل من 48 ساعة) لرسوم إضافية يتم توضيحها للعميل قبل البدء.</li>
                     </ul>
                 </div>
 
-                <!-- سياسة الدفع والاسترجاع -->
+                <!-- 2. سياسة الدفع والاسترجاع -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="700">
                     <div class="icon"><i class="fas fa-credit-card"></i></div>
                     <h3>سياسة الدفع والاسترجاع</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> آلية الدفع: يتم الاتفاق على آلية الدفع بناءً على حجم العمل</li>
-                        <li><i class="fas fa-check-circle"></i> إلغاء الطلب قبل التنفيذ: استرجاع المبلغ بالكامل</li>
-                        <li><i class="fas fa-check-circle"></i> إلغاء الطلب بعد التنفيذ: لا يحق للعميل المطالبة باسترجاع المبلغ</li>
-                        <li><i class="fas fa-check-circle"></i> الاعتذار عن التنفيذ: يتم إبلاغ العميل فوراً واسترجاع المبلغ</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>آلية الدفع:</strong> يتم الاتفاق على آلية الدفع (عربون مقدم أو دفع كامل) بناءً على حجم العمل ونوعه، ويتم سدادها عبر وسائل الدفع المعتمدة لدى المنصة.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب قبل التنفيذ:</strong> يحق للعميل إلغاء الطلب واسترجاع المبلغ بالكامل إذا لم يبدأ الفريق المتخصص في العمل الفعلي على الطلب.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إلغاء الطلب بعد التنفيذ:</strong> لا يحق للعميل المطالبة باسترجاع المبلغ بعد بدء الفريق بالعمل، حيث يتم تخصيص الوقت والموارد فور الاعتماد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الاعتذار عن التنفيذ:</strong> في حال واجهت المنصة أي ظرف يمنع تنفيذ الطلب بالجودة المطلوبة، يتم إبلاغ العميل فوراً واسترجاع المبلغ.</li>
                     </ul>
                 </div>
 
-                <!-- سياسة التسليم والتعديلات -->
+                <!-- 3. سياسة التسليم والتعديلات -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="800">
                     <div class="icon"><i class="fas fa-clock"></i></div>
                     <h3>سياسة التسليم والمراجعات</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> الالتزام بالمواعيد: تسليم الأعمال في الموعد المحدد</li>
-                        <li><i class="fas fa-check-circle"></i> صيغ التسليم: PDF و Word و Excel و PowerPoint</li>
-                        <li><i class="fas fa-check-circle"></i> التعديلات المجانية: خلال 72 ساعة من التسليم</li>
-                        <li><i class="fas fa-check-circle"></i> الطلبات الإضافية: تخضع لرسوم إضافية ووقت تسليم جديد</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الالتزام بالمواعيد:</strong> تلتزم منصة ارتقاء إديو هوب بتسليم الأعمال المطلوبة في أو قبل الموعد النهائي المحدد في نموذج الطلب المعتمد.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>صيغ التسليم:</strong> يتم تسليم الأعمال بصيغتها النهائية (PDF) و الصيغة القابلة للتعديل (Word, Excel, PowerPoint) حسب طبيعة الطلب والاتفاق المسبق.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>التأخير من طرف العميل:</strong> في حال تأخر العميل في تزويدنا بمعلومات جوهرية أو ملفات ناقصة تم طلبها لاحقاً، يتم تمديد موعد التسليم تلقائياً بما يتناسب مع مدة التأخير.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>التعديلات المجانية:</strong> يحق للعميل طلب تعديلات مجانية على العمل المُسَلَّم في حال وجود أي قصور أو عدم مطابقة للتعليمات المرفقة في وصف الطلب الأساسي.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>فترة طلب التعديل:</strong> يتم استقبال طلبات التعديل المجانية خلال فترة أقصاها (72 ساعة) من وقت تسليم العمل للعميل.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الطلبات الإضافية:</strong> أي متطلبات، نقاط إضافية، أو تعديلات جذرية لم يتم ذكرها في نموذج الطلب الأساسي تُعتبر طلباً جديداً وتخضع لرسوم إضافية ووقت تسليم جديد.</li>
                     </ul>
                 </div>
 
-                <!-- الخصوصية وسرية المعلومات -->
+                <!-- 4. الخصوصية وسرية المعلومات -->
                 <div class="terms-card" data-aos="fade-up" data-aos-duration="900">
                     <div class="icon"><i class="fas fa-lock"></i></div>
                     <h3>الخصوصية وسرية المعلومات</h3>
                     <ul>
-                        <li><i class="fas fa-check-circle"></i> حماية البيانات: التزام تام بسرية بيانات العميل</li>
-                        <li><i class="fas fa-check-circle"></i> ملكية العمل: جميع الملفات والبيانات ملك للعميل</li>
-                        <li><i class="fas fa-check-circle"></i> إتلاف الملفات: يتم إتلاف جميع ملفات العميل بعد فترة محددة</li>
-                        <li><i class="fas fa-check-circle"></i> الهدف الاسترشادي: المخرجات هي خدمات استشارية وبحثية</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>حماية البيانات:</strong> تلتزم التزاماً تاماً بالحفاظ على سرية بيانات العميل الشخصية والأكاديمية، ولا يتم مشاركتها مع أي أطراف خارجية تحت أي ظرف.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>ملكية العمل:</strong> كافة الملفات والبيانات التي يتم تحليلها ومعالجتها هي ملك للعميل بالكامل.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>إتلاف الملفات:</strong> يتم إتلاف جميع ملفات العميل من قواعد بياناتنا بعد فترة زمنية محددة من تسليم واعتماد العمل، وذلك لضمان أعلى معايير السرية.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>الهدف الاسترشادي:</strong> تُقدم المنصة مخرجاتها كخدمات استشارية وبحثية تهدف حصراً إلى مساعدة الطالب والباحثين، وتسهيل فهمهم للمادة العلمية للارتقاء بمستواهم الأكاديمي.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>حدود الاستخدام:</strong> تُعد الملفات والأعمال المُسَلَّمة مراجع داعمة ونماذج استرشادية، وتؤكد المنصة على ضرورة التزام العميل بضوابط الأمانة العلمية المعمول بها في جهته الأكاديمية عند الاستفادة منها.</li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </section>
@@ -1511,7 +1568,15 @@
         });
 
         // ============================================================
-        // بيانات الخدمات حسب القسم
+        // تكوين عنوان API - الاتصال بقاعدة البيانات
+        // ============================================================
+        const API_BASE_URL = 'https://irteqa-eduhub.onrender.com/api';
+        // للتجربة المحلية: const API_BASE_URL = 'http://localhost:5000/api';
+
+        console.log('🌐 عنوان API المستخدم:', API_BASE_URL);
+
+        // ============================================================
+        // بيانات الخدمات حسب القسم (جميع الخدمات)
         // ============================================================
         const servicesData = {
             'الإدارة والاستراتيجية وإدارة المشاريع': [
@@ -1582,7 +1647,6 @@
         function openRequestForm(serviceName) {
             document.getElementById('request-form').scrollIntoView({ behavior: 'smooth' });
             setTimeout(() => {
-                // البحث عن القسم المناسب للخدمة
                 for (const [dept, services] of Object.entries(servicesData)) {
                     if (services.includes(serviceName)) {
                         document.getElementById('department').value = dept;
@@ -1650,10 +1714,9 @@
         });
 
         // ============================================================
-        // ✅ الدالة الرئيسية: إرسال الطلب إلى localStorage
-        //    ليتم عرضه في admin-business-services.html
+        // إرسال الطلب إلى قاعدة البيانات عبر API
         // ============================================================
-        function submitRequest(event) {
+        async function submitRequest(event) {
             event.preventDefault();
 
             // جمع البيانات
@@ -1687,75 +1750,51 @@
                 return;
             }
 
-            // تعطيل الزر لمنع الضغط المتكرر
+            // تعطيل الزر
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
 
             try {
-                // ============================================================
-                // 🔥 الخطوة الأهم: حفظ الطلب في localStorage
-                //    ليتم عرضه في admin-business-services.html
-                // ============================================================
-                
-                // 1. قراءة الطلبات الموجودة من localStorage
-                let storedRequests = [];
-                const storedData = localStorage.getItem('businessServiceRequests');
-                if (storedData) {
-                    try {
-                        storedRequests = JSON.parse(storedData);
-                    } catch (e) {
-                        storedRequests = [];
-                    }
+                console.log('📤 إرسال الطلب إلى:', `${API_BASE_URL}/business-orders`);
+                console.log('📦 البيانات:', formData);
+
+                const response = await fetch(`${API_BASE_URL}/business-orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log('📥 استجابة الخادم:', result);
+
+                if (result.success) {
+                    showMessage(`✅ ${result.message} | رقم الطلب: #${result.data.id.toString().slice(-6)}`, 'success');
+                    
+                    // إعادة تعيين النموذج
+                    document.getElementById('serviceRequestForm').reset();
+                    document.getElementById('fileList').innerHTML = '';
+                    uploadedFiles = [];
+                    updateServices();
+
+                    // تعيين التاريخ الافتراضي
+                    const dateInput = document.getElementById('deliveryDate');
+                    const today = new Date();
+                    const future = new Date(today);
+                    future.setDate(future.getDate() + 7);
+                    dateInput.value = future.toISOString().split('T')[0];
+
+                } else {
+                    showMessage(`❌ ${result.message || 'حدث خطأ في إرسال الطلب'}`, 'error');
                 }
 
-                // 2. إنشاء طلب جديد مع ID فريد
-                const newId = storedRequests.length > 0 
-                    ? Math.max(...storedRequests.map(r => r.id)) + 1 
-                    : 1;
-
-                const newRequest = {
-                    id: newId,
-                    ...formData,
-                    status: 'pending', // الحالة الافتراضية: قيد الانتظار
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-
-                // 3. إضافة الطلب الجديد إلى القائمة
-                storedRequests.push(newRequest);
-
-                // 4. حفظ القائمة المحدثة في localStorage
-                localStorage.setItem('businessServiceRequests', JSON.stringify(storedRequests));
-
-                // 5. عرض رسالة نجاح
-                showMessage('✅ تم إرسال طلبك بنجاح! سيتم مراجعته من قبل فريق الإدارة.', 'success');
-
-                // 6. إعادة تعيين النموذج
-                document.getElementById('serviceRequestForm').reset();
-                document.getElementById('fileList').innerHTML = '';
-                uploadedFiles = [];
-
-                // 7. إعادة تعيين قائمة الخدمات
-                updateServices();
-
-                // 8. تعيين التاريخ الافتراضي مرة أخرى
-                const dateInput = document.getElementById('deliveryDate');
-                const today = new Date();
-                const future = new Date(today);
-                future.setDate(future.getDate() + 7);
-                dateInput.value = future.toISOString().split('T')[0];
-
-                // 9. إعادة تفعيل الزر
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
-
-                // 10. عرض رقم الطلب في رسالة (اختياري)
-                console.log(`✅ تم حفظ الطلب برقم #${newId} في localStorage`);
-
             } catch (error) {
-                console.error('❌ خطأ في حفظ الطلب:', error);
-                showMessage('❌ حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.', 'error');
+                console.error('❌ خطأ في إرسال الطلب:', error);
+                showMessage('❌ حدث خطأ في الاتصال بالخادم. تأكد من أن الخادم يعمل.', 'error');
+            } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
             }
@@ -1770,16 +1809,48 @@
             messageEl.className = 'form-message ' + type;
             messageEl.style.display = 'block';
 
-            // إخفاء الرسالة بعد 10 ثوانٍ
-            setTimeout(() => {
+            clearTimeout(messageEl._timeout);
+            messageEl._timeout = setTimeout(() => {
                 messageEl.style.display = 'none';
             }, 10000);
         }
 
+        // ============================================================
+        // التحقق من اتصال الخادم
+        // ============================================================
+        async function checkServerConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    console.log('✅ الخادم يعمل بشكل صحيح');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('⚠️ لا يمكن الاتصال بالخادم:', error.message);
+            }
+            return false;
+        }
+
+        // ============================================================
+        // بدء التشغيل
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerConnection().then(connected => {
+                if (connected) {
+                    console.log('✅ جاهز لاستقبال الطلبات');
+                } else {
+                    showMessage('⚠️ لا يمكن الاتصال بالخادم. تأكد من تشغيل الخادم.', 'error');
+                }
+            });
+        });
+
         console.log('🚀 منصة ارتقاء - خدمات كلية الأعمال');
-        console.log('📋 تم تحميل 7 أقسام وأكثر من 40 خدمة');
-        console.log('✅ النموذج جاهز لاستقبال الطلبات وحفظها في localStorage');
-        console.log('📊 سيتم عرض الطلبات في admin-business-services.html');
+        console.log('🌐 عنوان API:', API_BASE_URL);
+        console.log('📋 تم تحميل 7 أقسام و 29 خدمة');
+        console.log('✅ النموذج جاهز لاستقبال الطلبات وحفظها في قاعدة البيانات');
     </script>
 </body>
 </html>
