@@ -244,16 +244,41 @@ app.get('/api/chat/conversations', protect, async (req, res) => {
         });
     }
 });
-
-// ============================================================
-// 2. إنشاء محادثة جديدة
-// ============================================================
+ // 2. إنشاء محادثة جديدة
 app.post('/api/chat/conversations', protect, async (req, res) => {
     try {
         const { userId, userRole } = req.body;
         const senderId = req.user.id;
 
-        if (!userId) {
+        let targetUserId = userId;
+
+        // ✅ إذا كان userId = 'admin'، نبحث عن أول مدير نشط
+        if (userId === 'admin') {
+            const admin = await User.findOne({ 
+                role: 'admin', 
+                isActive: true 
+            });
+            
+            if (!admin) {
+                // إذا لم يوجد مدير، نبحث عن أي مستخدم لديه صلاحيات إدارية
+                const anyAdmin = await User.findOne({ 
+                    role: { $in: ['admin', 'expert'] },
+                    isActive: true 
+                });
+                
+                if (!anyAdmin) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'لا يوجد مدير متاح للمراسلة حالياً'
+                    });
+                }
+                targetUserId = anyAdmin._id;
+            } else {
+                targetUserId = admin._id;
+            }
+        }
+
+        if (!targetUserId) {
             return res.status(400).json({
                 success: false,
                 message: 'معرف المستخدم مطلوب'
@@ -261,7 +286,7 @@ app.post('/api/chat/conversations', protect, async (req, res) => {
         }
 
         // التحقق من وجود المستخدم
-        const targetUser = await User.findById(userId);
+        const targetUser = await User.findById(targetUserId);
         if (!targetUser) {
             return res.status(404).json({
                 success: false,
@@ -271,7 +296,7 @@ app.post('/api/chat/conversations', protect, async (req, res) => {
 
         // التحقق من وجود محادثة سابقة
         const existingConversation = await Conversation.findOne({
-            participants: { $all: [senderId, userId] }
+            participants: { $all: [senderId, targetUserId] }
         });
 
         if (existingConversation) {
@@ -284,7 +309,7 @@ app.post('/api/chat/conversations', protect, async (req, res) => {
 
         // إنشاء محادثة جديدة
         const conversation = new Conversation({
-            participants: [senderId, userId],
+            participants: [senderId, targetUserId],
             createdBy: senderId,
             type: 'direct'
         });

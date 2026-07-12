@@ -1,6 +1,6 @@
 // ============================================================
 // نظام الدردشة العائم - Chat Widget
-// النسخة النهائية مع قاعدة البيانات
+// النسخة النهائية - بدون ردود تلقائية
 // ============================================================
 
 (function() {
@@ -48,7 +48,8 @@
         currentConversationId: null,
         isConnected: false,
         ws: null,
-        reconnectCount: 0
+        reconnectCount: 0,
+        isAdmin: false // تحديد إذا كان المستخدم مديراً
     };
 
     // ============================================================
@@ -96,6 +97,7 @@
         // جلب بيانات المستخدم
         const user = getUser();
         state.user = { ...state.user, ...user };
+        state.isAdmin = state.user.role === 'admin' || state.user.role === 'expert';
         
         // إنشاء عناصر الدردشة
         createWidgetElements();
@@ -110,6 +112,7 @@
         
         console.log('💬 نظام الدردشة العائم جاهز!');
         console.log('👤 المستخدم:', state.user);
+        console.log('👑 مدير:', state.isAdmin);
     }
 
     // ============================================================
@@ -132,14 +135,12 @@
         popup.className = 'chat-widget-popup';
         popup.id = 'chatWidgetPopup';
         
-        const isAdmin = state.user.role === 'admin' || state.user.role === 'expert';
-        
         popup.innerHTML = `
             <div class="chat-widget-header">
                 <div class="info">
-                    <div class="avatar" id="widgetAvatar">${isAdmin ? 'م' : 'ا'}</div>
+                    <div class="avatar" id="widgetAvatar">${state.isAdmin ? 'م' : 'ا'}</div>
                     <div class="details">
-                        <div class="name" id="widgetName">${isAdmin ? 'لوحة الإدارة' : 'الدعم الفني'}</div>
+                        <div class="name" id="widgetName">${state.isAdmin ? 'لوحة الإدارة' : 'الدعم الفني'}</div>
                         <div class="status" id="widgetStatus">
                             <span class="dot online"></span> متصل الآن
                         </div>
@@ -156,7 +157,8 @@
             </div>
 
             <div class="chat-widget-body">
-                <div class="chat-conversations" id="chatConversations">
+                <!-- قائمة المحادثات -->
+                <div class="chat-conversations" id="chatConversations" style="${state.isAdmin ? '' : 'display:none;'}">
                     <div class="conv-header">
                         <span>المحادثات</span>
                         <span class="conv-count" id="convCount">0</span>
@@ -169,11 +171,13 @@
                     </div>
                 </div>
 
+                <!-- منطقة الرسائل -->
                 <div class="chat-messages-wrapper">
                     <div class="chat-messages" id="widgetMessages">
                         <div class="widget-empty-state">
                             <i class="fas fa-comment-dots"></i>
-                            <p>اختر محادثة للبدء</p>
+                            <p>${state.isAdmin ? 'اختر محادثة للبدء' : 'مرحباً! كيف يمكنني مساعدتك؟'}</p>
+                            <span>${state.isAdmin ? 'سيظهر العملاء هنا عند مراسلتك' : 'اكتب رسالتك وسيتم الرد عليك من قبل الدعم الفني'}</span>
                         </div>
                     </div>
 
@@ -181,7 +185,7 @@
                         <button class="attach-btn" onclick="window.chatWidget.attachFile()" title="إرفاق ملف">
                             <i class="fas fa-paperclip"></i>
                         </button>
-                        <input type="text" id="widgetInput" placeholder="اكتب رسالتك..." autocomplete="off" />
+                        <input type="text" id="widgetInput" placeholder="${state.isAdmin ? 'اكتب ردك...' : 'اكتب رسالتك...'}" autocomplete="off" />
                         <button class="send-btn" id="widgetSendBtn" disabled onclick="window.chatWidget.sendMessage()">
                             <i class="fas fa-paper-plane"></i>
                         </button>
@@ -221,7 +225,8 @@
             getUnreadCount: getUnreadCount,
             markAsRead: markAsRead,
             getMessages: getMessages,
-            refresh: loadConversations
+            refresh: loadConversations,
+            isAdmin: state.isAdmin
         };
     }
 
@@ -232,8 +237,6 @@
         try {
             const token = getToken();
             if (!token) {
-                // مستخدم زائر - لا نستطيع جلب المحادثات
-                console.log('👤 مستخدم زائر، لا توجد محادثات');
                 renderConversations();
                 return;
             }
@@ -252,12 +255,10 @@
             if (data.success) {
                 state.conversations = data.data || [];
                 renderConversations();
-                
-                // تحديث الإشعارات
                 updateBadge();
                 
-                // فتح أول محادثة إذا كانت موجودة
-                if (state.conversations.length > 0 && !state.currentConversationId) {
+                // إذا كان مديراً ووجدت محادثات، افتح الأولى
+                if (state.isAdmin && state.conversations.length > 0 && !state.currentConversationId) {
                     openConversation(state.conversations[0].id);
                 }
             }
@@ -306,11 +307,20 @@
         const container = elements.conversationsList;
         if (!container) return;
 
+        // إذا لم يكن المستخدم مديراً، نخفي قائمة المحادثات
+        if (!state.isAdmin) {
+            document.getElementById('chatConversations').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('chatConversations').style.display = 'flex';
+
         if (state.conversations.length === 0) {
             container.innerHTML = `
                 <div class="conv-empty">
                     <i class="fas fa-comments"></i>
                     <p>لا توجد محادثات</p>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">سيظهر العملاء هنا عند مراسلتك</span>
                 </div>
             `;
             document.getElementById('convCount').textContent = '0';
@@ -333,6 +343,12 @@
                 client: 'client',
                 expert: 'expert'
             };
+            
+            const roleLabels = {
+                admin: 'مدير',
+                client: 'عميل',
+                expert: 'خبير'
+            };
 
             html += `
                 <div class="conv-item ${isActive ? 'active' : ''}" onclick="window.chatWidget.openConversation('${conv.id}')">
@@ -340,7 +356,7 @@
                     <div class="info">
                         <div class="name">
                             ${userName}
-                            <span class="role">${userRole === 'admin' ? 'مدير' : userRole === 'expert' ? 'خبير' : 'عميل'}</span>
+                            <span class="role">${roleLabels[userRole] || 'مستخدم'}</span>
                         </div>
                         <div class="last-msg">${lastMsg}</div>
                     </div>
@@ -383,24 +399,14 @@
             container.innerHTML = `
                 <div class="widget-empty-state">
                     <i class="fas fa-comment-dots"></i>
-                    <p>لا توجد رسائل</p>
-                    <span>ابدأ المحادثة الآن</span>
+                    <p>${state.isAdmin ? 'لا توجد رسائل في هذه المحادثة' : 'مرحباً! كيف يمكنني مساعدتك؟'}</p>
+                    <span>${state.isAdmin ? 'انتظر ردود العملاء' : 'اكتب رسالتك وسيتم الرد عليك'}</span>
                 </div>
             `;
             return;
         }
 
-        let lastDate = '';
         state.messages.forEach((msg) => {
-            const msgDate = new Date(msg.createdAt).toLocaleDateString('ar-SA');
-            if (msgDate !== lastDate) {
-                lastDate = msgDate;
-                const dateDiv = document.createElement('div');
-                dateDiv.className = 'message-date';
-                dateDiv.innerHTML = `<span>${msgDate}</span>`;
-                container.appendChild(dateDiv);
-            }
-
             const div = document.createElement('div');
             const isOwn = msg.senderId === state.user.id;
             div.className = `msg ${isOwn ? 'sent' : 'received'}`;
@@ -464,10 +470,16 @@
             return;
         }
 
-        // إذا لم تكن هناك محادثة مفتوحة، ننشئ محادثة جديدة مع المدير
+        // إذا لم تكن هناك محادثة مفتوحة
         if (!state.currentConversationId) {
-            // إنشاء محادثة مع المدير (admin)
-            const adminId = await getOrCreateAdminConversation();
+            // إذا كان المستخدم مديراً، لا يمكنه بدء محادثة جديدة بدون عميل محدد
+            if (state.isAdmin) {
+                showToast('❌ اختر محادثة من القائمة أولاً', 'error');
+                return;
+            }
+            
+            // العميل يبدأ محادثة جديدة مع المدير
+            const adminId = await createConversationWithAdmin();
             if (!adminId) {
                 showToast('❌ لا يمكن إنشاء محادثة جديدة', 'error');
                 return;
@@ -534,6 +546,14 @@
                 elements.sendBtn.disabled = true;
                 
                 showToast('✅ تم إرسال الرسالة', 'success');
+                
+                // بعد إرسال الرسالة، تأكد من تحديث قائمة المحادثات للمدير
+                if (!state.isAdmin) {
+                    // تحديث المحادثات بعد ثانيتين لظهورها عند المدير
+                    setTimeout(() => {
+                        loadConversations();
+                    }, 2000);
+                }
             }
         } catch (error) {
             console.error('❌ فشل إرسال الرسالة:', error);
@@ -542,24 +562,12 @@
     }
 
     // ============================================================
-    // الحصول على محادثة مع المدير أو إنشاؤها
+    // إنشاء محادثة مع المدير
     // ============================================================
-    async function getOrCreateAdminConversation() {
+    async function createConversationWithAdmin() {
         try {
             const token = getToken();
             
-            // البحث عن محادثة مع المدير
-            const existingConv = state.conversations.find(c => 
-                c.otherUser && c.otherUser.role === 'admin'
-            );
-            
-            if (existingConv) {
-                return existingConv.id;
-            }
-            
-            // إنشاء محادثة جديدة مع المدير
-            // نحتاج إلى معرف المدير (admin ID)
-            // في النظام، المدير عادةً يكون أول مستخدم مسجل
             const response = await fetch(`${CONFIG.apiUrl}/chat/conversations`, {
                 method: 'POST',
                 headers: {
@@ -567,7 +575,7 @@
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    userId: 'admin', // سيتم التعامل معها في الخادم
+                    userId: 'admin', // يبحث عن أول مدير في النظام
                     userRole: 'admin'
                 })
             });
@@ -579,9 +587,19 @@
             const data = await response.json();
             if (data.success) {
                 // إضافة المحادثة الجديدة إلى القائمة
-                state.conversations.unshift(data.data);
+                const newConv = {
+                    id: data.data._id,
+                    otherUser: {
+                        name: 'الدعم الفني',
+                        role: 'admin',
+                        avatar: 'ا'
+                    },
+                    lastMessage: 'مرحباً! كيف يمكنني مساعدتك؟',
+                    unreadCount: 0
+                };
+                state.conversations.unshift(newConv);
                 renderConversations();
-                return data.data.id;
+                return data.data._id;
             }
         } catch (error) {
             console.error('❌ فشل إنشاء المحادثة:', error);
@@ -603,6 +621,19 @@
         
         // تحديث المحادثات
         loadConversations();
+        
+        // إذا كان العميل وليس لديه محادثة، نعرض رسالة ترحيب
+        if (!state.isAdmin && state.conversations.length === 0) {
+            // نعرض رسالة ترحيب في منطقة الرسائل
+            const container = elements.messages;
+            container.innerHTML = `
+                <div class="widget-empty-state">
+                    <i class="fas fa-comment-dots"></i>
+                    <p>مرحباً! كيف يمكنني مساعدتك؟</p>
+                    <span>اكتب رسالتك وسيتم الرد عليك من قبل الدعم الفني</span>
+                </div>
+            `;
+        }
         
         setTimeout(() => {
             elements.input.focus();
@@ -719,7 +750,6 @@
             if (state.isOpen) {
                 loadConversations();
             } else {
-                // تحديث عدد الإشعارات فقط
                 updateBadge();
             }
         }, 10000);
@@ -796,10 +826,12 @@
         markAsRead: markAsRead,
         getMessages: getMessages,
         refresh: loadConversations,
+        isAdmin: state.isAdmin,
         state: state
     };
 
     console.log('💬 Chat Widget initialized successfully!');
     console.log('👤 المستخدم:', state.user);
+    console.log('👑 مدير:', state.isAdmin);
 
 })();
