@@ -434,10 +434,7 @@ app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
         });
     }
 });
-
-// ============================================================
-// 4. إرسال رسالة جديدة
-// ============================================================
+// 4. إرسال رسالة جديدة - مع دعم الملفات
 app.post('/api/chat/messages', protect, async (req, res) => {
     try {
         const { conversationId, text, file } = req.body;
@@ -450,7 +447,6 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             });
         }
 
-        // التحقق من وجود المحادثة
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
             return res.status(404).json({
@@ -459,7 +455,6 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             });
         }
 
-        // التحقق من أن المستخدم مشارك في المحادثة
         if (!conversation.participants.includes(senderId)) {
             return res.status(403).json({
                 success: false,
@@ -467,28 +462,68 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             });
         }
 
-        // حفظ الملف إذا وجد
         let fileData = null;
-        if (file) {
-            // حفظ الملف في مجلد chat-files
-            const fileName = `chat_${Date.now()}_${file.name}`;
-            const filePath = path.join(chatFilesDir, fileName);
-            
-            // استخراج البيانات من Base64
-            const base64Data = file.data.split(';base64,').pop();
-            const buffer = Buffer.from(base64Data, 'base64');
-            fs.writeFileSync(filePath, buffer);
+        
+        // ✅ معالجة الملف إذا وجد
+        if (file && file.data) {
+            try {
+                console.log('📁 استلام ملف:', {
+                    name: file.name,
+                    type: file.type,
+                    size: (file.size / 1024).toFixed(1) + ' KB'
+                });
 
-            fileData = {
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                path: `/uploads/chat-files/${fileName}`,
-                fileId: fileName
-            };
+                // ✅ التأكد من وجود مجلد chat-files
+                if (!fs.existsSync(chatFilesDir)) {
+                    fs.mkdirSync(chatFilesDir, { recursive: true });
+                    console.log('📁 تم إنشاء مجلد chat-files');
+                }
+
+                // ✅ تنظيف اسم الملف
+                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const fileName = `chat_${Date.now()}_${cleanName}`;
+                const filePath = path.join(chatFilesDir, fileName);
+                
+                // ✅ استخراج البيانات من Base64
+                let base64Data = file.data;
+                if (base64Data.includes(';base64,')) {
+                    base64Data = base64Data.split(';base64,').pop();
+                }
+                
+                // ✅ التحقق من وجود بيانات
+                if (!base64Data || base64Data.length === 0) {
+                    throw new Error('بيانات الملف فارغة');
+                }
+                
+                const buffer = Buffer.from(base64Data, 'base64');
+                
+                // ✅ التحقق من أن الملف ليس فارغاً
+                if (buffer.length === 0) {
+                    throw new Error('الملف فارغ');
+                }
+
+                // ✅ حفظ الملف
+                fs.writeFileSync(filePath, buffer);
+                console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
+
+                fileData = {
+                    name: file.name,
+                    type: file.type || 'application/octet-stream',
+                    size: file.size || buffer.length,
+                    path: `/uploads/chat-files/${fileName}`,
+                    fileId: fileName
+                };
+
+            } catch (fileError) {
+                console.error('❌ خطأ في حفظ الملف:', fileError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'حدث خطأ في حفظ الملف: ' + fileError.message
+                });
+            }
         }
 
-        // إنشاء الرسالة
+        // ✅ إنشاء الرسالة
         const message = new Message({
             conversationId: conversationId,
             senderId: senderId,
@@ -499,18 +534,18 @@ app.post('/api/chat/messages', protect, async (req, res) => {
 
         await message.save();
 
-        // تحديث المحادثة
+        // ✅ تحديث المحادثة
         await Conversation.findByIdAndUpdate(conversationId, {
             lastMessage: message._id,
             updatedAt: new Date(),
             $inc: { unreadCount: 1 }
         });
 
-        // جلب الرسالة مع بيانات المرسل
+        // ✅ جلب الرسالة مع بيانات المرسل
         const populatedMessage = await Message.findById(message._id)
             .populate('senderId', 'name email role avatar');
 
-        // إرسال إشعار عبر WebSocket
+        // ✅ إرسال إشعار عبر WebSocket
         const wsData = {
             type: 'new_message',
             conversationId: conversationId,
@@ -525,7 +560,6 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             }
         };
 
-        // إرسال إلى جميع المشاركين في المحادثة (باستثناء المرسل)
         broadcastToConversation(conversationId, senderId, wsData);
 
         res.status(201).json({
@@ -546,11 +580,10 @@ app.post('/api/chat/messages', protect, async (req, res) => {
         console.error('❌ خطأ في إرسال الرسالة:', error);
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message || 'حدث خطأ في إرسال الرسالة'
         });
     }
 });
-
 // ============================================================
 // 5. تحديد الرسائل كمقروءة
 // ============================================================
@@ -3475,178 +3508,20 @@ app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
-
-// 4. إرسال رسالة جديدة
-app.post('/api/chat/messages', protect, async (req, res) => {
-    try {
-        const { conversationId, text, file } = req.body;
-        const senderId = req.user.id;
-
-        if (!conversationId || !text) {
-            return res.status(400).json({
-                success: false,
-                message: 'معرف المحادثة والنص مطلوبان'
-            });
-        }
-
-        const conversation = await Conversation.findById(conversationId);
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'المحادثة غير موجودة'
-            });
-        }
-
-        if (!conversation.participants.includes(senderId)) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لإرسال رسالة في هذه المحادثة'
-            });
-        }
-
-        let fileData = null;
-        if (file && file.data) {
-            try {
-                // التأكد من وجود مجلد chat-files
-                if (!fs.existsSync(chatFilesDir)) {
-                    fs.mkdirSync(chatFilesDir, { recursive: true });
-                }
-
-                const fileName = `chat_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                const filePath = path.join(chatFilesDir, fileName);
-                
-                let base64Data = file.data;
-                if (base64Data.includes(';base64,')) {
-                    base64Data = base64Data.split(';base64,').pop();
-                }
-                
-                const buffer = Buffer.from(base64Data, 'base64');
-                fs.writeFileSync(filePath, buffer);
-
-                fileData = {
-                    name: file.name,
-                    type: file.type || 'application/octet-stream',
-                    size: file.size || buffer.length,
-                    path: `/uploads/chat-files/${fileName}`,
-                    fileId: fileName
-                };
-            } catch (fileError) {
-                console.error('❌ خطأ في حفظ الملف:', fileError);
-                return res.status(500).json({
-                    success: false,
-                    message: 'حدث خطأ في حفظ الملف: ' + fileError.message
-                });
-            }
-        }
-
-        const message = new Message({
-            conversationId: conversationId,
-            senderId: senderId,
-            text: text,
-            file: fileData,
-            read: false
-        });
-
-        await message.save();
-
-        await Conversation.findByIdAndUpdate(conversationId, {
-            lastMessage: message._id,
-            updatedAt: new Date(),
-            $inc: { unreadCount: 1 }
-        });
-
-        const populatedMessage = await Message.findById(message._id)
-            .populate('senderId', 'name email role avatar');
-
-        res.status(201).json({
-            success: true,
-            data: {
-                id: populatedMessage._id,
-                senderId: populatedMessage.senderId._id,
-                senderName: populatedMessage.senderId.name,
-                senderRole: populatedMessage.senderId.role,
-                text: populatedMessage.text,
-                file: populatedMessage.file || null,
-                createdAt: populatedMessage.createdAt
-            },
-            message: 'تم إرسال الرسالة بنجاح'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في إرسال الرسالة:', error);
-        res.status(500).json({
+// ============================================================
+// مسار مباشر لملفات الدردشة
+// ============================================================
+app.get('/chat-files/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(chatFilesDir, filename);
+    
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.status(404).json({
             success: false,
-            message: error.message || 'حدث خطأ في إرسال الرسالة'
+            message: 'الملف غير موجود'
         });
-    }
-});
-
-// 5. تحديث الرسائل كمقروءة
-app.put('/api/chat/messages/read', protect, async (req, res) => {
-    try {
-        const { conversationId } = req.body;
-        const userId = req.user.id;
-
-        if (!conversationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'معرف المحادثة مطلوب'
-            });
-        }
-
-        await Message.updateMany(
-            {
-                conversationId: conversationId,
-                senderId: { $ne: userId },
-                read: false
-            },
-            { read: true }
-        );
-
-        await Conversation.findByIdAndUpdate(conversationId, {
-            $set: { unreadCount: 0 }
-        });
-
-        res.status(200).json({
-            success: true,
-            message: 'تم تحديث الرسائل كمقروءة'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في تحديث الرسائل:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// 6. حذف محادثة
-app.delete('/api/chat/conversations/:id', protect, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const conversation = await Conversation.findById(id);
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'المحادثة غير موجودة'
-            });
-        }
-
-        if (!conversation.participants.includes(userId)) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لحذف هذه المحادثة'
-            });
-        }
-
-        await Message.deleteMany({ conversationId: id });
-        await Conversation.findByIdAndDelete(id);
-
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف المحادثة بنجاح'
-        });
-    } catch (error) {
-        console.error('❌ خطأ في حذف المحادثة:', error);
-        res.status(500).json({ success: false, message: error.message });
     }
 });
 // ============================================================
