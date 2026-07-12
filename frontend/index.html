@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>منصة ارتقاء - الخدمات الأكاديمية الاحترافية</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -95,92 +97,294 @@
             background: var(--gradient-main);
             border-radius: 10px;
         }
+/* ============================================================
+   شاشة الترحيب - تصميم احترافي
+   ============================================================ */
 
-        /* ============================================================
-           شاشة الترحيب - حرف E مميز
-           ============================================================ */
-        .splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            transition: opacity 1s ease, transform 1s ease;
-        }
+/* الخلفية الرئيسية */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 30%, #0d1b2a 60%, #1a0a2e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+    overflow: hidden;
+}
 
-        .splash-screen.hide {
-            opacity: 0;
-            transform: scale(1.2);
-            pointer-events: none;
-        }
+.splash-screen.hide {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+}
 
-        .splash-letter {
-            font-size: 15rem;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 40px rgba(255,255,255,0.3);
-            animation: splashPulse 1.5s ease-in-out infinite;
-            position: relative;
-        }
+/* 🌌 خلفية الجسيمات (Canvas) */
+#particlesCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
 
-        .splash-letter::after {
-            content: 'E';
-            position: absolute;
-            top: 0;
-            left: 0;
-            color: rgba(255,255,255,0.1);
-            filter: blur(20px);
-            animation: splashGlow 2s ease-in-out infinite;
-        }
+/* ✨ الجسيمات الضوئية المتألقة */
+.sparkle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
 
-        @keyframes splashPulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-        }
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0) 70%);
+    border-radius: 50%;
+    animation: sparkleAnimation 3s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
 
-        @keyframes splashGlow {
-            0%, 100% {
-                filter: blur(20px);
-                opacity: 0.5;
-            }
-            50% {
-                filter: blur(40px);
-                opacity: 1;
-            }
-        }
+@keyframes sparkleAnimation {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    25% {
+        opacity: 1;
+        transform: scale(1.5) rotate(90deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1) rotate(180deg);
+    }
+    75% {
+        opacity: 1;
+        transform: scale(1.3) rotate(270deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0) rotate(360deg);
+    }
+}
 
-        .splash-sub {
-            position: absolute;
-            bottom: 30%;
-            color: rgba(255,255,255,0.6);
-            font-size: 1.2rem;
-            font-weight: 300;
-            letter-spacing: 5px;
-            animation: fadeInUp 2s ease;
-        }
+/* ✨ المحتوى الرئيسي */
+.splash-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    animation: fadeInUp 1.5s ease;
+}
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* أيقونة المنصة */
+.splash-icon {
+    margin-bottom: 20px;
+    animation: floatIcon 3s ease-in-out infinite;
+}
 
+.splash-icon svg {
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* 🏆 العنوان الذهبي ثلاثي الأبعاد */
+.splash-title {
+    margin: 0;
+    padding: 0;
+    perspective: 1000px;
+}
+
+.gold-text {
+    font-size: 7rem;
+    font-weight: 900;
+    letter-spacing: 8px;
+    display: inline-block;
+    background: linear-gradient(180deg, #FFF8DC 0%, #FFD700 25%, #FFA500 50%, #FFD700 75%, #FFF8DC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.3),
+        0 0 40px rgba(255, 215, 0, 0.2),
+        0 0 60px rgba(255, 215, 0, 0.1);
+    animation: gold3D 3s ease-in-out infinite;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+/* تأثير ثلاثي الأبعاد */
+.gold-text::before {
+    content: 'ERTIQAA';
+    position: absolute;
+    top: 4px;
+    left: -4px;
+    background: linear-gradient(180deg, #B8860B, #8B7500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    z-index: -1;
+    transform: translateZ(-10px);
+    opacity: 0.5;
+}
+
+.gold-text::after {
+    content: 'ERTIQAA';
+    position: absolute;
+    top: 8px;
+    left: -8px;
+    background: linear-gradient(180deg, #8B7500, #5C4A00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    z-index: -2;
+    transform: translateZ(-20px);
+    opacity: 0.3;
+}
+
+@keyframes gold3D {
+    0%, 100% {
+        transform: rotateX(0deg) rotateY(0deg) scale(1);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.2);
+    }
+    25% {
+        transform: rotateX(5deg) rotateY(5deg) scale(1.02);
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+    }
+    75% {
+        transform: rotateX(-5deg) rotateY(-5deg) scale(0.98);
+        text-shadow: 0 0 25px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 215, 0, 0.3);
+    }
+}
+
+/* 🏷️ النص الثانوي */
+.splash-subtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 6px;
+    margin-top: 10px;
+    font-family: 'Georgia', serif;
+    animation: fadeInUp 2s ease 0.3s both;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+/* 📊 شريط التحميل */
+.splash-loader {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.loader-bar {
+    width: 250px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loader-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+    border-radius: 3px;
+    animation: loadProgress 2.5s ease-in-out forwards;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes loadProgress {
+    0% { width: 0%; }
+    30% { width: 30%; }
+    60% { width: 65%; }
+    85% { width: 85%; }
+    100% { width: 100%; }
+}
+
+.loader-text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    font-weight: 300;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+/* 🎬 تأثيرات الدخول */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================================
+   التجاوب للشاشات الصغيرة
+   ============================================================ */
+@media (max-width: 768px) {
+    .gold-text {
+        font-size: 4rem;
+        letter-spacing: 4px;
+    }
+    
+    .splash-subtitle {
+        font-size: 1rem;
+        letter-spacing: 3px;
+    }
+    
+    .loader-bar {
+        width: 180px;
+    }
+    
+    .sparkle {
+        width: 4px;
+        height: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gold-text {
+        font-size: 2.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .splash-subtitle {
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .splash-icon svg {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .loader-bar {
+        width: 150px;
+    }
+}
         /* ============================================================
            زر تبديل الوضع
            ============================================================ */
@@ -403,7 +607,7 @@
             color: var(--text-color);
             font-weight: 600;
             transition: var(--transition);
-            font-size: 1.05rem;
+            font-size: 0.9rem;
         }
 
         .sidebar-menu li a:hover {
@@ -488,6 +692,12 @@
         .sidebar-overlay.show {
             display: block;
         }
+.logo-img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+}
+
 
         /* ============================================================
            القائمة الرئيسية - تختفي في الشاشات الصغيرة
@@ -656,48 +866,64 @@
         .search-bar button:hover {
             transform: scale(1.05);
         }
+ /* ============================================================
+   Hero Section - خلفية نجمية
+   ============================================================ */
+.hero {
+    background: linear-gradient(180deg, #0a0a1a 0%, #0f172a 40%, #1a0a2e 70%, #0d1b2a 100%);
+    color: #fff;
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+}
 
-        /* ============================================================
-           القسم الرئيسي (Hero)
-           ============================================================ */
-        .hero {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #2D1B69 100%);
-            color: #fff;
-            padding: 120px 0;
-            position: relative;
-            overflow: hidden;
-        }
+/* النجوم المتلألئة */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+}
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
-            border-radius: 50%;
-            animation: float 8s ease-in-out infinite reverse;
-        }
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
 
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(30px, -30px) rotate(5deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
+/* أشعة ضوئية متحركة */
+.light-rays {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
 
+.ray {
+    position: absolute;
+    top: -50%;
+    width: 100%;
+    height: 200%;
+    background: linear-gradient(180deg, transparent, rgba(124, 58, 237, 0.03), transparent);
+    transform: rotate(var(--angle));
+    animation: rayMove 12s linear infinite;
+}
+
+@keyframes rayMove {
+    0% { transform: rotate(var(--angle)) translateX(-100%); }
+    100% { transform: rotate(var(--angle)) translateX(100%); }
+}
         .hero .container {
             position: relative;
             z-index: 1;
@@ -1993,14 +2219,60 @@
         }
     </style>
 </head>
-<body>
 
-    <!-- ====== شاشة الترحيب - حرف E مميز ====== -->
-    <div class="splash-screen" id="splashScreen">
-        <svg xmlns="http://www.w3.org/2000/svg" height="60" width="100" viewBox="0 0 640 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(220, 196, 220)" d="M493.9 295.6c-50.3 0-83.5-38.9-92.8-53.9 11.9-95.3 46.8-125.4 92.8-125.4 45.5 0 80.9 36.4 80.9 89.7s-35.4 89.7-80.9 89.7l0-.1zm0-237.8c-81.9 0-127.8 53.4-141 108.4-14.9-28-25.9-65.5-34.5-100.3l-113.2 0 0 141c0 51.1-23.3 89-68.8 89s-71.6-37.8-71.6-89l.5-141-65.3 0 0 141c0 41.1 13.3 78.4 37.6 105.1 25 27.5 59.2 41.8 98.8 41.8 78.8 0 133.8-60.4 133.8-146.9l0-94.8c8.2 31.2 27.8 91.1 65.3 143.6l-35 199.4 66.4 0 23.1-141.3c7.6 6.3 15.7 12 24.2 17 22.2 14 47.7 21.9 73.9 22.8 0 0 4 .2 6.1 .2 81.2 0 145.9-62.9 145.9-147.8S575.3 57.9 494.1 57.9l-.2-.1z"/></svg>
-        <div class="splash-letter">IRTEQA</div>
-        <div class="splash-sub">منصة ارتقاء</div>
+<body>
+ <!-- ====== شاشة الترحيب - تصميم احترافي ====== -->
+<div class="splash-screen" id="splashScreen">
+    
+    <!-- 🌌 خلفية متحركة -->
+    <canvas id="particlesCanvas"></canvas>
+    
+    <!-- ✨ جسيمات ضوئية -->
+    <div class="sparkle-container">
+        <div class="sparkle" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+        <div class="sparkle" style="top: 20%; right: 20%; animation-delay: 0.5s;"></div>
+        <div class="sparkle" style="bottom: 30%; left: 25%; animation-delay: 1s;"></div>
+        <div class="sparkle" style="top: 40%; right: 10%; animation-delay: 1.5s;"></div>
+        <div class="sparkle" style="bottom: 20%; right: 30%; animation-delay: 2s;"></div>
+        <div class="sparkle" style="top: 60%; left: 5%; animation-delay: 2.5s;"></div>
+        <div class="sparkle" style="bottom: 10%; left: 40%; animation-delay: 3s;"></div>
+        <div class="sparkle" style="top: 5%; left: 50%; animation-delay: 3.5s;"></div>
+        <div class="sparkle" style="bottom: 50%; right: 5%; animation-delay: 4s;"></div>
+        <div class="sparkle" style="top: 30%; left: 70%; animation-delay: 4.5s;"></div>
     </div>
+    
+    <!-- ✨ المحتوى الرئيسي -->
+    <div class="splash-content">
+        <div class="splash-icon">
+            <svg width="80" height="80" viewBox="0 0 640 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M493.9 295.6c-50.3 0-83.5-38.9-92.8-53.9 11.9-95.3 46.8-125.4 92.8-125.4 45.5 0 80.9 36.4 80.9 89.7s-35.4 89.7-80.9 89.7l0-.1zm0-237.8c-81.9 0-127.8 53.4-141 108.4-14.9-28-25.9-65.5-34.5-100.3l-113.2 0 0 141c0 51.1-23.3 89-68.8 89s-71.6-37.8-71.6-89l.5-141-65.3 0 0 141c0 41.1 13.3 78.4 37.6 105.1 25 27.5 59.2 41.8 98.8 41.8 78.8 0 133.8-60.4 133.8-146.9l0-94.8c8.2 31.2 27.8 91.1 65.3 143.6l-35 199.4 66.4 0 23.1-141.3c7.6 6.3 15.7 12 24.2 17 22.2 14 47.7 21.9 73.9 22.8 0 0 4 .2 6.1 .2 81.2 0 145.9-62.9 145.9-147.8S575.3 57.9 494.1 57.9l-.2-.1z" 
+                      fill="url(#goldGradient)" opacity="0.9"/>
+                <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                        <stop offset="25%" style="stop-color:#FFF8DC;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+                        <stop offset="75%" style="stop-color:#FFA500;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        
+        <h1 class="splash-title">
+            <span class="gold-text">ERTIQAA</span>
+        </h1>
+        
+        <p class="splash-subtitle">The Future of Academic Excellence</p>
+        
+        <div class="splash-loader">
+            <div class="loader-bar">
+                <div class="loader-fill"></div>
+            </div>
+            <span class="loader-text">جاري التحميل...</span>
+        </div>
+    </div>
+</div>
 
     <!-- ====== زر تبديل الوضع ====== -->
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="تبديل الوضع">
@@ -2065,13 +2337,14 @@
         </div>
     </div>
 
+    
     <!-- ============================================================
     الهيدر
     ============================================================ -->
     <header class="header" id="header">
         <div class="container">
             <a href="#" class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" height="32" width="40" viewBox="0 0 640 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(220, 196, 220)" d="M493.9 295.6c-50.3 0-83.5-38.9-92.8-53.9 11.9-95.3 46.8-125.4 92.8-125.4 45.5 0 80.9 36.4 80.9 89.7s-35.4 89.7-80.9 89.7l0-.1zm0-237.8c-81.9 0-127.8 53.4-141 108.4-14.9-28-25.9-65.5-34.5-100.3l-113.2 0 0 141c0 51.1-23.3 89-68.8 89s-71.6-37.8-71.6-89l.5-141-65.3 0 0 141c0 41.1 13.3 78.4 37.6 105.1 25 27.5 59.2 41.8 98.8 41.8 78.8 0 133.8-60.4 133.8-146.9l0-94.8c8.2 31.2 27.8 91.1 65.3 143.6l-35 199.4 66.4 0 23.1-141.3c7.6 6.3 15.7 12 24.2 17 22.2 14 47.7 21.9 73.9 22.8 0 0 4 .2 6.1 .2 81.2 0 145.9-62.9 145.9-147.8S575.3 57.9 494.1 57.9l-.2-.1z"/></svg>
+                <img src="images/logo.png" alt="شعار منصة ارتقاء" class="logo-img">
                 منصة <span>ارتقاء</span>
             </a>
 
@@ -3010,15 +3283,123 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js">
     </script>
     <script>
-        // ============================================================
-        // شاشة الترحيب - حرف E
-        // ============================================================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splashScreen').classList.add('hide');
-            }, 2500);
-        });
+       // ============================================================
+// جسيمات الخلفية المتحركة
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('particlesCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
 
+    // ضبط حجم canvas
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // إنشاء الجسيمات
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = (Math.random() - 0.5) * 0.5;
+            this.speedY = (Math.random() - 0.5) * 0.5;
+            this.opacity = Math.random() * 0.5 + 0.2;
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            // عودة عند الخروج من الشاشة
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`;
+            ctx.fill();
+            
+            // توهج حول الجسيم
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.3)';
+            ctx.shadowBlur = 10;
+        }
+    }
+
+    // إنشاء الجسيمات
+    const particleCount = Math.min(150, Math.floor(window.innerWidth / 5));
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    // رسم خطوط بين الجسيمات القريبة
+    function drawLines() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 150) {
+                    const opacity = (1 - distance / 150) * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${opacity})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    // حلقة الرسم
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // خلفية مظلمة مع تأثير متدرج
+        const gradient = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, 0,
+            canvas.width / 2, canvas.height / 2, canvas.width / 2
+        );
+        gradient.addColorStop(0, 'rgba(30, 15, 50, 0.3)');
+        gradient.addColorStop(1, 'rgba(10, 10, 30, 0.8)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // تحديث ورسم الجسيمات
+        for (let particle of particles) {
+            particle.update();
+            particle.draw();
+        }
+        
+        drawLines();
+        
+        animationId = requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // إيقاف الرسم عند إخفاء الشاشة
+    document.getElementById('splashScreen').addEventListener('transitionend', function() {
+        if (this.classList.contains('hide')) {
+            cancelAnimationFrame(animationId);
+        }
+    });
+
+    // إخفاء الشاشة بعد 3 ثوانٍ
+    setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hide');
+    }, 3500);
+});
         // ============================================================
         // تفعيل AOS
         // ============================================================
@@ -3067,6 +3448,43 @@
                 }
             });
         });
+        // JavaScript لإنشاء النجوم
+document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('.hero');
+    
+    // إنشاء النجوم
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'stars';
+    
+    for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+        star.style.animationDelay = (Math.random() * 3) + 's';
+        starsContainer.appendChild(star);
+    }
+    
+    hero.prepend(starsContainer);
+    
+    // إنشاء أشعة ضوئية
+    const raysContainer = document.createElement('div');
+    raysContainer.className = 'light-rays';
+    
+    for (let i = 0; i < 6; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'ray';
+        ray.style.setProperty('--angle', (i * 30) + 'deg');
+        ray.style.animationDelay = (i * 2) + 's';
+        raysContainer.appendChild(ray);
+    }
+    
+    hero.prepend(raysContainer);
+});
 
         // ============================================================
         // سلايدر الصور

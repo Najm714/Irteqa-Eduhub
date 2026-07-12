@@ -264,48 +264,64 @@
             color: #0088CC;
             background: rgba(0, 136, 204, 0.1);
         }
+ /* ============================================================
+   Hero Section - خلفية نجمية
+   ============================================================ */
+.hero {
+    background: linear-gradient(180deg, #0a0a1a 0%, #0f172a 40%, #1a0a2e 70%, #0d1b2a 100%);
+    color: #fff;
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+}
 
-        /* ============================================================
-           القسم الرئيسي (Hero)
-           ============================================================ */
-        .hero {
-            background: var(--gradient-hero);
-            color: #fff;
-            padding: 100px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
+/* النجوم المتلألئة */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(108, 43, 217, 0.3), transparent 70%);
-            border-radius: 50%;
-            animation: floatHero 8s ease-in-out infinite;
-        }
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+}
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
-            border-radius: 50%;
-            animation: floatHero 10s ease-in-out infinite reverse;
-        }
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
 
-        @keyframes floatHero {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(30px, -30px) rotate(5deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
+/* أشعة ضوئية متحركة */
+.light-rays {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
 
+.ray {
+    position: absolute;
+    top: -50%;
+    width: 100%;
+    height: 200%;
+    background: linear-gradient(180deg, transparent, rgba(124, 58, 237, 0.03), transparent);
+    transform: rotate(var(--angle));
+    animation: rayMove 12s linear infinite;
+}
+
+@keyframes rayMove {
+    0% { transform: rotate(var(--angle)) translateX(-100%); }
+    100% { transform: rotate(var(--angle)) translateX(100%); }
+}
         .hero .container {
             position: relative;
             z-index: 1;
@@ -2174,6 +2190,43 @@
             once: true,
             offset: 100
         });
+        // JavaScript لإنشاء النجوم
+document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('.hero');
+    
+    // إنشاء النجوم
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'stars';
+    
+    for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+        star.style.animationDelay = (Math.random() * 3) + 's';
+        starsContainer.appendChild(star);
+    }
+    
+    hero.prepend(starsContainer);
+    
+    // إنشاء أشعة ضوئية
+    const raysContainer = document.createElement('div');
+    raysContainer.className = 'light-rays';
+    
+    for (let i = 0; i < 6; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'ray';
+        ray.style.setProperty('--angle', (i * 30) + 'deg');
+        ray.style.animationDelay = (i * 2) + 's';
+        raysContainer.appendChild(ray);
+    }
+    
+    hero.prepend(raysContainer);
+});
 
         // ============================================================
         // تبديل الوضع
