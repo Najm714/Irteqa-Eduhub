@@ -2857,7 +2857,15 @@
             <span class="link-text">ميثاق العمل</span>
         </a>
     </li>
-
+<li>
+    <a href="chat.html">
+        <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512">
+            <path fill="currentColor" d="M256 32C114.6 32 0 125.1 0 240c0 49.6 21.6 94.5 56.7 130.3C42.2 406.5 20.3 432.6 5.1 453.4c-3.8 5.3-2.7 12.4 2.5 16.2s12.4 2.7 16.2-2.5c15.5-21.2 37.5-47.8 52.2-76.2C119.3 424.2 185.9 448 256 448c141.4 0 256-93.1 256-208S397.4 32 256 32zm0 368c-26.7 0-53.1-4.1-78.4-12.1l-22.7-7.2-19.5 13.8c-14.3 10.1-33.2 21.8-50.4 31.2 6.4-13.5 14.2-30.4 22.4-47.7l10.6-22.2-15.5-17.3C86.4 315.6 64 278.1 64 240c0-97.2 86.1-176 192-176s192 78.8 192 176-86.1 176-192 176z"/>
+        </svg>
+        الدردشة
+        <span class="badge" id="sidebarChatBadge" style="display:none; background: #EF4444; color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; margin-right: auto;">0</span>
+    </a>
+</li>
     <!-- ✅ حاسبة العينة -->
     <li>
         <a href="sample-calculator.html">
@@ -2998,6 +3006,7 @@
                     <li><a href="#how-it-works">آلية العمل</a></li>
                     <li><a href="#services">الخدمات</a></li>
                     <li><a href="models-page.html">النماذج</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comment-dots"></i> الدردشة</a></li>
                     <li><a href="explanations.html">📚 الشروحات</a></li>
                     <li><a href="blog.html"><i class="fas fa-newspaper"></i> المدونة</a></li>
                     <li><a href="#testimonials">آراء العملاء</a></li>
@@ -3900,6 +3909,7 @@
                 <a href="dmca.html"><i class="fas fa-file-contract"></i> سياسات وأحكام (DMCA)</a>
                 <a href="cookies-policy.html"><i class="fas fa-cookie-bite"></i> سياسة ملفات الارتباط</a>
                 <a href="refund-policy.html"><svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="rgb(177, 151, 252)" d="M0 419.6L0 109.5c0-23.2 24.1-38.6 46.3-32 87.7 26.2 149.7 5.5 212.1-15.3 64.5-21.5 129.4-43.1 223.3-13.1 18.5 5.9 30.3 23.8 30.3 43.3l0 310.1c0 23.2-24.1 38.6-46.2 32-87.7-26.2-149.8-5.5-212.1 15.3-64.5 21.5-129.4 43.1-223.3 13.1-18.5-5.9-30.3-23.8-30.3-43.3zM336 256c0-53-35.8-96-80-96s-80 43-80 96 35.8 96 80 96 80-43 80-96zM120 413.6c4.4 0 7.9-3.8 7.2-8.1-4.6-27.8-27-49.5-55.2-53-4.4-.5-8 3.1-8 7.5l0 39.9c0 3.6 2.4 6.8 6 7.7 17.9 4.2 34.3 6.1 50 6.1zm318.5-51.1c5 .8 9.5-3 9.5-8l0-42.6c0-4.4-3.6-8.1-8-7.5-25.2 3.1-45.9 20.9-53.2 44.6-1.4 4.7 2.3 9.1 7.2 9.2 14.2 .4 29 1.7 44.4 4.3zM448 152l0-39.9c0-3.6-2.5-6.8-6-7.7-17.9-4.2-34.3-6.1-50-6.1-4.4 0-7.9 3.8-7.2 8.1 4.6 27.8 27 49.5 55.2 53 4.4 .5 8-3.1 8-7.5zM125.2 162.9c1.4-4.7-2.3-9.1-7.2-9.2-14.2-.4-29-1.7-44.4-4.3-5-.8-9.5 3-9.5 8L64 200c0 4.4 3.6 8.1 8 7.5 25.2-3.1 45.9-20.9 53.2-44.6z"/></svg> سياسة الاسترداد</a>
+                <a href="chat.html"><i class="fas fa-comment-dots"></i> الدردشة</a>
                 <a href="terms-of-service.html"><i class="fas fa-file-contract"></i> شروط الاستخدام</a>
                 <a href="privacy-policy.html">سياسة الخصوصية</a>
                 <a href="terms-of-service.html"><i class="fas fa-file-contract"></i> شروط الاستخدام</a>
@@ -4472,7 +4482,38 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         document.addEventListener('DOMContentLoaded', function() {
             updateAuthButton();
         });
+// ============================================================
+// تحديث شارة الدردشة في القائمة الجانبية
+// ============================================================
+function updateChatBadge() {
+    const badge = document.getElementById('sidebarChatBadge');
+    if (!badge) return;
+    
+    try {
+        const unreadCount = parseInt(localStorage.getItem('chat_widget_unread') || '0');
+        if (unreadCount > 0) {
+            badge.style.display = 'inline';
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch (e) {
+        console.warn('⚠️ فشل تحديث شارة الدردشة:', e);
+    }
+}
 
+// ✅ تحديث عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', updateChatBadge);
+
+// ✅ تحديث عند تغيير localStorage
+window.addEventListener('storage', function(e) {
+    if (e.key === 'chat_widget_unread') {
+        updateChatBadge();
+    }
+});
+
+// ✅ تحديث كل 5 ثوانٍ
+setInterval(updateChatBadge, 5000);
         console.log('🚀 منصة ارتقاء تعمل بنجاح!');
         console.log('🎨 تم تحديث الألوان والتصميم بشكل جذاب');
         console.log('📸 تم إضافة سلايدر صور متعدد');
