@@ -1920,7 +1920,187 @@ function handleFileUpload(event) {
                 modal.classList.remove('show');
             }
         });
+// ============================================================
+// دوال المرفقات
+// ============================================================
 
+// ✅ فتح/إغلاق نافذة المرفقات
+function toggleAttach() {
+    const modal = document.getElementById('attachModal');
+    if (modal) {
+        modal.classList.toggle('show');
+    }
+}
+
+// ✅ اختيار نوع الملف
+function attachFile(type) {
+    const modal = document.getElementById('attachModal');
+    if (modal) modal.classList.remove('show');
+    
+    const input = document.getElementById('fileInput');
+    if (!input) return;
+
+    const acceptMap = {
+        'image': 'image/*',
+        'video': 'video/*',
+        'pdf': '.pdf',
+        'word': '.doc,.docx',
+        'excel': '.xls,.xlsx',
+        'powerpoint': '.ppt,.pptx',
+        'file': '*'
+    };
+
+    input.accept = acceptMap[type] || '*';
+    input.click();
+}
+
+// ✅ معالجة رفع الملفات
+function handleFileUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    
+    // التحقق من حجم الملف (حد أقصى 50MB)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showToast(`❌ حجم الملف كبير جداً. الحد الأقصى 50MB`, 'error');
+        event.target.value = '';
+        return;
+    }
+
+    // التحقق من نوع الملف
+    const allowedTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/avi', 'video/mov', 'video/webm',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/zip', 'application/x-zip-compressed',
+        'text/plain'
+    ];
+
+    // استنتاج النوع من الامتداد
+    let fileType = file.type;
+    if (!fileType || fileType === '') {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const typeMap = {
+            'pdf': 'application/pdf',
+            'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls': 'application/vnd.ms-excel',
+            'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'ppt': 'application/vnd.ms-powerpoint',
+            'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+            'webp': 'image/webp',
+            'mp4': 'video/mp4',
+            'avi': 'video/avi',
+            'mov': 'video/mov',
+            'webm': 'video/webm',
+            'zip': 'application/zip',
+            'rar': 'application/x-rar-compressed',
+            'txt': 'text/plain'
+        };
+        fileType = typeMap[ext] || 'application/octet-stream';
+    }
+
+    if (!allowedTypes.includes(fileType)) {
+        showToast(`❌ نوع الملف غير مدعوم: ${file.name}`, 'error');
+        event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        try {
+            const result = e.target.result;
+            if (!result || !result.startsWith('data:')) {
+                showToast('❌ فشل قراءة الملف', 'error');
+                return;
+            }
+
+            pendingFile = {
+                name: file.name,
+                type: fileType,
+                size: file.size,
+                data: result
+            };
+
+            const input = document.getElementById('messageInput');
+            const fileSize = (file.size / 1024).toFixed(1);
+            if (input) {
+                input.value = `📎 ${file.name} (${fileSize} KB)`;
+                input.focus();
+            }
+            
+            const sendBtn = document.getElementById('sendBtn');
+            if (sendBtn) sendBtn.disabled = false;
+
+            // إغلاق نافذة المرفقات
+            const modal = document.getElementById('attachModal');
+            if (modal) modal.classList.remove('show');
+
+            showToast(`✅ تم رفع الملف: ${file.name} (${fileSize} KB)`, 'success');
+            
+            console.log('📁 ملف مرفوع:', {
+                name: file.name,
+                type: fileType,
+                size: fileSize + ' KB'
+            });
+
+        } catch (error) {
+            console.error('❌ خطأ في قراءة الملف:', error);
+            showToast('❌ حدث خطأ في قراءة الملف', 'error');
+        }
+    };
+
+    reader.onerror = function(error) {
+        console.error('❌ خطأ في FileReader:', error);
+        showToast('❌ حدث خطأ في قراءة الملف', 'error');
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+// ✅ تنزيل ملف
+function downloadFile(name, data) {
+    if (!data) {
+        showToast('❌ لا توجد بيانات للتحميل', 'error');
+        return;
+    }
+    
+    try {
+        const link = document.createElement('a');
+        link.href = data;
+        link.download = name || 'ملف';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`✅ تم تنزيل الملف: ${name}`, 'success');
+    } catch (error) {
+        console.error('❌ خطأ في تنزيل الملف:', error);
+        showToast('❌ حدث خطأ في تنزيل الملف', 'error');
+    }
+}
+
+// ✅ إغلاق نافذة المرفقات عند الضغط خارجها
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('attachModal');
+    const wrapper = document.querySelector('.input-wrapper');
+    if (modal && wrapper && !wrapper.contains(e.target) && modal.classList.contains('show')) {
+        modal.classList.remove('show');
+    }
+});
         // ============================================================
         // بدء التشغيل
         // ============================================================
