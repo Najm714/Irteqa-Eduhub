@@ -1522,89 +1522,110 @@
                 متصل الآن
             `;
         }
+ // ============================================================
+// عرض الرسائل - مع دعم الملفات
+// ============================================================
+function renderMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
 
-        // ============================================================
-        // عرض الرسائل
-        // ============================================================
-        function renderMessages() {
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = '';
+    container.innerHTML = '';
 
-            if (messages.length === 0) {
-                container.innerHTML = `
-                    <div class="no-chat">
-                        <i class="fas fa-comment-dots"></i>
-                        <h3>لا توجد رسائل</h3>
-                        <p>ابدأ المحادثة الآن</p>
+    if (messages.length === 0) {
+        container.innerHTML = `
+            <div class="no-chat">
+                <i class="fas fa-comment-dots"></i>
+                <h3>لا توجد رسائل</h3>
+                <p>ابدأ المحادثة الآن</p>
+            </div>
+        `;
+        return;
+    }
+
+    let lastDate = '';
+    const currentUserId = currentUser ? currentUser.id : null;
+
+    messages.forEach((msg) => {
+        const msgDate = new Date(msg.createdAt).toLocaleDateString('ar-SA');
+        if (msgDate !== lastDate) {
+            lastDate = msgDate;
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'message-date';
+            dateDiv.innerHTML = `<span>${msgDate}</span>`;
+            container.appendChild(dateDiv);
+        }
+
+        const isOwn = msg.senderId === currentUserId;
+        const div = document.createElement('div');
+        div.className = `message ${isOwn ? 'sent' : 'received'}`;
+
+        let content = `<div class="msg-text">${msg.text}</div>`;
+
+        // ✅ عرض الملف إذا وجد
+        if (msg.file && msg.file.name) {
+            const isImage = msg.file.type && msg.file.type.startsWith('image/');
+            const isVideo = msg.file.type && msg.file.type.startsWith('video/');
+
+            if (isImage) {
+                // ✅ عرض الصورة
+                const imageUrl = msg.file.path || msg.file.data;
+                content += `<img src="${imageUrl}" class="msg-image" 
+                           onclick="window.open('${imageUrl}', '_blank')" 
+                           onerror="this.style.display='none'" />`;
+            } else if (isVideo) {
+                // ✅ عرض الفيديو
+                const videoUrl = msg.file.path || msg.file.data;
+                content += `
+                    <video controls class="msg-video" onclick="this.paused ? this.play() : this.pause()">
+                        <source src="${videoUrl}" type="${msg.file.type}" />
+                    </video>
+                `;
+            } else {
+                // ✅ عرض الملف
+                const iconMap = {
+                    'pdf': 'fa-file-pdf',
+                    'doc': 'fa-file-word',
+                    'docx': 'fa-file-word',
+                    'xls': 'fa-file-excel',
+                    'xlsx': 'fa-file-excel',
+                    'ppt': 'fa-file-powerpoint',
+                    'pptx': 'fa-file-powerpoint',
+                    'zip': 'fa-file-archive',
+                    'rar': 'fa-file-archive',
+                    'mp4': 'fa-file-video',
+                    'avi': 'fa-file-video',
+                    'mov': 'fa-file-video',
+                    'txt': 'fa-file-alt'
+                };
+                const ext = msg.file.name.split('.').pop().toLowerCase();
+                const icon = iconMap[ext] || 'fa-file';
+                const fileSize = msg.file.size ? (msg.file.size / 1024).toFixed(1) : '0';
+
+                // ✅ استخدام المسار أو البيانات
+                const fileUrl = msg.file.path || msg.file.data;
+
+                content += `
+                    <div class="msg-file" onclick="downloadFile('${msg.file.name}', '${fileUrl}')">
+                        <i class="fas ${icon}"></i>
+                        <div class="file-info">
+                            <div class="file-name">${msg.file.name}</div>
+                            <div class="file-size">${fileSize} KB</div>
+                        </div>
+                        <i class="fas fa-download download-icon"></i>
                     </div>
                 `;
-                return;
             }
-
-            let lastDate = '';
-            const currentUserId = currentUser ? currentUser.id : null;
-
-            messages.forEach((msg) => {
-                const msgDate = new Date(msg.createdAt).toLocaleDateString('ar-SA');
-                if (msgDate !== lastDate) {
-                    lastDate = msgDate;
-                    const dateDiv = document.createElement('div');
-                    dateDiv.className = 'message-date';
-                    dateDiv.innerHTML = `<span>${msgDate}</span>`;
-                    container.appendChild(dateDiv);
-                }
-
-                const isOwn = msg.senderId === currentUserId;
-                const div = document.createElement('div');
-                div.className = `message ${isOwn ? 'sent' : 'received'}`;
-
-                let content = `<div class="msg-text">${msg.text}</div>`;
-
-                if (msg.file) {
-                    const isImage = msg.file.type && msg.file.type.startsWith('image/');
-                    if (isImage) {
-                        content += `<img src="${msg.file.data}" class="msg-image" 
-                                   onclick="window.open('${msg.file.data}', '_blank')" />`;
-                    } else {
-                        const iconMap = {
-                            'pdf': 'fa-file-pdf',
-                            'doc': 'fa-file-word',
-                            'docx': 'fa-file-word',
-                            'xls': 'fa-file-excel',
-                            'xlsx': 'fa-file-excel',
-                            'ppt': 'fa-file-powerpoint',
-                            'pptx': 'fa-file-powerpoint',
-                            'zip': 'fa-file-archive',
-                            'rar': 'fa-file-archive',
-                            'mp4': 'fa-file-video',
-                            'txt': 'fa-file-alt'
-                        };
-                        const ext = msg.file.name.split('.').pop().toLowerCase();
-                        const icon = iconMap[ext] || 'fa-file';
-                        const fileSize = msg.file.size ? (msg.file.size / 1024).toFixed(1) : '0';
-
-                        content += `
-                            <div class="msg-file" onclick="downloadFile('${msg.file.name}', '${msg.file.data}')">
-                                <i class="fas ${icon}"></i>
-                                <div class="file-info">
-                                    <div class="file-name">${msg.file.name}</div>
-                                    <div class="file-size">${fileSize} KB</div>
-                                </div>
-                                <i class="fas fa-download download-icon"></i>
-                            </div>
-                        `;
-                    }
-                }
-
-                const senderName = msg.senderName || (isOwn ? 'أنت' : 'المرسل');
-                const time = new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-                content += `<span class="msg-time">${senderName} • ${time}</span>`;
-                div.innerHTML = content;
-                container.appendChild(div);
-            });
-
-            scrollToBottom();
         }
+
+        const senderName = msg.senderName || (isOwn ? 'أنت' : 'المرسل');
+        const time = new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+        content += `<span class="msg-time">${senderName} • ${time}</span>`;
+        div.innerHTML = content;
+        container.appendChild(div);
+    });
+
+    scrollToBottom();
+}
 // ============================================================
 // إرسال رسالة مع ملفات - نسخة محسنة
 // ============================================================

@@ -434,7 +434,7 @@ app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
         });
     }
 });
-// 4. إرسال رسالة جديدة - مع دعم الملفات
+// 4. إرسال رسالة جديدة
 app.post('/api/chat/messages', protect, async (req, res) => {
     try {
         const { conversationId, text, file } = req.body;
@@ -490,14 +490,12 @@ app.post('/api/chat/messages', protect, async (req, res) => {
                     base64Data = base64Data.split(';base64,').pop();
                 }
                 
-                // ✅ التحقق من وجود بيانات
                 if (!base64Data || base64Data.length === 0) {
                     throw new Error('بيانات الملف فارغة');
                 }
                 
                 const buffer = Buffer.from(base64Data, 'base64');
                 
-                // ✅ التحقق من أن الملف ليس فارغاً
                 if (buffer.length === 0) {
                     throw new Error('الملف فارغ');
                 }
@@ -506,6 +504,7 @@ app.post('/api/chat/messages', protect, async (req, res) => {
                 fs.writeFileSync(filePath, buffer);
                 console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
 
+                // ✅ تخزين معلومات الملف ككائن
                 fileData = {
                     name: file.name,
                     type: file.type || 'application/octet-stream',
@@ -523,12 +522,12 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             }
         }
 
-        // ✅ إنشاء الرسالة
+        // ✅ إنشاء الرسالة مع ملف ككائن
         const message = new Message({
             conversationId: conversationId,
             senderId: senderId,
             text: text,
-            file: fileData,
+            file: fileData, // ✅ الآن هو كائن وليس String
             read: false
         });
 
@@ -581,93 +580,6 @@ app.post('/api/chat/messages', protect, async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'حدث خطأ في إرسال الرسالة'
-        });
-    }
-});
-// ============================================================
-// 5. تحديد الرسائل كمقروءة
-// ============================================================
-app.put('/api/chat/messages/read', protect, async (req, res) => {
-    try {
-        const { conversationId } = req.body;
-        const userId = req.user.id;
-
-        if (!conversationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'معرف المحادثة مطلوب'
-            });
-        }
-
-        // تحديث الرسائل غير المقروءة
-        await Message.updateMany(
-            {
-                conversationId: conversationId,
-                senderId: { $ne: userId },
-                read: false
-            },
-            { read: true }
-        );
-
-        // تحديث عدد الرسائل غير المقروءة في المحادثة
-        await Conversation.findByIdAndUpdate(conversationId, {
-            $set: { unreadCount: 0 }
-        });
-
-        res.status(200).json({
-            success: true,
-            message: 'تم تحديث الرسائل كمقروءة'
-        });
-
-    } catch (error) {
-        console.error('❌ خطأ في تحديث الرسائل:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-// ============================================================
-// 6. حذف محادثة
-// ============================================================
-app.delete('/api/chat/conversations/:id', protect, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const conversation = await Conversation.findById(id);
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'المحادثة غير موجودة'
-            });
-        }
-
-        // التحقق من أن المستخدم مشارك في المحادثة
-        if (!conversation.participants.includes(userId)) {
-            return res.status(403).json({
-                success: false,
-                message: 'ليس لديك صلاحية لحذف هذه المحادثة'
-            });
-        }
-
-        // حذف جميع الرسائل المرتبطة
-        await Message.deleteMany({ conversationId: id });
-
-        // حذف المحادثة
-        await Conversation.findByIdAndDelete(id);
-
-        res.status(200).json({
-            success: true,
-            message: 'تم حذف المحادثة بنجاح'
-        });
-
-    } catch (error) {
-        console.error('❌ خطأ في حذف المحادثة:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
         });
     }
 });
