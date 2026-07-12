@@ -2448,7 +2448,177 @@ app.use((err, req, res, next) => {
         message: err.message || 'حدث خطأ في الخادم'
     });
 });
+// ============================================================
+// WebSocket - دردشة وإشعارات فورية
+// ============================================================
+const WebSocket = require('ws');
+const http = require('http');
 
+// إنشاء خادم HTTP
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// تخزين الاتصالات النشطة
+const connections = {
+    admins: [],     // اتصالات المديرين
+    clients: [],    // اتصالات العملاء
+    all: []         // جميع الاتصالات
+};
+
+// ✅ عند الاتصال
+wss.on('connection', function(ws, req) {
+    // تحديد نوع المستخدم من الـ URL
+    const url = req.url || '';
+    const isAdmin = url.includes('admin');
+    const userId = req.headers['user-id'] || 'unknown';
+    
+    // إضافة معلومات المستخدم للاتصال
+    ws.userData = {
+        id: userId,
+        isAdmin: isAdmin,
+        connectedAt: new Date().toISOString()
+    };
+    
+    // تخزين الاتصال
+    connections.all.push(ws);
+    if (isAdmin) {
+        connections.admins.push(ws);
+        console.log(`👤 مدير متصل: ${userId}`);
+        
+        // ✅ إرسال إشعار للمدير بعدد العملاء المتصلين
+        const clientCount = connections.clients.length;
+        ws.send(JSON.stringify({
+            type: 'system',
+            message: `🔔 عدد العملاء المتصلين: ${clientCount}`,
+            clients: connections.clients.map(c => c.userData)
+        }));
+    } else {
+        connections.clients.push(ws);
+        console.log(`👤 عميل متصل: ${userId}`);
+        
+        // ✅ إشعار للمدير بوجود عميل جديد
+        broadcastToAdmins({
+            type: 'notification',
+            sender: 'system',
+            message: `🟢 عميل جديد متصل: ${userId}`,
+            time: new Date().toISOString()
+        });
+    }
+
+    // ✅ استقبال الرسائل
+    ws.on('message', function(message) {
+        try {
+            const data = JSON.parse(message);
+            console.log('📩 رسالة:', data);
+            
+            // ✅ معالجة أنواع مختلفة من الرسائل
+            switch(data.type) {
+                case 'message':
+                    // رسالة من عميل → إرسال للمدير
+                    if (!ws.userData.isAdmin) {
+                        broadcastToAdmins({
+                            type: 'notification',
+                            sender: 'client',
+                            userId: ws.userData.id,
+                            message: data.text,
+                            file: data.file || null,
+                            time: new Date().toISOString()
+                        });
+                    }
+                    break;
+                    
+                case 'reply':
+                    // رد من مدير → إرسال للعميل
+                    if (ws.userData.isAdmin) {
+                        sendToClient(data.userId, {
+                            type: 'reply',
+                            sender: 'admin',
+                            message: data.text,
+                            file: data.file || null,
+                            time: new Date().toISOString()
+                        });
+                    }
+                    break;
+                    
+                case 'typing':
+                    // مؤشر الكتابة
+                    if (!ws.userData.isAdmin) {
+                        broadcastToAdmins({
+                            type: 'typing',
+                            userId: ws.userData.id,
+                            isTyping: data.isTyping
+                        });
+                    }
+                    break;
+                    
+                case 'read':
+                    // تأكيد القراءة
+                    if (ws.userData.isAdmin) {
+                        sendToClient(data.userId, {
+                            type: 'read',
+                            messageId: data.messageId
+                        });
+                    }
+                    break;
+            }
+            
+        } catch (error) {
+            console.error('❌ خطأ في معالجة الرسالة:', error);
+        }
+    });
+
+    // ✅ عند قطع الاتصال
+    ws.on('close', function() {
+        // إزالة الاتصال من القوائم
+        connections.all = connections.all.filter(c => c !== ws);
+        connections.admins = connections.admins.filter(c => c !== ws);
+        connections.clients = connections.clients.filter(c => c !== ws);
+        
+        if (ws.userData.isAdmin) {
+            console.log(`👤 مدير غير متصل: ${ws.userData.id}`);
+        } else {
+            console.log(`👤 عميل غير متصل: ${ws.userData.id}`);
+            // إشعار للمدير بفصل العميل
+            broadcastToAdmins({
+                type: 'notification',
+                sender: 'system',
+                message: `🔴 عميل غير متصل: ${ws.userData.id}`,
+                time: new Date().toISOString()
+            });
+        }
+    });
+});
+
+// ✅ دوال مساعدة
+function broadcastToAdmins(data) {
+    connections.admins.forEach(admin => {
+        if (admin.readyState === WebSocket.OPEN) {
+            admin.send(JSON.stringify(data));
+        }
+    });
+}
+
+function sendToClient(userId, data) {
+    connections.clients.forEach(client => {
+        if (client.userData.id === userId && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+        }
+    });
+}
+
+function broadcastToAll(data) {
+    connections.all.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(data));
+        }
+    });
+}
+
+// ✅ بدء الخادم
+server.listen(PORT, () => {
+    console.log(`✅ الخادم يعمل على http://localhost:${PORT}`);
+    console.log(`🔌 WebSocket جاهز على ws://localhost:${PORT}`);
+});
 // ============================================================
 // تشغيل الخادم
 // ============================================================

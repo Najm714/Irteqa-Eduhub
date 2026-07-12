@@ -1,6 +1,6 @@
 // ============================================================
 // نظام الدردشة العائم - Chat Widget
-// النسخة النهائية المتكاملة
+// النسخة النهائية مع WebSocket
 // ============================================================
 
 (function() {
@@ -11,11 +11,14 @@
     // ============================================================
     const CONFIG = {
         apiUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:5000/api' 
-            : 'https://irteqa-eduhub.onrender.com/api',
+            ? 'http://localhost:5000' 
+            : 'https://irteqa-eduhub.onrender.com',
+        wsUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'ws://localhost:5000'
+            : 'wss://irteqa-eduhub.onrender.com',
         autoOpenDelay: 3000,
         notificationSound: true,
-        maxFileSize: 20 * 1024 * 1024, // 20MB
+        maxFileSize: 20 * 1024 * 1024,
         allowedFileTypes: [
             'image/jpeg', 'image/png', 'image/gif', 'image/webp',
             'video/mp4', 'video/avi', 'video/mov', 'video/webm',
@@ -28,31 +31,40 @@
             'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             'application/zip', 'application/x-zip-compressed',
             'text/plain'
-        ]
+        ],
+        reconnectAttempts: 5,
+        reconnectDelay: 3000,
+        heartbeatInterval: 30000
     };
 
     // ============================================================
-    // بيانات المحادثة
+    // الحالة العامة
     // ============================================================
     let state = {
         messages: [],
         unreadCount: 0,
         isOpen: false,
         isInitialized: false,
-        currentChatId: null,
         pendingFile: null,
         isTyping: false,
+        isConnected: false,
+        ws: null,
+        reconnectCount: 0,
+        heartbeatTimer: null,
         user: {
             id: null,
             name: 'زائر',
-            role: 'client'
+            role: 'client', // 'admin' or 'client'
+            avatar: 'ز'
         },
         admin: {
             id: 'admin',
             name: 'الدعم الفني',
             avatar: 'ا',
             online: true
-        }
+        },
+        currentClientId: null, // للمدير - معرف العميل الحالي
+        clients: [] // قائمة العملاء المتصلين
     };
 
     // ============================================================
@@ -61,30 +73,395 @@
     let elements = {};
 
     // ============================================================
+    // WebSocket Manager
+    // ============================================================
+    const WSManager = {
+        // ✅ الاتصال بالخادم
+        connect: function() {
+            if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+                console.log('⚠️ WebSocket متصل بالفعل');
+                return;
+            }
+
+            const wsUrl = `${CONFIG.wsUrl}?userId=${state.user.id || 'guest'}&role=${state.user.role}`;
+            console.log('🔌 محاولة الاتصال بـ WebSocket:', wsUrl);
+
+            try {
+                state.ws = new WebSocket(wsUrl);
+
+                state.ws.onopen = function() {
+                    console.log('✅ تم الاتصال بـ WebSocket');
+                    state.isConnected = true;
+                    state.reconnectCount = 0;
+                    
+                    // بدء نبضات القلب
+                    startHeartbeat();
+                    
+                    // إرسال رسالة ترحيب
+                    sendWSMessage({
+                        type: 'system',
+                        action: 'connect',
+                        userId: state.user.id,
+                        role: state.user.role,
+                        name: state.user.name
+                    });
+                    
+                    // تحديث واجهة المستخدم
+                    updateConnectionStatus(true);
+                    showToast('🟢 تم الاتصال بالخادم', 'success');
+                };
+
+                state.ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 رسالة من الخادم:', data);
+                        handleWSMessage(data);
+                    } catch (error) {
+                        console.error('❌ خطأ في معالجة الرسالة:', error);
+                    }
+                };
+
+                state.ws.onclose = function() {
+                    console.log('❌ تم قطع الاتصال بـ WebSocket');
+                    state.isConnected = false;
+                    stopHeartbeat();
+                    updateConnectionStatus(false);
+                    
+                    // محاولة إعادة الاتصال
+                    reconnectWS();
+                };
+
+                state.ws.onerror = function(error) {
+                    console.error('❌ خطأ في WebSocket:', error);
+                };
+
+            } catch (error) {
+                console.error('❌ فشل الاتصال بـ WebSocket:', error);
+                reconnectWS();
+            }
+        },
+
+        // ✅ قطع الاتصال
+        disconnect: function() {
+            if (state.ws) {
+                stopHeartbeat();
+                state.ws.close();
+                state.ws = null;
+                state.isConnected = false;
+                console.log('🔌 تم قطع الاتصال بـ WebSocket');
+            }
+        },
+
+        // ✅ إرسال رسالة
+        send: function(data) {
+            if (state.isConnected && state.ws && state.ws.readyState === WebSocket.OPEN) {
+                sendWSMessage(data);
+                return true;
+            } else {
+                console.warn('⚠️ غير متصل بالخادم، محاولة إعادة الاتصال...');
+                WSManager.connect();
+                // محاولة الإرسال بعد 1 ثانية
+                setTimeout(() => {
+                    if (state.isConnected) {
+                        sendWSMessage(data);
+                    }
+                }, 1000);
+                return false;
+            }
+        },
+
+        // ✅ الحالة
+        isConnected: function() {
+            return state.isConnected && state.ws && state.ws.readyState === WebSocket.OPEN;
+        }
+    };
+
+    // ============================================================
+    // دوال مساعدة لـ WebSocket
+    // ============================================================
+    function sendWSMessage(data) {
+        if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+            state.ws.send(JSON.stringify(data));
+        } else {
+            console.warn('⚠️ WebSocket غير جاهز للإرسال');
+        }
+    }
+
+    function reconnectWS() {
+        if (state.reconnectCount >= CONFIG.reconnectAttempts) {
+            console.log('❌ فشل إعادة الاتصال بعد عدة محاولات');
+            showToast('⚠️ لا يمكن الاتصال بالخادم، حاول تحديث الصفحة', 'error');
+            return;
+        }
+
+        state.reconnectCount++;
+        const delay = CONFIG.reconnectDelay * state.reconnectCount;
+        console.log(`🔄 محاولة إعادة الاتصال ${state.reconnectCount}/${CONFIG.reconnectAttempts} بعد ${delay/1000} ثانية`);
+        
+        setTimeout(() => {
+            WSManager.connect();
+        }, delay);
+    }
+
+    function startHeartbeat() {
+        stopHeartbeat();
+        state.heartbeatTimer = setInterval(() => {
+            if (state.isConnected) {
+                sendWSMessage({
+                    type: 'system',
+                    action: 'heartbeat',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }, CONFIG.heartbeatInterval);
+    }
+
+    function stopHeartbeat() {
+        if (state.heartbeatTimer) {
+            clearInterval(state.heartbeatTimer);
+            state.heartbeatTimer = null;
+        }
+    }
+
+    function updateConnectionStatus(connected) {
+        const statusEl = elements.status;
+        if (statusEl) {
+            if (connected) {
+                statusEl.innerHTML = '<span class="dot online"></span> متصل الآن';
+            } else {
+                statusEl.innerHTML = '<span class="dot offline"></span> غير متصل';
+            }
+        }
+    }
+
+    // ============================================================
+    // معالجة الرسائل الواردة من WebSocket
+    // ============================================================
+    function handleWSMessage(data) {
+        switch(data.type) {
+            case 'notification':
+                // ✅ إشعار من عميل
+                if (state.user.role === 'admin') {
+                    handleAdminNotification(data);
+                }
+                break;
+
+            case 'reply':
+                // ✅ رد من مدير
+                if (state.user.role === 'client') {
+                    handleClientReply(data);
+                }
+                break;
+
+            case 'message':
+                // ✅ رسالة دردشة
+                if (data.sender === 'client' && state.user.role === 'admin') {
+                    handleAdminNotification(data);
+                } else if (data.sender === 'admin' && state.user.role === 'client') {
+                    handleClientReply(data);
+                }
+                break;
+
+            case 'typing':
+                // ✅ مؤشر الكتابة
+                if (state.user.role === 'admin') {
+                    showTypingIndicator(data.userId);
+                }
+                break;
+
+            case 'clients':
+                // ✅ تحديث قائمة العملاء (للمدير)
+                if (state.user.role === 'admin') {
+                    state.clients = data.clients || [];
+                    updateClientsList();
+                }
+                break;
+
+            case 'system':
+                // ✅ رسائل النظام
+                if (data.action === 'welcome') {
+                    console.log('👋 مرحباً بك في نظام الدردشة');
+                }
+                if (data.action === 'user_connected') {
+                    showToast(`🟢 ${data.userName || 'مستخدم'} متصل الآن`, 'info');
+                    if (state.user.role === 'admin') {
+                        playNotificationSound();
+                    }
+                }
+                if (data.action === 'user_disconnected') {
+                    showToast(`🔴 ${data.userName || 'مستخدم'} غير متصل`, 'info');
+                }
+                break;
+
+            default:
+                console.log('📩 رسالة غير معروفة:', data);
+        }
+    }
+
+    // ============================================================
+    // معالجة إشعارات المدير
+    // ============================================================
+    function handleAdminNotification(data) {
+        // ✅ إشعار صوتي
+        playNotificationSound();
+        
+        // ✅ إشعار منبثق
+        const senderName = data.userName || data.sender || 'عميل';
+        const messageText = data.message || data.text || 'رسالة جديدة';
+        
+        showNotification(
+            `📩 رسالة من ${senderName}`,
+            messageText
+        );
+        
+        // ✅ إضافة الإشعار إلى قائمة الإشعارات
+        state.unreadCount++;
+        updateBadge();
+        
+        // ✅ إذا كانت الدردشة مفتوحة، عرض الرسالة فوراً
+        if (state.isOpen) {
+            const newMsg = {
+                id: Date.now(),
+                sender: 'client',
+                userName: senderName,
+                text: messageText,
+                file: data.file || null,
+                time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+            };
+            state.messages.push(newMsg);
+            renderMessages();
+            saveMessages();
+        }
+        
+        // ✅ تحديث قائمة العملاء للمدير
+        if (data.userId && !state.clients.find(c => c.id === data.userId)) {
+            state.clients.push({
+                id: data.userId,
+                name: senderName,
+                online: true
+            });
+            updateClientsList();
+        }
+    }
+
+    // ============================================================
+    // معالجة ردود المدير للعميل
+    // ============================================================
+    function handleClientReply(data) {
+        // ✅ إضافة الرد إلى الدردشة
+        const newMsg = {
+            id: Date.now(),
+            sender: 'admin',
+            text: data.message || data.text || 'رد من الدعم الفني',
+            file: data.file || null,
+            time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+        };
+        
+        state.messages.push(newMsg);
+        saveMessages();
+        renderMessages();
+        
+        // ✅ إشعار للعميل
+        if (!state.isOpen) {
+            state.unreadCount++;
+            updateBadge();
+            showNotification('📩 رد من الدعم الفني', newMsg.text);
+            playNotificationSound();
+        }
+        
+        // ✅ التمرير للأسفل
+        scrollToBottom();
+    }
+
+    // ============================================================
+    // مؤشر الكتابة
+    // ============================================================
+    let typingTimeout = null;
+
+    function showTypingIndicator(userId) {
+        // إخفاء المؤشر بعد 3 ثوانٍ
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            hideTypingIndicator();
+        }, 3000);
+        
+        // عرض المؤشر في الدردشة
+        const container = elements.messages;
+        let typingEl = container.querySelector('.widget-typing');
+        if (!typingEl) {
+            typingEl = document.createElement('div');
+            typingEl.className = 'widget-typing';
+            typingEl.innerHTML = `
+                <span></span><span></span><span></span>
+                <span style="font-size:0.7rem;margin-right:6px;color:var(--text-muted);">
+                    ${userId ? `العميل يكتب...` : 'جاري الكتابة...'}
+                </span>
+            `;
+            container.appendChild(typingEl);
+            scrollToBottom();
+        }
+    }
+
+    function hideTypingIndicator() {
+        const typingEl = elements.messages.querySelector('.widget-typing');
+        if (typingEl) {
+            typingEl.remove();
+        }
+    }
+
+    // ============================================================
+    // تحديث قائمة العملاء (للمدير)
+    // ============================================================
+    function updateClientsList() {
+        // يمكن إضافة قائمة منسدلة للعملاء في واجهة المدير
+        console.log('👥 العملاء المتصلون:', state.clients);
+    }
+
+    // ============================================================
     // تهيئة الدردشة
     // ============================================================
     function init() {
         if (state.isInitialized) return;
         
-        // إنشاء عناصر الدردشة
+        // ✅ تحديد هوية المستخدم
+        const token = localStorage.getItem('token');
+        const userData = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        if (userData) {
+            state.user.id = userData.id || userData._id || 'user_' + Date.now();
+            state.user.name = userData.name || 'مستخدم';
+            state.user.role = userData.role || 'client';
+            state.user.avatar = state.user.name.charAt(0) || 'م';
+        } else {
+            state.user.id = 'guest_' + Date.now();
+            state.user.name = 'زائر';
+            state.user.role = 'client';
+            state.user.avatar = 'ز';
+        }
+        
+        // ✅ إنشاء عناصر الدردشة
         createWidgetElements();
         
-        // تحميل الرسائل من localStorage
+        // ✅ تحميل الرسائل من localStorage (للمتابعة)
         loadMessages();
         
-        // إضافة مستمعي الأحداث
+        // ✅ إعداد المستمعات
         setupEventListeners();
         
-        // تحديث عدد الإشعارات
+        // ✅ تحديث الشارة
         updateBadge();
+        
+        // ✅ الاتصال بـ WebSocket
+        WSManager.connect();
         
         state.isInitialized = true;
         
         console.log('💬 نظام الدردشة العائم جاهز!');
+        console.log('👤 المستخدم:', state.user);
         console.log('📋 عدد الرسائل:', state.messages.length);
-        console.log('📋 عدد الإشعارات:', state.unreadCount);
+        console.log('🔔 عدد الإشعارات:', state.unreadCount);
         
-        // فتح تلقائي للمستخدم الجديد
+        // ✅ فتح تلقائي للمستخدم الجديد
         if (state.messages.length === 0) {
             setTimeout(() => {
                 if (!state.isOpen) {
@@ -114,19 +491,29 @@
         const popup = document.createElement('div');
         popup.className = 'chat-widget-popup';
         popup.id = 'chatWidgetPopup';
+        
+        const isAdmin = state.user.role === 'admin';
+        const adminName = isAdmin ? 'لوحة المدير' : 'الدعم الفني';
+        const adminAvatar = isAdmin ? 'م' : 'ا';
+        const adminColor = isAdmin ? 'linear-gradient(135deg, #10B981, #059669)' : 'linear-gradient(135deg, #7C3AED, #EC4899)';
+        
         popup.innerHTML = `
-            <!-- رأس النافذة -->
-            <div class="chat-widget-header">
+            <div class="chat-widget-header" style="background: ${adminColor};">
                 <div class="info">
-                    <div class="avatar" id="widgetAvatar">ا</div>
+                    <div class="avatar" id="widgetAvatar" style="background: rgba(255,255,255,0.2);">${adminAvatar}</div>
                     <div class="details">
-                        <div class="name" id="widgetName">الدعم الفني</div>
+                        <div class="name" id="widgetName">${adminName}</div>
                         <div class="status" id="widgetStatus">
                             <span class="dot online"></span> متصل الآن
                         </div>
                     </div>
                 </div>
                 <div class="header-actions">
+                    ${isAdmin ? `
+                        <button class="clients-btn" onclick="window.chatWidget.showClients()" title="العملاء">
+                            <i class="fas fa-users"></i>
+                        </button>
+                    ` : ''}
                     <button class="minimize-btn" onclick="window.chatWidget.minimize()" title="تصغير">
                         <i class="fas fa-minus"></i>
                     </button>
@@ -136,28 +523,25 @@
                 </div>
             </div>
 
-            <!-- منطقة الرسائل -->
             <div class="chat-widget-messages" id="widgetMessages">
                 <div class="widget-empty-state">
                     <i class="fas fa-comment-dots"></i>
                     <p>مرحباً! كيف يمكنني مساعدتك؟</p>
-                    <span>ابدأ المحادثة الآن</span>
+                    <span>${isAdmin ? 'أنت مدير، يمكنك الرد على العملاء' : 'اكتب رسالتك وسيتم الرد عليك من قبل الدعم الفني'}</span>
                 </div>
             </div>
 
-            <!-- منطقة الإدخال -->
             <div class="chat-widget-input">
                 <button class="attach-btn" onclick="window.chatWidget.attachFile()" title="إرفاق ملف">
                     <i class="fas fa-paperclip"></i>
                 </button>
-                <input type="text" id="widgetInput" placeholder="اكتب رسالتك..." 
+                <input type="text" id="widgetInput" placeholder="${isAdmin ? 'اكتب ردك...' : 'اكتب رسالتك...'}" 
                        autocomplete="off" />
                 <button class="send-btn" id="widgetSendBtn" disabled onclick="window.chatWidget.sendMessage()">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
 
-            <!-- إدخال الملفات المخفي -->
             <input type="file" id="widgetFileInput" style="display:none" 
                    accept=".jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" 
                    multiple />
@@ -180,698 +564,32 @@
 
         // ✅ ربط الدوال بـ window
         window.chatWidget = {
+            init: init,
             toggle: toggleChat,
             open: openChat,
             close: closeChat,
             minimize: minimizeChat,
             sendMessage: sendMessage,
             attachFile: triggerFileUpload,
+            downloadFile: downloadFile,
             markAsRead: markAsRead,
             getUnreadCount: getUnreadCount,
-            setUser: setUser
+            setUser: setUser,
+            addMessage: addMessage,
+            getMessages: getMessages,
+            clearMessages: clearMessages,
+            showClients: showClients,
+            getConnectionStatus: getConnectionStatus
         };
     }
 
     // ============================================================
-    // أنماط الدردشة
+    // أنماط الدردشة (مضمنة)
     // ============================================================
     function addWidgetStyles() {
-        const style = document.createElement('style');
-        style.id = 'chat-widget-styles';
-        style.textContent = `
-            /* ============================================================
-               زر الدردشة العائم
-               ============================================================ */
-            .chat-widget-btn {
-                position: fixed;
-                bottom: 160px;
-                left: 30px;
-                z-index: 9998;
-                width: 62px;
-                height: 62px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #7C3AED, #EC4899);
-                color: #fff;
-                border: none;
-                box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
-                cursor: pointer;
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.8rem;
-                animation: widgetPulse 2s ease-in-out infinite;
-            }
-
-            .chat-widget-btn:hover {
-                transform: scale(1.1) rotate(-10deg);
-                box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
-            }
-
-            .chat-widget-btn .chat-widget-ripple {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-                border: 2px solid rgba(255, 255, 255, 0.3);
-                animation: rippleEffect 2s ease-out infinite;
-            }
-
-            @keyframes rippleEffect {
-                0% { transform: scale(1); opacity: 1; }
-                100% { transform: scale(1.8); opacity: 0; }
-            }
-
-            @keyframes widgetPulse {
-                0%, 100% { box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4); }
-                50% { box-shadow: 0 8px 50px rgba(124, 58, 237, 0.7), 0 0 80px rgba(124, 58, 237, 0.2); }
-            }
-
-            /* ============================================================
-               شارة الإشعارات
-               ============================================================ */
-            .chat-widget-badge {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                background: #EF4444;
-                color: #fff;
-                min-width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                font-size: 0.65rem;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0 6px;
-                border: 2px solid #fff;
-                animation: badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            }
-
-            @keyframes badgePop {
-                0% { transform: scale(0); }
-                70% { transform: scale(1.3); }
-                100% { transform: scale(1); }
-            }
-
-            /* ============================================================
-               نافذة الدردشة
-               ============================================================ */
-            .chat-widget-popup {
-                position: fixed;
-                bottom: 235px;
-                left: 30px;
-                width: 390px;
-                height: 540px;
-                background: var(--bg-card, #FFFFFF);
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-                z-index: 9999;
-                display: none;
-                flex-direction: column;
-                overflow: hidden;
-                border: 1px solid var(--border-color, #E2E8F0);
-                animation: popupSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                direction: rtl;
-            }
-
-            .chat-widget-popup.open {
-                display: flex;
-            }
-
-            .chat-widget-popup.minimized {
-                height: 60px;
-            }
-
-            .chat-widget-popup.minimized .chat-widget-messages,
-            .chat-widget-popup.minimized .chat-widget-input {
-                display: none;
-            }
-
-            @keyframes popupSlide {
-                from { opacity: 0; transform: translateY(20px) scale(0.95); }
-                to { opacity: 1; transform: translateY(0) scale(1); }
-            }
-
-            /* ============================================================
-               رأس النافذة
-               ============================================================ */
-            .chat-widget-header {
-                padding: 14px 18px;
-                background: linear-gradient(135deg, #7C3AED, #EC4899);
-                color: #fff;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-shrink: 0;
-                min-height: 60px;
-            }
-
-            .chat-widget-header .info {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-            .chat-widget-header .info .avatar {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.2);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 1.1rem;
-                flex-shrink: 0;
-            }
-
-            .chat-widget-header .info .details .name {
-                font-weight: 700;
-                font-size: 0.95rem;
-            }
-
-            .chat-widget-header .info .details .status {
-                font-size: 0.65rem;
-                opacity: 0.85;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
-
-            .chat-widget-header .info .details .status .dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                display: inline-block;
-            }
-
-            .chat-widget-header .info .details .status .dot.online {
-                background: #10B981;
-            }
-
-            .chat-widget-header .info .details .status .dot.offline {
-                background: #94A3B8;
-            }
-
-            .chat-widget-header .header-actions {
-                display: flex;
-                gap: 6px;
-            }
-
-            .chat-widget-header .header-actions button {
-                background: rgba(255, 255, 255, 0.15);
-                border: none;
-                color: #fff;
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                font-size: 0.9rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .chat-widget-header .header-actions button:hover {
-                background: rgba(255, 255, 255, 0.3);
-                transform: scale(1.05);
-            }
-
-            /* ============================================================
-               منطقة الرسائل
-               ============================================================ */
-            .chat-widget-messages {
-                flex: 1;
-                overflow-y: auto;
-                padding: 15px 18px;
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                background: var(--bg-body, #F1F5F9);
-            }
-
-            .chat-widget-messages::-webkit-scrollbar {
-                width: 4px;
-            }
-
-            .chat-widget-messages::-webkit-scrollbar-thumb {
-                background: var(--primary, #7C3AED);
-                border-radius: 10px;
-            }
-
-            /* ============================================================
-               حالة عدم وجود رسائل
-               ============================================================ */
-            .widget-empty-state {
-                text-align: center;
-                padding: 40px 20px;
-                color: var(--text-muted, #94A3B8);
-            }
-
-            .widget-empty-state i {
-                font-size: 3rem;
-                color: var(--border-color, #E2E8F0);
-                display: block;
-                margin-bottom: 12px;
-            }
-
-            .widget-empty-state p {
-                font-size: 0.95rem;
-                font-weight: 600;
-                color: var(--text-color, #0F172A);
-                margin-bottom: 4px;
-            }
-
-            .widget-empty-state span {
-                font-size: 0.8rem;
-            }
-
-            /* ============================================================
-               الرسائل
-               ============================================================ */
-            .chat-widget-messages .msg {
-                max-width: 85%;
-                padding: 10px 14px;
-                border-radius: 14px;
-                font-size: 0.85rem;
-                line-height: 1.6;
-                animation: messageIn 0.3s ease;
-                word-wrap: break-word;
-            }
-
-            @keyframes messageIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .chat-widget-messages .msg.sent {
-                align-self: flex-end;
-                background: linear-gradient(135deg, #7C3AED, #EC4899);
-                color: #fff;
-                border-bottom-left-radius: 4px;
-            }
-
-            .chat-widget-messages .msg.received {
-                align-self: flex-start;
-                background: var(--bg-card, #FFFFFF);
-                color: var(--text-color, #0F172A);
-                border-bottom-right-radius: 4px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            }
-
-            .chat-widget-messages .msg .time {
-                font-size: 0.5rem;
-                opacity: 0.6;
-                display: block;
-                margin-top: 4px;
-                direction: ltr;
-            }
-
-            .chat-widget-messages .msg .file-attachment {
-                margin-top: 8px;
-                padding: 8px 12px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-size: 0.8rem;
-            }
-
-            .chat-widget-messages .msg .file-attachment:hover {
-                background: rgba(255, 255, 255, 0.2);
-            }
-
-            .chat-widget-messages .msg .file-attachment i {
-                font-size: 1.2rem;
-            }
-
-            .chat-widget-messages .msg .file-attachment .file-name {
-                flex: 1;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .chat-widget-messages .msg .msg-image {
-                max-width: 180px;
-                border-radius: 10px;
-                margin-top: 8px;
-                cursor: pointer;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .chat-widget-messages .msg .msg-image:hover {
-                transform: scale(1.02);
-            }
-
-            .chat-widget-messages .msg .msg-video {
-                max-width: 200px;
-                border-radius: 10px;
-                margin-top: 8px;
-                background: #000;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            /* ============================================================
-               مؤشر الكتابة
-               ============================================================ */
-            .widget-typing {
-                align-self: flex-start;
-                padding: 8px 14px;
-                background: var(--bg-card, #FFFFFF);
-                border-radius: 14px;
-                border-bottom-right-radius: 4px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
-
-            .widget-typing span {
-                width: 7px;
-                height: 7px;
-                border-radius: 50%;
-                background: var(--text-muted, #94A3B8);
-                display: inline-block;
-                animation: typingBounce 1.4s ease-in-out infinite;
-            }
-
-            .widget-typing span:nth-child(2) { animation-delay: 0.2s; }
-            .widget-typing span:nth-child(3) { animation-delay: 0.4s; }
-
-            @keyframes typingBounce {
-                0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-                30% { transform: translateY(-6px); opacity: 1; }
-            }
-
-            /* ============================================================
-               منطقة الإدخال
-               ============================================================ */
-            .chat-widget-input {
-                padding: 10px 14px;
-                border-top: 1px solid var(--border-color, #E2E8F0);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: var(--bg-card, #FFFFFF);
-                flex-shrink: 0;
-            }
-
-            .chat-widget-input input {
-                flex: 1;
-                border: none;
-                background: var(--bg-body, #F1F5F9);
-                padding: 10px 14px;
-                border-radius: 50px;
-                font-family: 'Cairo', sans-serif;
-                font-size: 0.85rem;
-                color: var(--text-color, #0F172A);
-                outline: none;
-                min-width: 50px;
-            }
-
-            .chat-widget-input input::placeholder {
-                color: var(--text-muted, #94A3B8);
-            }
-
-            .chat-widget-input .attach-btn,
-            .chat-widget-input .send-btn {
-                background: none;
-                border: none;
-                color: var(--text-muted, #64748B);
-                font-size: 1.1rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                padding: 8px;
-                border-radius: 50%;
-                width: 38px;
-                height: 38px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-
-            .chat-widget-input .attach-btn:hover {
-                background: rgba(124, 58, 237, 0.08);
-                color: var(--primary, #7C3AED);
-            }
-
-            .chat-widget-input .send-btn {
-                background: linear-gradient(135deg, #7C3AED, #EC4899);
-                color: #fff;
-            }
-
-            .chat-widget-input .send-btn:hover:not(:disabled) {
-                transform: scale(1.05);
-                box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3);
-            }
-
-            .chat-widget-input .send-btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                transform: none !important;
-            }
-
-            /* ============================================================
-               إشعارات منبثقة
-               ============================================================ */
-            .widget-notification {
-                position: fixed;
-                bottom: 235px;
-                left: 100px;
-                background: var(--bg-card, #FFFFFF);
-                padding: 12px 18px;
-                border-radius: 12px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-                border: 1px solid var(--border-color, #E2E8F0);
-                z-index: 9998;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                font-family: 'Cairo', sans-serif;
-                font-size: 0.85rem;
-                color: var(--text-color, #0F172A);
-                animation: popupSlide 0.4s ease;
-                max-width: 320px;
-                direction: rtl;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .widget-notification:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-            }
-
-            .widget-notification .notif-icon {
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #7C3AED, #EC4899);
-                color: #fff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.9rem;
-                flex-shrink: 0;
-            }
-
-            .widget-notification .notif-content {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .widget-notification .notif-content .notif-title {
-                font-weight: 700;
-                font-size: 0.8rem;
-            }
-
-            .widget-notification .notif-content .notif-text {
-                font-size: 0.75rem;
-                color: var(--text-muted, #94A3B8);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .widget-notification .notif-close {
-                background: none;
-                border: none;
-                color: var(--text-muted, #94A3B8);
-                cursor: pointer;
-                font-size: 0.8rem;
-                padding: 4px;
-                transition: all 0.3s ease;
-            }
-
-            .widget-notification .notif-close:hover {
-                color: var(--text-color, #0F172A);
-            }
-
-            /* ============================================================
-               وضع الظلام
-               ============================================================ */
-            [data-theme="dark"] .chat-widget-popup {
-                background: #1E293B;
-            }
-
-            [data-theme="dark"] .chat-widget-messages {
-                background: #0F172A;
-            }
-
-            [data-theme="dark"] .chat-widget-messages .msg.received {
-                background: #1E293B;
-                color: #F1F5F9;
-            }
-
-            [data-theme="dark"] .chat-widget-input {
-                background: #1E293B;
-                border-color: #334155;
-            }
-
-            [data-theme="dark"] .chat-widget-input input {
-                background: #0F172A;
-                color: #F1F5F9;
-            }
-
-            [data-theme="dark"] .widget-empty-state p {
-                color: #F1F5F9;
-            }
-
-            [data-theme="dark"] .widget-notification {
-                background: #1E293B;
-                border-color: #334155;
-                color: #F1F5F9;
-            }
-
-            [data-theme="dark"] .widget-notification .notif-text {
-                color: #94A3B8;
-            }
-
-            /* ============================================================
-               التجاوب
-               ============================================================ */
-            @media (max-width: 768px) {
-                .chat-widget-popup {
-                    width: calc(100% - 40px);
-                    height: 460px;
-                    bottom: 200px;
-                    left: 20px;
-                }
-
-                .chat-widget-btn {
-                    width: 52px;
-                    height: 52px;
-                    font-size: 1.4rem;
-                    bottom: 140px;
-                    left: 20px;
-                }
-
-                .chat-widget-badge {
-                    min-width: 20px;
-                    height: 20px;
-                    font-size: 0.55rem;
-                    top: -4px;
-                    right: -4px;
-                }
-
-                .widget-notification {
-                    bottom: 200px;
-                    left: 80px;
-                    max-width: 260px;
-                    padding: 10px 14px;
-                    font-size: 0.8rem;
-                }
-            }
-
-            @media (max-width: 480px) {
-                .chat-widget-popup {
-                    width: calc(100% - 16px);
-                    height: 420px;
-                    bottom: 175px;
-                    left: 8px;
-                    border-radius: 16px;
-                }
-
-                .chat-widget-btn {
-                    width: 46px;
-                    height: 46px;
-                    font-size: 1.2rem;
-                    bottom: 130px;
-                    left: 12px;
-                }
-
-                .chat-widget-messages {
-                    padding: 12px 14px;
-                }
-
-                .chat-widget-messages .msg {
-                    max-width: 90%;
-                    padding: 8px 12px;
-                    font-size: 0.8rem;
-                }
-
-                .chat-widget-input {
-                    padding: 8px 10px;
-                }
-
-                .chat-widget-input input {
-                    font-size: 0.8rem;
-                    padding: 8px 12px;
-                }
-
-                .chat-widget-input .attach-btn,
-                .chat-widget-input .send-btn {
-                    width: 34px;
-                    height: 34px;
-                    font-size: 0.95rem;
-                }
-
-                .chat-widget-header {
-                    padding: 10px 14px;
-                    min-height: 50px;
-                }
-
-                .chat-widget-header .info .avatar {
-                    width: 34px;
-                    height: 34px;
-                    font-size: 0.9rem;
-                }
-
-                .chat-widget-header .info .details .name {
-                    font-size: 0.85rem;
-                }
-
-                .chat-widget-header .header-actions button {
-                    width: 28px;
-                    height: 28px;
-                    font-size: 0.75rem;
-                }
-
-                .widget-notification {
-                    bottom: 175px;
-                    left: 60px;
-                    max-width: 200px;
-                    padding: 8px 12px;
-                    font-size: 0.7rem;
-                }
-
-                .widget-notification .notif-icon {
-                    width: 28px;
-                    height: 28px;
-                    font-size: 0.7rem;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        // تم تضمين الأنماط في chat-widget.css
+        // هذا الكود هنا للتوثيق
+        console.log('🎨 تم تحميل أنماط الدردشة');
     }
 
     // ============================================================
@@ -948,19 +666,19 @@
                 <div class="widget-empty-state">
                     <i class="fas fa-comment-dots"></i>
                     <p>مرحباً! كيف يمكنني مساعدتك؟</p>
-                    <span>ابدأ المحادثة الآن</span>
+                    <span>${state.user.role === 'admin' ? 'أنت مدير، يمكنك الرد على العملاء' : 'اكتب رسالتك وسيتم الرد عليك من قبل الدعم الفني'}</span>
                 </div>
             `;
             return;
         }
 
-        state.messages.forEach((msg, index) => {
+        state.messages.forEach((msg) => {
             const div = document.createElement('div');
-            div.className = `msg ${msg.sender === 'admin' ? 'sent' : 'received'}`;
+            const isAdmin = msg.sender === 'admin';
+            div.className = `msg ${isAdmin ? 'sent' : 'received'}`;
 
             let content = msg.text || '';
 
-            // عرض الملفات
             if (msg.file) {
                 const isImage = msg.file.type && msg.file.type.startsWith('image/');
                 const isVideo = msg.file.type && msg.file.type.startsWith('video/');
@@ -1005,7 +723,8 @@
                 }
             }
 
-            content += `<span class="time">${msg.time || 'الآن'}</span>`;
+            const senderLabel = isAdmin ? 'أنت' : (msg.userName || 'العميل');
+            content += `<span class="time">${senderLabel} • ${msg.time || 'الآن'}</span>`;
             div.innerHTML = content;
             container.appendChild(div);
         });
@@ -1023,84 +742,113 @@
         const now = new Date();
         const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
 
+        const sender = state.user.role === 'admin' ? 'admin' : 'client';
+        
         const newMsg = {
             id: Date.now(),
-            sender: 'admin',
+            sender: sender,
+            userName: state.user.name,
             text: text || '📎 ملف مرفق',
             time: time,
             file: state.pendingFile || null,
             timestamp: now.toISOString()
         };
 
+        // ✅ إضافة الرسالة محلياً
         state.messages.push(newMsg);
         state.pendingFile = null;
-        
-        renderMessages();
         saveMessages();
-        
+        renderMessages();
+
         elements.input.value = '';
         elements.sendBtn.disabled = true;
 
-        // إظهار مؤشر الكتابة
-        showTyping();
+        // ✅ إرسال عبر WebSocket
+        const wsData = {
+            type: 'message',
+            sender: sender,
+            userId: state.user.id,
+            userName: state.user.name,
+            text: text || '📎 ملف مرفق',
+            file: state.pendingFile || null,
+            time: time
+        };
+        
+        WSManager.send(wsData);
 
-        // محاكاة رد من العميل
-        setTimeout(() => {
-            hideTyping();
-            
-            const replies = [
-                'شكراً لتواصلك معنا، سأقوم بمساعدتك فوراً 🙏',
-                'تم استلام رسالتك، سأرد عليك خلال دقائق ⏳',
-                'أهلاً بك! كيف يمكنني خدمتك اليوم؟ 😊',
-                'نحن هنا لمساعدتك، أخبرني بمزيد من التفاصيل 📝',
-                'شكراً على سؤالك، سأبحث عن الإجابة المناسبة 🔍',
-                'تم استلام طلبك، سأقوم بمعالجته بأسرع وقت 💪',
-                'مرحباً! يسعدني مساعدتك، أخبرني ما تحتاجه 🌟'
-            ];
-
-            const reply = {
-                id: Date.now() + 1,
-                sender: 'client',
-                text: replies[Math.floor(Math.random() * replies.length)],
-                time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
-                timestamp: new Date().toISOString()
-            };
-
-            state.messages.push(reply);
-            
-            // زيادة الإشعارات إذا كانت النافذة مغلقة
-            if (!state.isOpen) {
-                state.unreadCount++;
-                showNotification('📩 رسالة جديدة', reply.text);
-                playNotificationSound();
-            }
-            
-            renderMessages();
-            saveMessages();
-            updateBadge();
-            
-        }, 1500 + Math.random() * 1500);
-    }
-
-    // ============================================================
-    // مؤشر الكتابة
-    // ============================================================
-    let typingElement = null;
-
-    function showTyping() {
-        hideTyping();
-        typingElement = document.createElement('div');
-        typingElement.className = 'widget-typing';
-        typingElement.innerHTML = `<span></span><span></span><span></span>`;
-        elements.messages.appendChild(typingElement);
-        scrollToBottom();
-    }
-
-    function hideTyping() {
-        if (typingElement) {
-            typingElement.remove();
-            typingElement = null;
+        // ✅ إذا كان المرسل مديراً، إرسال إشعار للعميل المحدد
+        if (sender === 'admin' && state.currentClientId) {
+            WSManager.send({
+                type: 'reply',
+                userId: state.currentClientId,
+                message: text || '📎 ملف مرفق',
+                file: state.pendingFile || null
+            });
         }
+
+        // ✅ إشعار صوتي
+        playNotificationSound();
+    }
+
+    // ============================================================
+    // إضافة رسالة من الخارج
+    // ============================================================
+    function addMessage(text, sender = 'admin', file = null) {
+        const now = new Date();
+        const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+        const newMsg = {
+            id: Date.now(),
+            sender: sender,
+            userName: sender === 'admin' ? 'الدعم الفني' : state.user.name,
+            text: text,
+            time: time,
+            file: file || null,
+            timestamp: now.toISOString()
+        };
+
+        state.messages.push(newMsg);
+        saveMessages();
+        renderMessages();
+
+        // ✅ إرسال عبر WebSocket
+        WSManager.send({
+            type: 'message',
+            sender: sender,
+            userId: state.user.id,
+            text: text,
+            file: file || null
+        });
+
+        if (!state.isOpen) {
+            state.unreadCount++;
+            updateBadge();
+            saveMessages();
+            playNotificationSound();
+            showNotification(`📩 رسالة من ${sender === 'admin' ? 'الدعم الفني' : 'عميل'}`, text);
+        }
+
+        return newMsg;
+    }
+
+    // ============================================================
+    // جلب جميع الرسائل
+    // ============================================================
+    function getMessages() {
+        return state.messages;
+    }
+
+    // ============================================================
+    // مسح جميع الرسائل
+    // ============================================================
+    function clearMessages() {
+        if (!confirm('هل أنت متأكد من مسح جميع الرسائل؟')) return;
+        state.messages = [];
+        state.unreadCount = 0;
+        saveMessages();
+        renderMessages();
+        updateBadge();
+        showToast('🗑️ تم مسح جميع الرسائل', 'info');
     }
 
     // ============================================================
@@ -1116,14 +864,12 @@
 
         const file = files[0];
 
-        // التحقق من الحجم
         if (file.size > CONFIG.maxFileSize) {
             showToast(`❌ حجم الملف كبير جداً. الحد الأقصى ${CONFIG.maxFileSize / 1024 / 1024}MB`, 'error');
             event.target.value = '';
             return;
         }
 
-        // التحقق من نوع الملف
         if (!CONFIG.allowedFileTypes.includes(file.type)) {
             showToast('❌ نوع الملف غير مدعوم', 'error');
             event.target.value = '';
@@ -1133,16 +879,11 @@
         const reader = new FileReader();
 
         reader.onload = function(e) {
-            const isImage = file.type.startsWith('image/');
-            const isVideo = file.type.startsWith('video/');
-
             state.pendingFile = {
                 name: file.name,
                 type: file.type,
                 size: file.size,
-                data: e.target.result,
-                isImage: isImage,
-                isVideo: isVideo
+                data: e.target.result
             };
 
             elements.input.value = `📎 ${file.name}`;
@@ -1170,6 +911,30 @@
     }
 
     // ============================================================
+    // عرض العملاء (للمدير)
+    // ============================================================
+    function showClients() {
+        if (state.user.role !== 'admin') return;
+        
+        const clientList = state.clients.map(c => 
+            `🟢 ${c.name || c.id} ${c.online ? '(متصل)' : '(غير متصل)'}`
+        ).join('\n');
+        
+        alert(`👥 العملاء المتصلون:\n\n${clientList || 'لا يوجد عملاء متصلون'}`);
+    }
+
+    // ============================================================
+    // حالة الاتصال
+    // ============================================================
+    function getConnectionStatus() {
+        return {
+            connected: state.isConnected,
+            ws: state.ws,
+            reconnectCount: state.reconnectCount
+        };
+    }
+
+    // ============================================================
     // تحديث شارة الإشعارات
     // ============================================================
     function updateBadge() {
@@ -1179,16 +944,11 @@
         if (state.unreadCount > 0) {
             badge.style.display = 'flex';
             badge.textContent = state.unreadCount > 99 ? '99+' : state.unreadCount;
-            // إضافة تأثير نبض
-            badge.style.animation = 'badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         } else {
             badge.style.display = 'none';
         }
     }
 
-    // ============================================================
-    // عدد الإشعارات
-    // ============================================================
     function getUnreadCount() {
         return state.unreadCount;
     }
@@ -1200,10 +960,21 @@
     }
 
     // ============================================================
+    // تعيين المستخدم
+    // ============================================================
+    function setUser(user) {
+        if (user) {
+            state.user = { ...state.user, ...user };
+            // إعادة الاتصال بـ WebSocket
+            WSManager.disconnect();
+            WSManager.connect();
+        }
+    }
+
+    // ============================================================
     // إشعار منبثق
     // ============================================================
     function showNotification(title, message) {
-        // ✅ إشعار المتصفح
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('📩 منصة ارتقاء', {
                 body: message || 'لديك رسالة جديدة',
@@ -1211,7 +982,6 @@
             });
         }
 
-        // ✅ إشعار داخل الصفحة
         const existing = document.querySelector('.widget-notification');
         if (existing) existing.remove();
 
@@ -1236,7 +1006,6 @@
 
         document.body.appendChild(notif);
 
-        // إزالة الإشعار تلقائياً بعد 6 ثوانٍ
         setTimeout(() => {
             if (notif.parentNode) {
                 notif.style.opacity = '0';
@@ -1327,28 +1096,24 @@
     }
 
     // ============================================================
-    // تعيين المستخدم
-    // ============================================================
-    function setUser(user) {
-        if (user) {
-            state.user = { ...state.user, ...user };
-        }
-    }
-
-    // ============================================================
     // مستمعي الأحداث
     // ============================================================
     function setupEventListeners() {
-        // ✅ زر الدردشة
         elements.btn.addEventListener('click', toggleChat);
 
-        // ✅ إدخال الرسالة
         elements.input.addEventListener('input', function() {
             const btn = elements.sendBtn;
             btn.disabled = !this.value.trim() && !state.pendingFile;
+            
+            // إرسال مؤشر الكتابة
+            if (state.isConnected) {
+                WSManager.send({
+                    type: 'typing',
+                    isTyping: this.value.trim().length > 0
+                });
+            }
         });
 
-        // ✅ إرسال بالـ Enter
         elements.input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1356,30 +1121,20 @@
             }
         });
 
-        // ✅ رفع الملفات
         elements.fileInput.addEventListener('change', handleFileUpload);
 
-        // ✅ إغلاق عند الضغط خارج النافذة
-        document.addEventListener('click', function(e) {
-            const popup = elements.popup;
-            const btn = elements.btn;
-            if (state.isOpen && 
-                !popup.contains(e.target) && 
-                !btn.contains(e.target)) {
-                // لا نغلق تلقائياً، نترك المستخدم يقرر
-            }
-        });
-
-        // ✅ طلب إذن الإشعارات
         if ('Notification' in window && Notification.permission === 'default') {
             setTimeout(() => {
                 Notification.requestPermission();
             }, 5000);
         }
+
+        // ✅ استقبال الإشعارات من WebSocket
+        // يتم التعامل معها في handleWSMessage
     }
 
     // ============================================================
-    // التهيئة عند تحميل الصفحة
+    // التهيئة
     // ============================================================
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -1388,7 +1143,7 @@
     }
 
     // ============================================================
-    // تصدير الدوال للاستخدام الخارجي
+    // تصدير الدوال
     // ============================================================
     window.ChatWidget = {
         init: init,
@@ -1402,12 +1157,18 @@
         getUnreadCount: getUnreadCount,
         markAsRead: markAsRead,
         setUser: setUser,
-        showNotification: showNotification,
-        showToast: showToast,
+        addMessage: addMessage,
+        getMessages: getMessages,
+        clearMessages: clearMessages,
+        showClients: showClients,
+        getConnectionStatus: getConnectionStatus,
+        WSManager: WSManager,
         state: state
     };
 
     console.log('💬 Chat Widget initialized successfully!');
-    console.log('📖 Use window.ChatWidget to control the widget');
+    console.log('👤 المستخدم:', state.user);
+    console.log('🔌 WebSocket:', WSManager.isConnected() ? '🟢 متصل' : '🔴 غير متصل');
+    console.log('📖 استخدم window.ChatWidget للتحكم في الدردشة');
 
 })();
