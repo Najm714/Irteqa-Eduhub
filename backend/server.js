@@ -3508,22 +3508,7 @@ app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
-// ============================================================
-// مسار مباشر لملفات الدردشة
-// ============================================================
-app.get('/chat-files/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(chatFilesDir, filename);
-    
-    if (fs.existsSync(filePath)) {
-        res.sendFile(filePath);
-    } else {
-        res.status(404).json({
-            success: false,
-            message: 'الملف غير موجود'
-        });
-    }
-});
+
 // ============================================================
 // 10. معالجة 404
 // ============================================================
