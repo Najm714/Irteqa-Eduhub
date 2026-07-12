@@ -5,6 +5,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
+const WebSocket = require('ws');
 
 // تحميل متغيرات البيئة
 dotenv.config();
@@ -32,6 +33,8 @@ const videosDir = path.join(uploadsDir, 'videos');
 const ordersDir = path.join(uploadsDir, 'orders');
 const summariesDir = path.join(uploadsDir, 'summaries');
 const businessOrdersDir = path.join(uploadsDir, 'business-orders');
+const chatFilesDir = path.join(uploadsDir, 'chat-files');
+
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -66,6 +69,8 @@ app.use('/uploads/videos', express.static(videosDir));
 app.use('/uploads/orders', express.static(ordersDir));
 app.use('/uploads/summaries', express.static(summariesDir));
 app.use('/uploads/business-orders', express.static(businessOrdersDir));
+app.use('/uploads/chat-files', express.static(chatFilesDir));
+
 
 // ============================================================
 // مسار مباشر للفيديوهات (حل بديل)
@@ -141,7 +146,8 @@ const University = require('./models/University');
 const ExplanationMaterial = require('./models/ExplanationMaterial');
 const Summary = require('./models/Summary');
 const Subscription = require('./models/Subscription');
-
+const Conversation = require('./models/Conversation');
+const Message = require('./models/Message');
 // ============================================================
 // استيراد الميدل وير
 // ============================================================
@@ -177,6 +183,823 @@ app.get('/', (req, res) => {
         }
     });
 });
+
+
+// ============================================================
+// ============================================================
+// 🗨️ مسارات الدردشة (Chat Routes)
+// ============================================================
+// ============================================================
+
+// ============================================================
+// 1. جلب جميع المحادثات للمستخدم
+// ============================================================
+app.get('/api/chat/conversations', protect, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // جلب المحادثات التي يشارك فيها المستخدم
+        const conversations = await Conversation.find({
+            participants: userId
+        })
+        .populate('participants', 'name email role avatar')
+        .populate('lastMessage')
+        .sort({ updatedAt: -1 });
+
+        // تنسيق البيانات
+        const formattedConversations = conversations.map(conv => {
+            const otherUser = conv.participants.find(p => p._id.toString() !== userId);
+            const unreadCount = conv.messages ? conv.messages.filter(m => 
+                m.senderId.toString() !== userId && !m.read
+            ).length : 0;
+
+            return {
+                id: conv._id,
+                otherUser: otherUser ? {
+                    id: otherUser._id,
+                    name: otherUser.name,
+                    email: otherUser.email,
+                    role: otherUser.role,
+                    avatar: otherUser.avatar || otherUser.name.charAt(0)
+                } : null,
+                lastMessage: conv.lastMessage ? conv.lastMessage.text : 'لا توجد رسائل',
+                lastMessageTime: conv.lastMessage ? conv.lastMessage.createdAt : conv.updatedAt,
+                unreadCount: unreadCount,
+                createdAt: conv.createdAt,
+                updatedAt: conv.updatedAt
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            data: formattedConversations
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في جلب المحادثات:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// 2. إنشاء محادثة جديدة
+// ============================================================
+app.post('/api/chat/conversations', protect, async (req, res) => {
+    try {
+        const { userId, userRole } = req.body;
+        const senderId = req.user.id;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المستخدم مطلوب'
+            });
+        }
+
+        // التحقق من وجود المستخدم
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'المستخدم غير موجود'
+            });
+        }
+
+        // التحقق من وجود محادثة سابقة
+        const existingConversation = await Conversation.findOne({
+            participants: { $all: [senderId, userId] }
+        });
+
+        if (existingConversation) {
+            return res.status(200).json({
+                success: true,
+                data: existingConversation,
+                message: 'المحادثة موجودة بالفعل'
+            });
+        }
+
+        // إنشاء محادثة جديدة
+        const conversation = new Conversation({
+            participants: [senderId, userId],
+            createdBy: senderId,
+            type: 'direct'
+        });
+
+        await conversation.save();
+
+        // جلب المحادثة مع بيانات المشاركين
+        const populatedConv = await Conversation.findById(conversation._id)
+            .populate('participants', 'name email role avatar');
+
+        res.status(201).json({
+            success: true,
+            data: populatedConv,
+            message: 'تم إنشاء المحادثة بنجاح'
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء المحادثة:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// 3. جلب رسائل محادثة معينة
+// ============================================================
+app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        // التحقق من وجود المحادثة
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        // التحقق من أن المستخدم مشارك في المحادثة
+        if (!conversation.participants.includes(userId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لعرض هذه المحادثة'
+            });
+        }
+
+        // جلب الرسائل
+        const messages = await Message.find({ conversationId: id })
+            .populate('senderId', 'name email role avatar')
+            .sort({ createdAt: 1 });
+
+        // تحديث الرسائل غير المقروءة
+        await Message.updateMany(
+            { 
+                conversationId: id, 
+                senderId: { $ne: userId },
+                read: false 
+            },
+            { read: true }
+        );
+
+        // تحديث عدد الرسائل غير المقروءة في المحادثة
+        await Conversation.findByIdAndUpdate(id, {
+            $set: { unreadCount: 0 }
+        });
+
+        // تنسيق الرسائل
+        const formattedMessages = messages.map(msg => ({
+            id: msg._id,
+            senderId: msg.senderId._id,
+            senderName: msg.senderId.name,
+            senderRole: msg.senderId.role,
+            text: msg.text,
+            file: msg.file || null,
+            read: msg.read,
+            createdAt: msg.createdAt,
+            updatedAt: msg.updatedAt
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: formattedMessages
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في جلب الرسائل:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// 4. إرسال رسالة جديدة
+// ============================================================
+app.post('/api/chat/messages', protect, async (req, res) => {
+    try {
+        const { conversationId, text, file } = req.body;
+        const senderId = req.user.id;
+
+        if (!conversationId || !text) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المحادثة والنص مطلوبان'
+            });
+        }
+
+        // التحقق من وجود المحادثة
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        // التحقق من أن المستخدم مشارك في المحادثة
+        if (!conversation.participants.includes(senderId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لإرسال رسالة في هذه المحادثة'
+            });
+        }
+
+        // حفظ الملف إذا وجد
+        let fileData = null;
+        if (file) {
+            // حفظ الملف في مجلد chat-files
+            const fileName = `chat_${Date.now()}_${file.name}`;
+            const filePath = path.join(chatFilesDir, fileName);
+            
+            // استخراج البيانات من Base64
+            const base64Data = file.data.split(';base64,').pop();
+            const buffer = Buffer.from(base64Data, 'base64');
+            fs.writeFileSync(filePath, buffer);
+
+            fileData = {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                path: `/uploads/chat-files/${fileName}`,
+                fileId: fileName
+            };
+        }
+
+        // إنشاء الرسالة
+        const message = new Message({
+            conversationId: conversationId,
+            senderId: senderId,
+            text: text,
+            file: fileData,
+            read: false
+        });
+
+        await message.save();
+
+        // تحديث المحادثة
+        await Conversation.findByIdAndUpdate(conversationId, {
+            lastMessage: message._id,
+            updatedAt: new Date(),
+            $inc: { unreadCount: 1 }
+        });
+
+        // جلب الرسالة مع بيانات المرسل
+        const populatedMessage = await Message.findById(message._id)
+            .populate('senderId', 'name email role avatar');
+
+        // إرسال إشعار عبر WebSocket
+        const wsData = {
+            type: 'new_message',
+            conversationId: conversationId,
+            message: {
+                id: populatedMessage._id,
+                senderId: populatedMessage.senderId._id,
+                senderName: populatedMessage.senderId.name,
+                senderRole: populatedMessage.senderId.role,
+                text: populatedMessage.text,
+                file: populatedMessage.file || null,
+                createdAt: populatedMessage.createdAt
+            }
+        };
+
+        // إرسال إلى جميع المشاركين في المحادثة (باستثناء المرسل)
+        broadcastToConversation(conversationId, senderId, wsData);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                id: populatedMessage._id,
+                senderId: populatedMessage.senderId._id,
+                senderName: populatedMessage.senderId.name,
+                senderRole: populatedMessage.senderId.role,
+                text: populatedMessage.text,
+                file: populatedMessage.file || null,
+                createdAt: populatedMessage.createdAt
+            },
+            message: 'تم إرسال الرسالة بنجاح'
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في إرسال الرسالة:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// 5. تحديد الرسائل كمقروءة
+// ============================================================
+app.put('/api/chat/messages/read', protect, async (req, res) => {
+    try {
+        const { conversationId } = req.body;
+        const userId = req.user.id;
+
+        if (!conversationId) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المحادثة مطلوب'
+            });
+        }
+
+        // تحديث الرسائل غير المقروءة
+        await Message.updateMany(
+            {
+                conversationId: conversationId,
+                senderId: { $ne: userId },
+                read: false
+            },
+            { read: true }
+        );
+
+        // تحديث عدد الرسائل غير المقروءة في المحادثة
+        await Conversation.findByIdAndUpdate(conversationId, {
+            $set: { unreadCount: 0 }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'تم تحديث الرسائل كمقروءة'
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في تحديث الرسائل:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// 6. حذف محادثة
+// ============================================================
+app.delete('/api/chat/conversations/:id', protect, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        // التحقق من أن المستخدم مشارك في المحادثة
+        if (!conversation.participants.includes(userId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لحذف هذه المحادثة'
+            });
+        }
+
+        // حذف جميع الرسائل المرتبطة
+        await Message.deleteMany({ conversationId: id });
+
+        // حذف المحادثة
+        await Conversation.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف المحادثة بنجاح'
+        });
+
+    } catch (error) {
+        console.error('❌ خطأ في حذف المحادثة:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// ============================================================
+// ============================================================
+// 🔌 WebSocket للدردشة الفورية
+// ============================================================
+// ============================================================
+
+// إنشاء خادم HTTP
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// تخزين الاتصالات النشطة
+const connections = {
+    clients: new Map(), // userId -> WebSocket
+    admins: new Map(),  // userId -> WebSocket
+    experts: new Map(), // userId -> WebSocket
+    all: new Set()      // جميع الاتصالات
+};
+
+// ============================================================
+// معالجة اتصالات WebSocket
+// ============================================================
+wss.on('connection', function(ws, req) {
+    // استخراج معلومات المستخدم من URL
+    const urlParams = new URLSearchParams(req.url.split('?')[1]);
+    const userId = urlParams.get('userId');
+    const role = urlParams.get('role') || 'client';
+    const token = urlParams.get('token');
+
+    if (!userId) {
+        ws.close(1008, 'معرف المستخدم مطلوب');
+        return;
+    }
+
+    // تخزين معلومات المستخدم في الاتصال
+    ws.userData = {
+        userId: userId,
+        role: role,
+        connectedAt: new Date().toISOString()
+    };
+
+    // تخزين الاتصال حسب الدور
+    connections.all.add(ws);
+    
+    if (role === 'admin') {
+        connections.admins.set(userId, ws);
+        console.log(`👤 مدير متصل: ${userId}`);
+    } else if (role === 'expert') {
+        connections.experts.set(userId, ws);
+        console.log(`👤 خبير متصل: ${userId}`);
+    } else {
+        connections.clients.set(userId, ws);
+        console.log(`👤 عميل متصل: ${userId}`);
+    }
+
+    // ✅ إرسال قائمة المحادثات للمستخدم
+    sendUserConversations(ws, userId);
+
+    // ✅ إشعار للمديرين بوجود مستخدم جديد
+    broadcastToAdmins({
+        type: 'user_online',
+        userId: userId,
+        userName: 'مستخدم',
+        role: role,
+        timestamp: new Date().toISOString()
+    });
+
+    // ============================================================
+    // معالجة الرسائل الواردة
+    // ============================================================
+    ws.on('message', async function(message) {
+        try {
+            const data = JSON.parse(message);
+            console.log(`📩 رسالة من ${userId}:`, data);
+
+            switch(data.type) {
+                case 'auth':
+                    // تأكيد المصادقة
+                    ws.send(JSON.stringify({
+                        type: 'auth_confirm',
+                        userId: userId,
+                        role: role
+                    }));
+                    break;
+
+                case 'new_message':
+                    // رسالة جديدة من مستخدم
+                    await handleNewMessage(ws, data, userId, role);
+                    break;
+
+                case 'read':
+                    // تحديث الرسائل كمقروءة
+                    await handleReadMessages(ws, data, userId);
+                    break;
+
+                case 'typing':
+                    // مؤشر الكتابة
+                    broadcastToConversationParticipants(data.conversationId, userId, {
+                        type: 'typing',
+                        userId: userId,
+                        userName: data.userName || 'مستخدم',
+                        isTyping: data.isTyping
+                    });
+                    break;
+
+                case 'heartbeat':
+                    // نبضات القلب
+                    ws.send(JSON.stringify({
+                        type: 'heartbeat_ack',
+                        timestamp: new Date().toISOString()
+                    }));
+                    break;
+
+                default:
+                    console.log('📩 نوع رسالة غير معروف:', data.type);
+            }
+
+        } catch (error) {
+            console.error('❌ خطأ في معالجة الرسالة:', error);
+            ws.send(JSON.stringify({
+                type: 'error',
+                message: 'حدث خطأ في معالجة الرسالة'
+            }));
+        }
+    });
+
+    // ============================================================
+    // عند قطع الاتصال
+    // ============================================================
+    ws.on('close', function() {
+        // إزالة الاتصال من القوائم
+        connections.all.delete(ws);
+        connections.clients.delete(userId);
+        connections.admins.delete(userId);
+        connections.experts.delete(userId);
+
+        console.log(`👤 مستخدم غير متصل: ${userId}`);
+
+        // إشعار للمديرين بفصل المستخدم
+        broadcastToAdmins({
+            type: 'user_offline',
+            userId: userId,
+            userName: 'مستخدم',
+            timestamp: new Date().toISOString()
+        });
+    });
+
+    // ============================================================
+    // معالجة الأخطاء
+    // ============================================================
+    ws.on('error', function(error) {
+        console.error(`❌ خطأ في WebSocket للمستخدم ${userId}:`, error);
+    });
+});
+
+// ============================================================
+// دوال مساعدة WebSocket
+// ============================================================
+
+// ✅ إرسال رسالة إلى مستخدم معين
+function sendToUser(userId, data) {
+    // البحث في جميع القوائم
+    let ws = connections.clients.get(userId);
+    if (!ws) ws = connections.admins.get(userId);
+    if (!ws) ws = connections.experts.get(userId);
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
+        return true;
+    }
+    return false;
+}
+
+// ✅ إرسال إلى جميع المديرين
+function broadcastToAdmins(data) {
+    connections.admins.forEach((ws, userId) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(data));
+        }
+    });
+}
+
+// ✅ إرسال إلى جميع المشاركين في محادثة (باستثناء المرسل)
+function broadcastToConversation(conversationId, senderId, data) {
+    // البحث عن المحادثة
+    Conversation.findById(conversationId)
+        .then(conversation => {
+            if (!conversation) return;
+
+            // إرسال إلى جميع المشاركين
+            conversation.participants.forEach(participantId => {
+                if (participantId.toString() === senderId) return;
+                sendToUser(participantId.toString(), data);
+            });
+        })
+        .catch(error => {
+            console.error('❌ خطأ في إرسال إلى المحادثة:', error);
+        });
+}
+
+// ✅ إرسال إلى المشاركين في محادثة (للمؤشرات)
+function broadcastToConversationParticipants(conversationId, senderId, data) {
+    Conversation.findById(conversationId)
+        .then(conversation => {
+            if (!conversation) return;
+            conversation.participants.forEach(participantId => {
+                if (participantId.toString() === senderId) return;
+                sendToUser(participantId.toString(), data);
+            });
+        })
+        .catch(error => console.error('❌ خطأ:', error));
+}
+
+// ✅ إرسال قائمة المحادثات لمستخدم
+async function sendUserConversations(ws, userId) {
+    try {
+        const conversations = await Conversation.find({
+            participants: userId
+        })
+        .populate('participants', 'name email role avatar')
+        .populate('lastMessage')
+        .sort({ updatedAt: -1 });
+
+        const formatted = conversations.map(conv => {
+            const otherUser = conv.participants.find(p => p._id.toString() !== userId);
+            return {
+                id: conv._id,
+                otherUser: otherUser ? {
+                    id: otherUser._id,
+                    name: otherUser.name,
+                    role: otherUser.role,
+                    avatar: otherUser.avatar || otherUser.name.charAt(0)
+                } : null,
+                lastMessage: conv.lastMessage ? conv.lastMessage.text : 'لا توجد رسائل',
+                lastMessageTime: conv.lastMessage ? conv.lastMessage.createdAt : conv.updatedAt,
+                unreadCount: conv.unreadCount || 0,
+                createdAt: conv.createdAt
+            };
+        });
+
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'conversations',
+                data: formatted
+            }));
+        }
+
+    } catch (error) {
+        console.error('❌ خطأ في إرسال المحادثات:', error);
+    }
+}
+
+// ✅ معالجة رسالة جديدة
+async function handleNewMessage(ws, data, userId, role) {
+    try {
+        const { conversationId, text, file } = data;
+
+        if (!conversationId || !text) {
+            ws.send(JSON.stringify({
+                type: 'error',
+                message: 'معرف المحادثة والنص مطلوبان'
+            }));
+            return;
+        }
+
+        // التحقق من المحادثة
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) {
+            ws.send(JSON.stringify({
+                type: 'error',
+                message: 'المحادثة غير موجودة'
+            }));
+            return;
+        }
+
+        // التحقق من أن المستخدم مشارك
+        if (!conversation.participants.includes(userId)) {
+            ws.send(JSON.stringify({
+                type: 'error',
+                message: 'ليس لديك صلاحية'
+            }));
+            return;
+        }
+
+        // حفظ الملف إذا وجد
+        let fileData = null;
+        if (file) {
+            const fileName = `chat_${Date.now()}_${file.name}`;
+            const filePath = path.join(chatFilesDir, fileName);
+            const base64Data = file.data.split(';base64,').pop();
+            const buffer = Buffer.from(base64Data, 'base64');
+            fs.writeFileSync(filePath, buffer);
+
+            fileData = {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                path: `/uploads/chat-files/${fileName}`,
+                fileId: fileName
+            };
+        }
+
+        // إنشاء الرسالة
+        const message = new Message({
+            conversationId: conversationId,
+            senderId: userId,
+            text: text,
+            file: fileData,
+            read: false
+        });
+
+        await message.save();
+
+        // تحديث المحادثة
+        await Conversation.findByIdAndUpdate(conversationId, {
+            lastMessage: message._id,
+            updatedAt: new Date(),
+            $inc: { unreadCount: 1 }
+        });
+
+        // جلب الرسالة مع بيانات المرسل
+        const populatedMessage = await Message.findById(message._id)
+            .populate('senderId', 'name email role avatar');
+
+        // إرسال تأكيد للمرسل
+        ws.send(JSON.stringify({
+            type: 'message_sent',
+            message: {
+                id: populatedMessage._id,
+                senderId: populatedMessage.senderId._id,
+                senderName: populatedMessage.senderId.name,
+                text: populatedMessage.text,
+                file: populatedMessage.file || null,
+                createdAt: populatedMessage.createdAt
+            }
+        }));
+
+        // إرسال إلى جميع المشاركين الآخرين
+        const wsData = {
+            type: 'new_message',
+            conversationId: conversationId,
+            message: {
+                id: populatedMessage._id,
+                senderId: populatedMessage.senderId._id,
+                senderName: populatedMessage.senderId.name,
+                senderRole: populatedMessage.senderId.role,
+                text: populatedMessage.text,
+                file: populatedMessage.file || null,
+                createdAt: populatedMessage.createdAt
+            }
+        };
+
+        conversation.participants.forEach(participantId => {
+            if (participantId.toString() !== userId) {
+                sendToUser(participantId.toString(), wsData);
+            }
+        });
+
+        // إشعار للمديرين إذا كان المرسل عميلاً
+        if (role === 'client') {
+            broadcastToAdmins({
+                type: 'notification',
+                userId: userId,
+                userName: populatedMessage.senderId.name || 'عميل',
+                message: text,
+                conversationId: conversationId,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ خطأ في معالجة الرسالة الجديدة:', error);
+        ws.send(JSON.stringify({
+            type: 'error',
+            message: 'حدث خطأ في إرسال الرسالة'
+        }));
+    }
+}
+
+// ✅ معالجة تحديث القراءة
+async function handleReadMessages(ws, data, userId) {
+    try {
+        const { conversationId } = data;
+        if (!conversationId) return;
+
+        await Message.updateMany(
+            {
+                conversationId: conversationId,
+                senderId: { $ne: userId },
+                read: false
+            },
+            { read: true }
+        );
+
+        await Conversation.findByIdAndUpdate(conversationId, {
+            $set: { unreadCount: 0 }
+        });
+
+        // إشعار للمرسلين بأن الرسائل قد قُرئت
+        const conversation = await Conversation.findById(conversationId);
+        if (conversation) {
+            conversation.participants.forEach(participantId => {
+                if (participantId.toString() !== userId) {
+                    sendToUser(participantId.toString(), {
+                        type: 'messages_read',
+                        conversationId: conversationId,
+                        readBy: userId
+                    });
+                }
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ خطأ في تحديث القراءة:', error);
+    }
+}
 
 // ============================================================
 // مسار الصحة
@@ -2439,187 +3262,6 @@ app.use((req, res) => {
 });
 
 // ============================================================
-// 11. معالجة الأخطاء العامة
-// ============================================================
-app.use((err, req, res, next) => {
-    console.error('❌ خطأ:', err.stack);
-    res.status(500).json({
-        success: false,
-        message: err.message || 'حدث خطأ في الخادم'
-    });
-});
-// ============================================================
-// WebSocket - دردشة وإشعارات فورية
-// ============================================================
-const WebSocket = require('ws');
-const http = require('http');
-
-// إنشاء خادم HTTP
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-// تخزين الاتصالات النشطة
-const connections = {
-    admins: [],     // اتصالات المديرين
-    clients: [],    // اتصالات العملاء
-    all: []         // جميع الاتصالات
-};
-
-// ✅ عند الاتصال
-wss.on('connection', function(ws, req) {
-    // تحديد نوع المستخدم من الـ URL
-    const url = req.url || '';
-    const isAdmin = url.includes('admin');
-    const userId = req.headers['user-id'] || 'unknown';
-    
-    // إضافة معلومات المستخدم للاتصال
-    ws.userData = {
-        id: userId,
-        isAdmin: isAdmin,
-        connectedAt: new Date().toISOString()
-    };
-    
-    // تخزين الاتصال
-    connections.all.push(ws);
-    if (isAdmin) {
-        connections.admins.push(ws);
-        console.log(`👤 مدير متصل: ${userId}`);
-        
-        // ✅ إرسال إشعار للمدير بعدد العملاء المتصلين
-        const clientCount = connections.clients.length;
-        ws.send(JSON.stringify({
-            type: 'system',
-            message: `🔔 عدد العملاء المتصلين: ${clientCount}`,
-            clients: connections.clients.map(c => c.userData)
-        }));
-    } else {
-        connections.clients.push(ws);
-        console.log(`👤 عميل متصل: ${userId}`);
-        
-        // ✅ إشعار للمدير بوجود عميل جديد
-        broadcastToAdmins({
-            type: 'notification',
-            sender: 'system',
-            message: `🟢 عميل جديد متصل: ${userId}`,
-            time: new Date().toISOString()
-        });
-    }
-
-    // ✅ استقبال الرسائل
-    ws.on('message', function(message) {
-        try {
-            const data = JSON.parse(message);
-            console.log('📩 رسالة:', data);
-            
-            // ✅ معالجة أنواع مختلفة من الرسائل
-            switch(data.type) {
-                case 'message':
-                    // رسالة من عميل → إرسال للمدير
-                    if (!ws.userData.isAdmin) {
-                        broadcastToAdmins({
-                            type: 'notification',
-                            sender: 'client',
-                            userId: ws.userData.id,
-                            message: data.text,
-                            file: data.file || null,
-                            time: new Date().toISOString()
-                        });
-                    }
-                    break;
-                    
-                case 'reply':
-                    // رد من مدير → إرسال للعميل
-                    if (ws.userData.isAdmin) {
-                        sendToClient(data.userId, {
-                            type: 'reply',
-                            sender: 'admin',
-                            message: data.text,
-                            file: data.file || null,
-                            time: new Date().toISOString()
-                        });
-                    }
-                    break;
-                    
-                case 'typing':
-                    // مؤشر الكتابة
-                    if (!ws.userData.isAdmin) {
-                        broadcastToAdmins({
-                            type: 'typing',
-                            userId: ws.userData.id,
-                            isTyping: data.isTyping
-                        });
-                    }
-                    break;
-                    
-                case 'read':
-                    // تأكيد القراءة
-                    if (ws.userData.isAdmin) {
-                        sendToClient(data.userId, {
-                            type: 'read',
-                            messageId: data.messageId
-                        });
-                    }
-                    break;
-            }
-            
-        } catch (error) {
-            console.error('❌ خطأ في معالجة الرسالة:', error);
-        }
-    });
-
-    // ✅ عند قطع الاتصال
-    ws.on('close', function() {
-        // إزالة الاتصال من القوائم
-        connections.all = connections.all.filter(c => c !== ws);
-        connections.admins = connections.admins.filter(c => c !== ws);
-        connections.clients = connections.clients.filter(c => c !== ws);
-        
-        if (ws.userData.isAdmin) {
-            console.log(`👤 مدير غير متصل: ${ws.userData.id}`);
-        } else {
-            console.log(`👤 عميل غير متصل: ${ws.userData.id}`);
-            // إشعار للمدير بفصل العميل
-            broadcastToAdmins({
-                type: 'notification',
-                sender: 'system',
-                message: `🔴 عميل غير متصل: ${ws.userData.id}`,
-                time: new Date().toISOString()
-            });
-        }
-    });
-});
-
-// ✅ دوال مساعدة
-function broadcastToAdmins(data) {
-    connections.admins.forEach(admin => {
-        if (admin.readyState === WebSocket.OPEN) {
-            admin.send(JSON.stringify(data));
-        }
-    });
-}
-
-function sendToClient(userId, data) {
-    connections.clients.forEach(client => {
-        if (client.userData.id === userId && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(data));
-        }
-    });
-}
-
-function broadcastToAll(data) {
-    connections.all.forEach(ws => {
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(data));
-        }
-    });
-}
-
-// ✅ بدء الخادم
-server.listen(PORT, () => {
-    console.log(`✅ الخادم يعمل على http://localhost:${PORT}`);
-    console.log(`🔌 WebSocket جاهز على ws://localhost:${PORT}`);
-});
-// ============================================================
 // تشغيل الخادم
 // ============================================================
 app.listen(PORT, () => {
@@ -2628,5 +3270,7 @@ app.listen(PORT, () => {
     console.log(`📁 مجلد الطلبات: ${ordersDir}`);
     console.log(`📁 مجلد الملخصات: ${summariesDir}`);
     console.log(`📁 مجلد طلبات الأعمال: ${businessOrdersDir}`);
+    console.log(`🔌 WebSocket جاهز على ws://localhost:${PORT}`);
+    console.log(`📁 مجلد chat-files: ${chatFilesDir}`);
     console.log(`🌐 بيئة التشغيل: ${process.env.NODE_ENV || 'development'}`);
 });
