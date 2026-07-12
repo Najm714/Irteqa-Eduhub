@@ -434,7 +434,7 @@ app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
         });
     }
 });
-// 4. إرسال رسالة جديدة
+ // 4. إرسال رسالة جديدة - مع مسار ملف صحيح
 app.post('/api/chat/messages', protect, async (req, res) => {
     try {
         const { conversationId, text, file } = req.body;
@@ -464,15 +464,8 @@ app.post('/api/chat/messages', protect, async (req, res) => {
 
         let fileData = null;
         
-        // ✅ معالجة الملف إذا وجد
         if (file && file.data) {
             try {
-                console.log('📁 استلام ملف:', {
-                    name: file.name,
-                    type: file.type,
-                    size: (file.size / 1024).toFixed(1) + ' KB'
-                });
-
                 // ✅ التأكد من وجود مجلد chat-files
                 if (!fs.existsSync(chatFilesDir)) {
                     fs.mkdirSync(chatFilesDir, { recursive: true });
@@ -504,14 +497,20 @@ app.post('/api/chat/messages', protect, async (req, res) => {
                 fs.writeFileSync(filePath, buffer);
                 console.log(`✅ تم حفظ الملف: ${fileName} (${(buffer.length / 1024).toFixed(1)} KB)`);
 
-                // ✅ تخزين معلومات الملف ككائن
+                // ✅ بناء URL الملف (مسار كامل)
+                const baseUrl = req.protocol + '://' + req.get('host');
+                const fileUrl = `${baseUrl}/uploads/chat-files/${fileName}`;
+
                 fileData = {
                     name: file.name,
                     type: file.type || 'application/octet-stream',
                     size: file.size || buffer.length,
-                    path: `/uploads/chat-files/${fileName}`,
+                    path: `/uploads/chat-files/${fileName}`, // المسار النسبي
+                    url: fileUrl, // ✅ URL كامل للوصول للملف
                     fileId: fileName
                 };
+
+                console.log('📁 مسار الملف:', fileUrl);
 
             } catch (fileError) {
                 console.error('❌ خطأ في حفظ الملف:', fileError);
@@ -522,12 +521,12 @@ app.post('/api/chat/messages', protect, async (req, res) => {
             }
         }
 
-        // ✅ إنشاء الرسالة مع ملف ككائن
+        // ✅ إنشاء الرسالة
         const message = new Message({
             conversationId: conversationId,
             senderId: senderId,
             text: text,
-            file: fileData, // ✅ الآن هو كائن وليس String
+            file: fileData,
             read: false
         });
 

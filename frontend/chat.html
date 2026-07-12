@@ -1523,7 +1523,7 @@
             `;
         }
  // ============================================================
-// عرض الرسائل - مع دعم الملفات
+// عرض الرسائل - مع مسار ملف صحيح
 // ============================================================
 function renderMessages() {
     const container = document.getElementById('chatMessages');
@@ -1566,18 +1566,23 @@ function renderMessages() {
             const isImage = msg.file.type && msg.file.type.startsWith('image/');
             const isVideo = msg.file.type && msg.file.type.startsWith('video/');
 
+            // ✅ استخدام URL الملف أو المسار
+            const fileUrl = msg.file.url || msg.file.path || msg.file.data || '';
+
             if (isImage) {
-                // ✅ عرض الصورة
-                const imageUrl = msg.file.path || msg.file.data;
-                content += `<img src="${imageUrl}" class="msg-image" 
-                           onclick="window.open('${imageUrl}', '_blank')" 
-                           onerror="this.style.display='none'" />`;
+                // ✅ عرض الصورة مع منع الأخطاء
+                content += `
+                    <img src="${fileUrl}" class="msg-image" 
+                         onclick="window.open('${fileUrl}', '_blank')" 
+                         onerror="this.style.display='none'; console.error('❌ فشل تحميل الصورة:', '${fileUrl}')" 
+                         alt="${msg.file.name}" />
+                `;
             } else if (isVideo) {
                 // ✅ عرض الفيديو
-                const videoUrl = msg.file.path || msg.file.data;
                 content += `
                     <video controls class="msg-video" onclick="this.paused ? this.play() : this.pause()">
-                        <source src="${videoUrl}" type="${msg.file.type}" />
+                        <source src="${fileUrl}" type="${msg.file.type}" />
+                        متصفحك لا يدعم تشغيل الفيديو
                     </video>
                 `;
             } else {
@@ -1600,9 +1605,6 @@ function renderMessages() {
                 const ext = msg.file.name.split('.').pop().toLowerCase();
                 const icon = iconMap[ext] || 'fa-file';
                 const fileSize = msg.file.size ? (msg.file.size / 1024).toFixed(1) : '0';
-
-                // ✅ استخدام المسار أو البيانات
-                const fileUrl = msg.file.path || msg.file.data;
 
                 content += `
                     <div class="msg-file" onclick="downloadFile('${msg.file.name}', '${fileUrl}')">
@@ -2092,28 +2094,35 @@ function handleFileUpload(event) {
     reader.readAsDataURL(file);
     event.target.value = '';
 }
-
-// ✅ تنزيل ملف
-function downloadFile(name, data) {
-    if (!data) {
+ // ============================================================
+// تنزيل ملف
+// ============================================================
+function downloadFile(name, url) {
+    if (!url) {
         showToast('❌ لا توجد بيانات للتحميل', 'error');
         return;
     }
     
     try {
-        const link = document.createElement('a');
-        link.href = data;
-        link.download = name || 'ملف';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast(`✅ تم تنزيل الملف: ${name}`, 'success');
+        // ✅ إذا كان URL هو مسار الملف، نفتحه في نافذة جديدة للتحميل
+        if (url.startsWith('/uploads/') || url.startsWith('http')) {
+            window.open(url, '_blank');
+            showToast(`✅ جاري تحميل الملف: ${name}`, 'success');
+        } else {
+            // ✅ إذا كانت البيانات Base64
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = name || 'ملف';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`✅ تم تنزيل الملف: ${name}`, 'success');
+        }
     } catch (error) {
         console.error('❌ خطأ في تنزيل الملف:', error);
         showToast('❌ حدث خطأ في تنزيل الملف', 'error');
     }
 }
-
 // ✅ إغلاق نافذة المرفقات عند الضغط خارجها
 document.addEventListener('click', function(e) {
     const modal = document.getElementById('attachModal');
