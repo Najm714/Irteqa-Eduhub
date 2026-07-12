@@ -155,7 +155,8 @@
     "validator": "^13.15.35",
     "vary": "^1.1.2",
     "webidl-conversions": "^7.0.0",
-    "whatwg-url": "^14.2.0"
+    "whatwg-url": "^14.2.0",
+    "ws": "^8.21.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
