@@ -88,6 +88,7 @@ if (!fs.existsSync(businessOrdersDir)) {
 console.log('📁 مسار uploads:', uploadsDir);
 console.log('📁 مسار videos:', videosDir);
 console.log('📁 مسار summaries:', summariesDir);
+console.log('📁 مسار chat-files:', chatFilesDir);
 
 // ============================================================
 // خدمة الملفات الثابتة (Uploads)
