@@ -3303,7 +3303,352 @@ app.delete('/api/subscriptions/:id', protect, authorize('admin'), async (req, re
         res.status(500).json({ success: false, message: error.message });
     }
 });
+// ============================================================
+// 🗨️ مسارات الدردشة
+// ============================================================
 
+// 1. جلب جميع المحادثات
+app.get('/api/chat/conversations', protect, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const conversations = await Conversation.find({
+            participants: userId
+        })
+        .populate('participants', 'name email role avatar')
+        .populate('lastMessage')
+        .sort({ updatedAt: -1 });
+
+        const formattedConversations = conversations.map(conv => {
+            const otherUser = conv.participants.find(p => p._id.toString() !== userId);
+            return {
+                id: conv._id,
+                otherUser: otherUser ? {
+                    id: otherUser._id,
+                    name: otherUser.name,
+                    role: otherUser.role,
+                    avatar: otherUser.avatar || otherUser.name.charAt(0)
+                } : null,
+                lastMessage: conv.lastMessage ? conv.lastMessage.text : 'لا توجد رسائل',
+                lastMessageTime: conv.lastMessage ? conv.lastMessage.createdAt : conv.updatedAt,
+                unreadCount: conv.unreadCount || 0,
+                createdAt: conv.createdAt,
+                updatedAt: conv.updatedAt
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            data: formattedConversations
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب المحادثات:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 2. إنشاء محادثة جديدة
+app.post('/api/chat/conversations', protect, async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const senderId = req.user.id;
+
+        // إذا كان userId = 'admin'، نبحث عن أول مدير
+        let targetUserId = userId;
+        if (userId === 'admin') {
+            const admin = await User.findOne({ role: 'admin', isActive: true });
+            if (!admin) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'لا يوجد مدير متاح للمراسلة'
+                });
+            }
+            targetUserId = admin._id;
+        }
+
+        if (!targetUserId) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المستخدم مطلوب'
+            });
+        }
+
+        const targetUser = await User.findById(targetUserId);
+        if (!targetUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'المستخدم غير موجود'
+            });
+        }
+
+        // التحقق من وجود محادثة سابقة
+        const existingConversation = await Conversation.findOne({
+            participants: { $all: [senderId, targetUserId] }
+        });
+
+        if (existingConversation) {
+            return res.status(200).json({
+                success: true,
+                data: existingConversation,
+                message: 'المحادثة موجودة بالفعل'
+            });
+        }
+
+        const conversation = new Conversation({
+            participants: [senderId, targetUserId],
+            createdBy: senderId,
+            type: 'direct'
+        });
+
+        await conversation.save();
+
+        const populatedConv = await Conversation.findById(conversation._id)
+            .populate('participants', 'name email role avatar');
+
+        res.status(201).json({
+            success: true,
+            data: populatedConv,
+            message: 'تم إنشاء المحادثة بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء المحادثة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 3. جلب رسائل محادثة
+app.get('/api/chat/conversations/:id/messages', protect, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        if (!conversation.participants.includes(userId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لعرض هذه المحادثة'
+            });
+        }
+
+        const messages = await Message.find({ conversationId: id })
+            .populate('senderId', 'name email role avatar')
+            .sort({ createdAt: 1 });
+
+        // تحديث الرسائل غير المقروءة
+        await Message.updateMany(
+            {
+                conversationId: id,
+                senderId: { $ne: userId },
+                read: false
+            },
+            { read: true }
+        );
+
+        await Conversation.findByIdAndUpdate(id, {
+            $set: { unreadCount: 0 }
+        });
+
+        const formattedMessages = messages.map(msg => ({
+            id: msg._id,
+            senderId: msg.senderId._id,
+            senderName: msg.senderId.name,
+            senderRole: msg.senderId.role,
+            text: msg.text,
+            file: msg.file || null,
+            read: msg.read,
+            createdAt: msg.createdAt,
+            updatedAt: msg.updatedAt
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: formattedMessages
+        });
+    } catch (error) {
+        console.error('❌ خطأ في جلب الرسائل:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 4. إرسال رسالة جديدة
+app.post('/api/chat/messages', protect, async (req, res) => {
+    try {
+        const { conversationId, text, file } = req.body;
+        const senderId = req.user.id;
+
+        if (!conversationId || !text) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المحادثة والنص مطلوبان'
+            });
+        }
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        if (!conversation.participants.includes(senderId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لإرسال رسالة في هذه المحادثة'
+            });
+        }
+
+        let fileData = null;
+        if (file && file.data) {
+            try {
+                // التأكد من وجود مجلد chat-files
+                if (!fs.existsSync(chatFilesDir)) {
+                    fs.mkdirSync(chatFilesDir, { recursive: true });
+                }
+
+                const fileName = `chat_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const filePath = path.join(chatFilesDir, fileName);
+                
+                let base64Data = file.data;
+                if (base64Data.includes(';base64,')) {
+                    base64Data = base64Data.split(';base64,').pop();
+                }
+                
+                const buffer = Buffer.from(base64Data, 'base64');
+                fs.writeFileSync(filePath, buffer);
+
+                fileData = {
+                    name: file.name,
+                    type: file.type || 'application/octet-stream',
+                    size: file.size || buffer.length,
+                    path: `/uploads/chat-files/${fileName}`,
+                    fileId: fileName
+                };
+            } catch (fileError) {
+                console.error('❌ خطأ في حفظ الملف:', fileError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'حدث خطأ في حفظ الملف: ' + fileError.message
+                });
+            }
+        }
+
+        const message = new Message({
+            conversationId: conversationId,
+            senderId: senderId,
+            text: text,
+            file: fileData,
+            read: false
+        });
+
+        await message.save();
+
+        await Conversation.findByIdAndUpdate(conversationId, {
+            lastMessage: message._id,
+            updatedAt: new Date(),
+            $inc: { unreadCount: 1 }
+        });
+
+        const populatedMessage = await Message.findById(message._id)
+            .populate('senderId', 'name email role avatar');
+
+        res.status(201).json({
+            success: true,
+            data: {
+                id: populatedMessage._id,
+                senderId: populatedMessage.senderId._id,
+                senderName: populatedMessage.senderId.name,
+                senderRole: populatedMessage.senderId.role,
+                text: populatedMessage.text,
+                file: populatedMessage.file || null,
+                createdAt: populatedMessage.createdAt
+            },
+            message: 'تم إرسال الرسالة بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في إرسال الرسالة:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'حدث خطأ في إرسال الرسالة'
+        });
+    }
+});
+
+// 5. تحديث الرسائل كمقروءة
+app.put('/api/chat/messages/read', protect, async (req, res) => {
+    try {
+        const { conversationId } = req.body;
+        const userId = req.user.id;
+
+        if (!conversationId) {
+            return res.status(400).json({
+                success: false,
+                message: 'معرف المحادثة مطلوب'
+            });
+        }
+
+        await Message.updateMany(
+            {
+                conversationId: conversationId,
+                senderId: { $ne: userId },
+                read: false
+            },
+            { read: true }
+        );
+
+        await Conversation.findByIdAndUpdate(conversationId, {
+            $set: { unreadCount: 0 }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'تم تحديث الرسائل كمقروءة'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في تحديث الرسائل:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 6. حذف محادثة
+app.delete('/api/chat/conversations/:id', protect, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'المحادثة غير موجودة'
+            });
+        }
+
+        if (!conversation.participants.includes(userId)) {
+            return res.status(403).json({
+                success: false,
+                message: 'ليس لديك صلاحية لحذف هذه المحادثة'
+            });
+        }
+
+        await Message.deleteMany({ conversationId: id });
+        await Conversation.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: 'تم حذف المحادثة بنجاح'
+        });
+    } catch (error) {
+        console.error('❌ خطأ في حذف المحادثة:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 // ============================================================
 // 10. معالجة 404
 // ============================================================

@@ -25,26 +25,7 @@ const MessageSchema = new mongoose.Schema({
     read: {
         type: Boolean,
         default: false
-    },
-    readAt: {
-        type: Date,
-        default: null
-    },
-    deleted: {
-        type: Boolean,
-        default: false
-    },
-    deletedAt: {
-        type: Date,
-        default: null
     }
-}, {
-    timestamps: true
-});
-
-MessageSchema.index({ conversationId: 1 });
-MessageSchema.index({ senderId: 1 });
-MessageSchema.index({ createdAt: -1 });
-MessageSchema.index({ read: 1 });
+}, { timestamps: true });
 
 module.exports = mongoose.model('Message', MessageSchema);

@@ -28,12 +28,6 @@ const ConversationSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     }
-}, {
-    timestamps: true
-});
-
-ConversationSchema.index({ participants: 1 });
-ConversationSchema.index({ updatedAt: -1 });
-ConversationSchema.index({ createdBy: 1 });
+}, { timestamps: true });
 
 module.exports = mongoose.model('Conversation', ConversationSchema);
