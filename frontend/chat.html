@@ -50,9 +50,6 @@
             --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.3);
         }
 
-        /* ============================================================
-           الإعدادات العامة
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -72,9 +69,6 @@
             height: 100vh;
         }
 
-        /* ============================================================
-           شريط التمرير المخصص
-           ============================================================ */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -211,21 +205,16 @@
             gap: 6px;
         }
 
-        .header-badge i {
-            font-size: 0.9rem;
-        }
-
         /* ============================================================
            صفحة الدردشة
            ============================================================ */
         .chat-page {
             display: flex;
             height: calc(100vh - 85px);
-            padding: 20px 0;
+            padding: 20px;
             gap: 20px;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         /* ============================================================
@@ -379,22 +368,22 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: #10B981;
             border-radius: 50%;
-            border: 3px solid var(--bg-card);
+            border: 2px solid var(--bg-card);
         }
 
         .chat-item .avatar .offline-dot {
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: #94A3B8;
             border-radius: 50%;
-            border: 3px solid var(--bg-card);
+            border: 2px solid var(--bg-card);
         }
 
         .chat-item .info {
@@ -424,16 +413,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             margin-top: 2px;
-        }
-
-        .chat-item .info .last-msg .typing {
-            color: var(--primary);
-            animation: typingDot 1.5s ease-in-out infinite;
-        }
-
-        @keyframes typingDot {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
         }
 
         .chat-item .unread {
@@ -475,9 +454,6 @@
             transition: all 0.3s ease;
         }
 
-        /* ============================================================
-           رأس الدردشة
-           ============================================================ */
         .chat-main-header {
             padding: 15px 25px;
             border-bottom: 1px solid var(--border-color);
@@ -531,13 +507,6 @@
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-
-        .chat-main-header .user-info .details .status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
         }
 
         .chat-main-header .user-info .details .status .dot.online {
@@ -594,9 +563,6 @@
             border-radius: 10px;
         }
 
-        /* ============================================================
-           تنسيق الرسائل
-           ============================================================ */
         .message {
             max-width: 75%;
             padding: 12px 18px;
@@ -647,9 +613,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================
-           الملفات والصور في الرسائل
-           ============================================================ */
         .message .msg-file {
             margin-top: 8px;
             padding: 10px 14px;
@@ -731,9 +694,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ============================================================
-           تاريخ الرسائل
-           ============================================================ */
         .message-date {
             text-align: center;
             font-size: 0.7rem;
@@ -750,9 +710,6 @@
             font-weight: 600;
         }
 
-        /* ============================================================
-           حالة عدم وجود محادثة
-           ============================================================ */
         .no-chat {
             display: flex;
             flex-direction: column;
@@ -778,43 +735,6 @@
 
         .no-chat p {
             font-size: 0.95rem;
-        }
-
-        /* ============================================================
-           مؤشر الكتابة
-           ============================================================ */
-        .typing-indicator {
-            align-self: flex-start;
-            padding: 10px 18px;
-            background: var(--bg-card);
-            border-radius: 18px;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            animation: messageSlide 0.3s ease;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            display: inline-block;
-            animation: typingBounce 1.4s ease-in-out infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-8px); opacity: 1; }
         }
 
         /* ============================================================
@@ -906,9 +826,6 @@
             box-shadow: none !important;
         }
 
-        /* ============================================================
-           نافذة المرفقات
-           ============================================================ */
         .attach-modal {
             display: none;
             position: absolute;
@@ -967,9 +884,6 @@
             position: relative;
         }
 
-        /* ============================================================
-           توست - إشعارات
-           ============================================================ */
         .toast-chat {
             position: fixed;
             top: 30px;
@@ -1010,9 +924,6 @@
             font-size: 1.2rem;
         }
 
-        /* ============================================================
-           التجاوب
-           ============================================================ */
         @media (max-width: 1024px) {
             .chat-sidebar {
                 width: 280px;
@@ -1391,99 +1302,145 @@
         }
 
         // ============================================================
-        // بيانات المحادثات (محاكاة)
+        // الإعدادات
         // ============================================================
-        let chats = [{
-            id: 1,
-            name: 'أحمد محمد',
-            role: 'client',
-            avatar: 'أ',
-            lastMessage: 'شكراً على المساعدة!',
-            time: '10:30 ص',
-            unread: 2,
-            online: true,
-            messages: [
-                { id: 1, sender: 'client', text: 'مرحباً، لدي استفسار حول الخدمة', time: '10:20 ص' },
-                { id: 2, sender: 'admin', text: 'أهلاً بك، كيف يمكنني مساعدتك؟', time: '10:22 ص' },
-                { id: 3, sender: 'client', text: 'أريد معرفة المزيد عن خدمات التحليل الإحصائي', time: '10:25 ص' },
-                { id: 4, sender: 'admin', text: 'بالتأكيد، لدينا فريق متخصص في التحليل الإحصائي باستخدام SPSS و AMOS', time: '10:28 ص' },
-                { id: 5, sender: 'client', text: 'شكراً على المساعدة!', time: '10:30 ص' }
-            ]
-        }, {
-            id: 2,
-            name: 'سارة العتيبي',
-            role: 'client',
-            avatar: 'س',
-            lastMessage: 'سأرسل الملفات اليوم',
-            time: '9:45 ص',
-            unread: 0,
-            online: false,
-            messages: [
-                { id: 1, sender: 'client', text: 'مرحباً، لدي طلب لخدمة الترجمة الأكاديمية', time: '9:30 ص' },
-                { id: 2, sender: 'admin', text: 'مرحباً سارة، يمكننا مساعدتك في ذلك', time: '9:35 ص' },
-                { id: 3, sender: 'client', text: 'سأرسل الملفات اليوم', time: '9:45 ص' }
-            ]
-        }, {
-            id: 3,
-            name: 'د. محمد القحطاني',
-            role: 'expert',
-            avatar: 'م',
-            lastMessage: 'تم الانتهاء من المراجعة',
-            time: 'الأمس',
-            unread: 1,
-            online: true,
-            messages: [
-                { id: 1, sender: 'expert', text: 'مرحباً، تم الانتهاء من مراجعة البحث', time: 'الأمس 8:00 م' },
-                { id: 2, sender: 'admin', text: 'شكراً دكتور، سأرسل التقرير للعميل', time: 'الأمس 8:15 م' },
-                { id: 3, sender: 'expert', text: 'تم الانتهاء من المراجعة', time: 'الأمس 8:30 م' }
-            ]
-        }, {
-            id: 4,
-            name: 'نورة السعيد',
-            role: 'client',
-            avatar: 'ن',
-            lastMessage: 'هل يمكنك مساعدتي في تحليل البيانات؟',
-            time: 'الأمس',
-            unread: 3,
-            online: true,
-            messages: [
-                { id: 1, sender: 'client', text: 'مرحباً، أحتاج مساعدة في تحليل البيانات', time: 'الأمس 6:00 م' },
-                { id: 2, sender: 'admin', text: 'بالتأكيد، أخبريني عن نوع البيانات', time: 'الأمس 6:05 م' },
-                { id: 3, sender: 'client', text: 'لدي بيانات استبيان، أحتاج تحليل SPSS', time: 'الأمس 6:10 م' },
-                { id: 4, sender: 'client', text: 'هل يمكنك مساعدتي في تحليل البيانات؟', time: 'الأمس 6:15 م' }
-            ]
-        }];
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000/api'
+            : 'https://irteqa-eduhub.onrender.com/api';
 
-        let currentChatId = null;
+        let conversations = [];
+        let currentConversationId = null;
+        let messages = [];
         let pendingFile = null;
-        let isTyping = false;
-        let typingTimeout = null;
+        let currentUser = null;
 
         // ============================================================
-        // عرض قائمة المحادثات
+        // جلب بيانات المستخدم
         // ============================================================
-        function renderChats() {
-            const list = document.getElementById('chatList');
-            list.innerHTML = '';
-            const search = document.getElementById('searchChat').value.toLowerCase();
+        function getUser() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('user') || 'null');
+                if (userData) {
+                    return {
+                        id: userData.id || userData._id || null,
+                        name: userData.name || 'مستخدم',
+                        role: userData.role || 'client',
+                        email: userData.email || '',
+                        avatar: userData.name ? userData.name.charAt(0) : 'م'
+                    };
+                }
+            } catch (e) {
+                console.warn('⚠️ فشل جلب بيانات المستخدم:', e);
+            }
+            return null;
+        }
 
-            const filtered = chats.filter(c => c.name.includes(search) || c.role.includes(search));
+        function getToken() {
+            return localStorage.getItem('token') || '';
+        }
 
-            if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
-                        <i class="fas fa-search" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
-                        <p>لا توجد نتائج مطابقة</p>
-                    </div>
-                `;
-                document.getElementById('chatCount').textContent = '0';
+        // ============================================================
+        // تحميل المحادثات
+        // ============================================================
+        async function loadConversations() {
+            const token = getToken();
+            if (!token) {
+                showToast('❌ يرجى تسجيل الدخول لعرض المحادثات', 'error');
                 return;
             }
 
-            filtered.forEach(chat => {
-                const div = document.createElement('div');
-                div.className = `chat-item ${chat.id === currentChatId ? 'active' : ''}`;
-                div.onclick = () => openChat(chat.id);
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/conversations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error(`خطأ ${response.status}`);
+
+                const data = await response.json();
+                if (data.success) {
+                    conversations = data.data || [];
+                    renderChats();
+                    updateBadge();
+                }
+            } catch (error) {
+                console.error('❌ فشل تحميل المحادثات:', error);
+                showToast('❌ فشل تحميل المحادثات', 'error');
+            }
+        }
+
+        // ============================================================
+        // تحميل رسائل محادثة
+        // ============================================================
+        async function loadMessages(conversationId) {
+            const token = getToken();
+            if (!token) {
+                showToast('❌ يرجى تسجيل الدخول', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error(`خطأ ${response.status}`);
+
+                const data = await response.json();
+                if (data.success) {
+                    messages = data.data || [];
+                    currentConversationId = conversationId;
+                    renderMessages();
+                    scrollToBottom();
+                    
+                    // تحديث رأس الدردشة
+                    updateChatHeader(conversationId);
+                    
+                    // تحديث الإشعارات
+                    const conv = conversations.find(c => c.id === conversationId);
+                    if (conv) {
+                        conv.unreadCount = 0;
+                        renderChats();
+                        updateBadge();
+                    }
+                }
+            } catch (error) {
+                console.error('❌ فشل تحميل الرسائل:', error);
+                showToast('❌ فشل تحميل الرسائل', 'error');
+            }
+        }
+
+        // ============================================================
+        // عرض المحادثات
+        // ============================================================
+        function renderChats() {
+            const list = document.getElementById('chatList');
+            const count = document.getElementById('chatCount');
+            list.innerHTML = '';
+
+            if (conversations.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                        <i class="fas fa-comments" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                        <p>لا توجد محادثات</p>
+                        <p style="font-size:0.8rem;">ابدأ محادثة جديدة</p>
+                    </div>
+                `;
+                count.textContent = '0';
+                return;
+            }
+
+            conversations.forEach(conv => {
+                const otherUser = conv.otherUser || {};
+                const userName = otherUser.name || 'مستخدم';
+                const userAvatar = otherUser.avatar || userName.charAt(0) || 'م';
+                const userRole = otherUser.role || 'client';
+                const lastMsg = conv.lastMessage || 'لا توجد رسائل';
+                const unread = conv.unreadCount || 0;
+                const isActive = conv.id === currentConversationId;
 
                 const roleColors = {
                     admin: 'admin',
@@ -1498,41 +1455,53 @@
                     support: 'دعم'
                 };
 
-                const lastMsg = chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'لا توجد رسائل';
+                const div = document.createElement('div');
+                div.className = `chat-item ${isActive ? 'active' : ''}`;
+                div.onclick = () => openChat(conv.id);
 
                 div.innerHTML = `
-                    <div class="avatar ${roleColors[chat.role] || 'client'}">
-                        ${chat.avatar}
-                        <div class="${chat.online ? 'online-dot' : 'offline-dot'}"></div>
+                    <div class="avatar ${roleColors[userRole] || 'client'}">
+                        ${userAvatar}
                     </div>
                     <div class="info">
                         <div class="name">
-                            ${chat.name}
-                            <span class="time">${chat.time}</span>
+                            ${userName}
+                            <span class="chat-type">${roleLabels[userRole] || 'مستخدم'}</span>
                         </div>
                         <div class="last-msg">${lastMsg}</div>
                     </div>
-                    ${chat.unread > 0 ? `<div class="unread">${chat.unread}</div>` : ''}
-                    <span class="chat-type">${roleLabels[chat.role] || 'مستخدم'}</span>
+                    ${unread > 0 ? `<div class="unread">${unread}</div>` : ''}
                 `;
 
                 list.appendChild(div);
             });
 
-            document.getElementById('chatCount').textContent = filtered.length;
+            count.textContent = conversations.length;
         }
 
         // ============================================================
         // فتح محادثة
         // ============================================================
-        function openChat(chatId) {
-            currentChatId = chatId;
-            const chat = chats.find(c => c.id === chatId);
-            if (!chat) return;
-
-            // تحديث رأس الدردشة
+        function openChat(conversationId) {
+            if (currentConversationId === conversationId) return;
+            
             document.getElementById('chatHeader').style.display = 'flex';
             document.getElementById('chatInputArea').style.display = 'flex';
+            
+            loadMessages(conversationId);
+        }
+
+        // ============================================================
+        // تحديث رأس الدردشة
+        // ============================================================
+        function updateChatHeader(conversationId) {
+            const conv = conversations.find(c => c.id === conversationId);
+            if (!conv) return;
+
+            const otherUser = conv.otherUser || {};
+            const userName = otherUser.name || 'مستخدم';
+            const userAvatar = otherUser.avatar || userName.charAt(0) || 'م';
+            const userRole = otherUser.role || 'client';
 
             const roleColors = {
                 admin: 'admin',
@@ -1540,47 +1509,28 @@
                 expert: 'expert',
                 support: 'support'
             };
-            const avatar = document.getElementById('chatAvatar');
-            avatar.className = `avatar ${roleColors[chat.role] || 'client'}`;
-            avatar.textContent = chat.avatar;
 
-            document.getElementById('chatUserName').textContent = chat.name;
+            const avatar = document.getElementById('chatAvatar');
+            avatar.className = `avatar ${roleColors[userRole] || 'client'}`;
+            avatar.textContent = userAvatar;
+
+            document.getElementById('chatUserName').textContent = userName;
+            
             const statusEl = document.getElementById('chatUserStatus');
             statusEl.innerHTML = `
-                <span class="dot ${chat.online ? 'online' : 'offline'}"></span>
-                ${chat.online ? 'متصل الآن' : 'غير متصل'}
+                <span class="dot online"></span>
+                متصل الآن
             `;
-            statusEl.style.color = chat.online ? '#10B981' : '#94A3B8';
-
-            // عرض الرسائل
-            renderMessages(chat);
-
-            // تصفير الإشعارات
-            chat.unread = 0;
-            renderChats();
-
-            // التمرير للأسفل
-            scrollToBottom();
-
-            // تحديث الحالة النشطة
-            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
-            const items = document.querySelectorAll('.chat-item');
-            items.forEach(el => {
-                const nameEl = el.querySelector('.info .name');
-                if (nameEl && nameEl.textContent.includes(chat.name)) {
-                    el.classList.add('active');
-                }
-            });
         }
 
         // ============================================================
         // عرض الرسائل
         // ============================================================
-        function renderMessages(chat) {
+        function renderMessages() {
             const container = document.getElementById('chatMessages');
             container.innerHTML = '';
 
-            if (!chat.messages || chat.messages.length === 0) {
+            if (messages.length === 0) {
                 container.innerHTML = `
                     <div class="no-chat">
                         <i class="fas fa-comment-dots"></i>
@@ -1592,10 +1542,10 @@
             }
 
             let lastDate = '';
+            const currentUserId = currentUser ? currentUser.id : null;
 
-            chat.messages.forEach((msg) => {
-                // إضافة تاريخ إذا تغير
-                const msgDate = new Date().toLocaleDateString('ar-SA');
+            messages.forEach((msg) => {
+                const msgDate = new Date(msg.createdAt).toLocaleDateString('ar-SA');
                 if (msgDate !== lastDate) {
                     lastDate = msgDate;
                     const dateDiv = document.createElement('div');
@@ -1604,26 +1554,17 @@
                     container.appendChild(dateDiv);
                 }
 
+                const isOwn = msg.senderId === currentUserId;
                 const div = document.createElement('div');
-                div.className = `message ${msg.sender === 'admin' ? 'sent' : 'received'}`;
+                div.className = `message ${isOwn ? 'sent' : 'received'}`;
 
                 let content = `<div class="msg-text">${msg.text}</div>`;
 
-                // عرض الملفات إذا وجدت
                 if (msg.file) {
                     const isImage = msg.file.type && msg.file.type.startsWith('image/');
-                    const isVideo = msg.file.type && msg.file.type.startsWith('video/');
-
                     if (isImage) {
-                        content += `<img src="${msg.file.data}" class="msg-image" alt="صورة" 
-                                     onclick="window.open('${msg.file.data}', '_blank')" />`;
-                    } else if (isVideo) {
-                        content += `
-                            <video controls class="msg-video" onclick="this.paused ? this.play() : this.pause()">
-                                <source src="${msg.file.data}" type="${msg.file.type}" />
-                                متصفحك لا يدعم تشغيل الفيديو
-                            </video>
-                        `;
+                        content += `<img src="${msg.file.data}" class="msg-image" 
+                                   onclick="window.open('${msg.file.data}', '_blank')" />`;
                     } else {
                         const iconMap = {
                             'pdf': 'fa-file-pdf',
@@ -1635,14 +1576,11 @@
                             'pptx': 'fa-file-powerpoint',
                             'zip': 'fa-file-archive',
                             'rar': 'fa-file-archive',
-                            'txt': 'fa-file-alt',
                             'mp4': 'fa-file-video',
-                            'avi': 'fa-file-video',
-                            'mov': 'fa-file-video'
+                            'txt': 'fa-file-alt'
                         };
                         const ext = msg.file.name.split('.').pop().toLowerCase();
                         const icon = iconMap[ext] || 'fa-file';
-
                         const fileSize = msg.file.size ? (msg.file.size / 1024).toFixed(1) : '0';
 
                         content += `
@@ -1658,7 +1596,9 @@
                     }
                 }
 
-                content += `<span class="msg-time">${msg.time}</span>`;
+                const senderName = msg.senderName || (isOwn ? 'أنت' : 'المرسل');
+                const time = new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                content += `<span class="msg-time">${senderName} • ${time}</span>`;
                 div.innerHTML = content;
                 container.appendChild(div);
             });
@@ -1669,97 +1609,159 @@
         // ============================================================
         // إرسال رسالة
         // ============================================================
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text && !pendingFile) return;
 
-            const chat = chats.find(c => c.id === currentChatId);
-            if (!chat) return;
+            const token = getToken();
+            if (!token) {
+                showToast('❌ يرجى تسجيل الدخول', 'error');
+                return;
+            }
 
-            const now = new Date();
-            const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            if (!currentConversationId) {
+                showToast('❌ اختر محادثة أولاً', 'error');
+                return;
+            }
 
-            const newMsg = {
-                id: chat.messages.length + 1,
-                sender: 'admin',
-                text: text || '📎 ملف مرفق',
-                time: time,
-                file: pendingFile || null
-            };
-
-            chat.messages.push(newMsg);
-            chat.lastMessage = text || '📎 ملف مرفق';
-            chat.time = time;
-
-            pendingFile = null;
-
-            renderMessages(chat);
-            renderChats();
-
-            input.value = '';
-            document.getElementById('sendBtn').disabled = true;
-
-            // إظهار مؤشر الكتابة
-            showTypingIndicator();
-
-            // محاكاة رد آلي
-            setTimeout(() => {
-                hideTypingIndicator();
-                const replies = [
-                    'شكراً لتواصلك معنا، سأقوم بمساعدتك فوراً 🙏',
-                    'تم استلام رسالتك، سأرد عليك خلال دقائق ⏳',
-                    'أهلاً بك! كيف يمكنني خدمتك اليوم؟ 😊',
-                    'نحن هنا لمساعدتك، أخبرني بمزيد من التفاصيل 📝',
-                    'شكراً على سؤالك، سأبحث عن الإجابة المناسبة 🔍',
-                    'تم استلام طلبك، سأقوم بمعالجته بأسرع وقت 💪'
-                ];
-
-                const reply = {
-                    id: chat.messages.length + 1,
-                    sender: chat.role === 'client' ? 'client' : 'expert',
-                    text: replies[Math.floor(Math.random() * replies.length)],
-                    time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+            let fileData = null;
+            if (pendingFile) {
+                fileData = {
+                    name: pendingFile.name,
+                    type: pendingFile.type,
+                    size: pendingFile.size,
+                    data: pendingFile.data
                 };
+            }
 
-                chat.messages.push(reply);
-                chat.lastMessage = reply.text;
-                chat.time = reply.time;
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        conversationId: currentConversationId,
+                        text: text || '📎 ملف مرفق',
+                        file: fileData
+                    })
+                });
 
-                // زيادة عدد الإشعارات إذا كانت النافذة غير مفتوحة
-                if (currentChatId !== chat.id) {
-                    chat.unread = (chat.unread || 0) + 1;
+                if (!response.ok) throw new Error(`خطأ ${response.status}`);
+
+                const data = await response.json();
+                if (data.success) {
+                    // إضافة الرسالة محلياً
+                    const newMsg = {
+                        id: data.data.id,
+                        senderId: currentUser ? currentUser.id : null,
+                        senderName: currentUser ? currentUser.name : 'أنت',
+                        text: data.data.text,
+                        file: data.data.file || null,
+                        createdAt: data.data.createdAt
+                    };
+                    messages.push(newMsg);
+                    renderMessages();
+                    scrollToBottom();
+
+                    // تحديث آخر رسالة في المحادثة
+                    const conv = conversations.find(c => c.id === currentConversationId);
+                    if (conv) {
+                        conv.lastMessage = text || '📎 ملف مرفق';
+                        renderChats();
+                    }
+
+                    pendingFile = null;
+                    input.value = '';
+                    document.getElementById('sendBtn').disabled = true;
+
+                    showToast('✅ تم إرسال الرسالة', 'success');
                 }
+            } catch (error) {
+                console.error('❌ فشل إرسال الرسالة:', error);
+                showToast('❌ فشل إرسال الرسالة', 'error');
+            }
+        }
 
-                renderMessages(chat);
+        // ============================================================
+        // تصدير المحادثة
+        // ============================================================
+        function exportChat() {
+            if (messages.length === 0) {
+                showToast('⚠️ لا توجد رسائل لتصديرها', 'warning');
+                return;
+            }
+
+            const conv = conversations.find(c => c.id === currentConversationId);
+            const userName = conv ? conv.otherUser?.name || 'المستخدم' : 'المستخدم';
+
+            let content = `محادثة مع ${userName}\n`;
+            content += `${'='.repeat(50)}\n\n`;
+            content += `تاريخ التصدير: ${new Date().toLocaleString('ar-SA')}\n\n`;
+
+            messages.forEach(msg => {
+                const sender = msg.senderName || (msg.senderId === currentUser?.id ? 'أنت' : 'المرسل');
+                const time = new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                content += `[${time}] ${sender}: ${msg.text}\n`;
+            });
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `محادثة_${userName}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            showToast('✅ تم تصدير المحادثة بنجاح', 'success');
+        }
+
+        // ============================================================
+        // مسح المحادثة
+        // ============================================================
+        function clearChat() {
+            if (!currentConversationId) return;
+            if (!confirm('هل أنت متأكد من مسح جميع رسائل هذه المحادثة؟')) return;
+
+            // حذف الرسائل محلياً
+            messages = [];
+            renderMessages();
+            
+            const conv = conversations.find(c => c.id === currentConversationId);
+            if (conv) {
+                conv.lastMessage = 'لا توجد رسائل';
                 renderChats();
+            }
 
-                // إشعار صوتي
-                playNotificationSound();
-            }, 1500 + Math.random() * 1500);
+            showToast('🗑️ تم مسح المحادثة', 'info');
         }
 
         // ============================================================
-        // مؤشر الكتابة
+        // تحديث الدردشة
         // ============================================================
-        function showTypingIndicator() {
-            const container = document.getElementById('chatMessages');
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = `
-                <span></span>
-                <span></span>
-                <span></span>
-                <span style="font-size:0.75rem;margin-right:6px;color:var(--text-muted);">جاري الكتابة...</span>
-            `;
-            container.appendChild(indicator);
-            scrollToBottom();
+        function refreshChat() {
+            if (currentConversationId) {
+                loadMessages(currentConversationId);
+                loadConversations();
+                showToast('🔄 تم تحديث المحادثة', 'info');
+            }
         }
 
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
+        // ============================================================
+        // البحث في المحادثات
+        // ============================================================
+        function filterChats() {
+            const search = document.getElementById('searchChat').value.toLowerCase();
+            const list = document.getElementById('chatList');
+            const items = list.querySelectorAll('.chat-item');
+
+            items.forEach(item => {
+                const name = item.querySelector('.info .name')?.textContent?.toLowerCase() || '';
+                item.style.display = name.includes(search) ? 'flex' : 'none';
+            });
         }
 
         // ============================================================
@@ -1773,7 +1775,6 @@
         function attachFile(type) {
             document.getElementById('attachModal').classList.remove('show');
             const input = document.getElementById('fileInput');
-
             const acceptMap = {
                 'image': 'image/*',
                 'video': 'video/*',
@@ -1783,7 +1784,6 @@
                 'powerpoint': '.ppt,.pptx',
                 'file': '*'
             };
-
             input.accept = acceptMap[type] || '*';
             input.click();
         }
@@ -1796,16 +1796,11 @@
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                const isImage = file.type.startsWith('image/');
-                const isVideo = file.type.startsWith('video/');
-
                 pendingFile = {
                     name: file.name,
                     type: file.type,
                     size: file.size,
-                    data: e.target.result,
-                    isImage: isImage,
-                    isVideo: isVideo
+                    data: e.target.result
                 };
 
                 document.getElementById('messageInput').value = `📎 ${file.name}`;
@@ -1833,106 +1828,29 @@
         }
 
         // ============================================================
-        // تصدير المحادثة
+        // تحديث شارة الإشعارات
         // ============================================================
-        function exportChat() {
-            const chat = chats.find(c => c.id === currentChatId);
-            if (!chat) return;
+        function updateBadge() {
+            const badge = document.getElementById('chatCount');
+            if (!badge) return;
 
-            let content = `محادثة مع ${chat.name}\n`;
-            content += `=${'='.repeat(40)}\n\n`;
-
-            chat.messages.forEach(msg => {
-                const sender = msg.sender === 'admin' ? 'أنت' : chat.name;
-                content += `[${msg.time}] ${sender}: ${msg.text}\n`;
-            });
-
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `محادثة_${chat.name}_${new Date().toISOString().split('T')[0]}.txt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-
-            showToast('✅ تم تصدير المحادثة بنجاح', 'success');
-        }
-
-        // ============================================================
-        // البحث في المحادثات
-        // ============================================================
-        function filterChats() {
-            renderChats();
-        }
-
-        // ============================================================
-        // تحديث الدردشة
-        // ============================================================
-        function refreshChat() {
-            if (currentChatId) {
-                const chat = chats.find(c => c.id === currentChatId);
-                if (chat) {
-                    renderMessages(chat);
-                    showToast('🔄 تم تحديث المحادثة', 'info');
-                }
-            }
-        }
-
-        // ============================================================
-        // مسح المحادثة
-        // ============================================================
-        function clearChat() {
-            if (!currentChatId) return;
-            if (!confirm('هل أنت متأكد من مسح جميع رسائل هذه المحادثة؟')) return;
-
-            const chat = chats.find(c => c.id === currentChatId);
-            if (chat) {
-                chat.messages = [];
-                chat.lastMessage = 'لا توجد رسائل';
-                renderMessages(chat);
-                renderChats();
-                showToast('🗑️ تم مسح المحادثة', 'info');
-            }
+            const totalUnread = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
+            badge.textContent = totalUnread;
+            badge.style.display = totalUnread > 0 ? 'inline' : 'inline';
         }
 
         // ============================================================
         // التمرير للأسفل
         // ============================================================
         function scrollToBottom() {
-            const container = document.getElementById('chatMessages');
             setTimeout(() => {
+                const container = document.getElementById('chatMessages');
                 container.scrollTop = container.scrollHeight;
             }, 100);
         }
 
         // ============================================================
-        // تشغيل صوت الإشعار
-        // ============================================================
-        function playNotificationSound() {
-            try {
-                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                gainNode.gain.value = 0.15;
-
-                oscillator.start();
-                setTimeout(() => {
-                    oscillator.stop();
-                }, 150);
-            } catch (e) {
-                // تجاهل الأخطاء
-            }
-        }
-
-        // ============================================================
-        // Toast Notifications
+        // Toast
         // ============================================================
         function showToast(message, type = 'success') {
             const existing = document.querySelector('.toast-chat');
@@ -1940,14 +1858,12 @@
 
             const toast = document.createElement('div');
             toast.className = `toast-chat ${type}`;
-
             const icons = {
                 success: 'fa-check-circle',
                 error: 'fa-times-circle',
                 info: 'fa-info-circle',
                 warning: 'fa-exclamation-triangle'
             };
-
             toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
             document.body.appendChild(toast);
 
@@ -1963,12 +1879,11 @@
         // التحكم في زر الإرسال
         // ============================================================
         document.getElementById('messageInput').addEventListener('input', function() {
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = !this.value.trim() && !pendingFile;
+            document.getElementById('sendBtn').disabled = !this.value.trim() && !pendingFile;
         });
 
         // ============================================================
-        // إغلاق نافذة المرفقات عند الضغط في أي مكان
+        // إغلاق نافذة المرفقات
         // ============================================================
         document.addEventListener('click', function(e) {
             const modal = document.getElementById('attachModal');
@@ -1982,15 +1897,34 @@
         // بدء التشغيل
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            renderChats();
-
-            // فتح أول محادثة تلقائياً
-            if (chats.length > 0) {
-                openChat(chats[0].id);
+            currentUser = getUser();
+            
+            if (currentUser) {
+                console.log('👤 المستخدم:', currentUser);
+                loadConversations();
+                
+                // تحديث تلقائي كل 10 ثوانٍ
+                setInterval(() => {
+                    if (document.hidden) return;
+                    if (currentConversationId) {
+                        loadMessages(currentConversationId);
+                    }
+                    loadConversations();
+                }, 10000);
+            } else {
+                document.getElementById('chatList').innerHTML = `
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                        <i class="fas fa-lock" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                        <p>يرجى تسجيل الدخول</p>
+                        <p style="font-size:0.8rem;">للمتابعة في الدردشة</p>
+                        <a href="login.html" style="color:var(--primary);text-decoration:none;font-weight:600;margin-top:10px;display:inline-block;padding:8px 20px;border:2px solid var(--primary);border-radius:50px;">
+                            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                        </a>
+                    </div>
+                `;
             }
 
             console.log('💬 صفحة الدردشة - منصة ارتقاء');
-            console.log('📋 عدد المحادثات:', chats.length);
         });
     </script>
 </body>
