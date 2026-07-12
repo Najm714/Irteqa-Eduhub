@@ -32,7 +32,6 @@ const ConversationSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// فهارس للبحث السريع
 ConversationSchema.index({ participants: 1 });
 ConversationSchema.index({ updatedAt: -1 });
 ConversationSchema.index({ createdBy: 1 });

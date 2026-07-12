@@ -42,7 +42,6 @@ const MessageSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// فهارس للبحث السريع
 MessageSchema.index({ conversationId: 1 });
 MessageSchema.index({ senderId: 1 });
 MessageSchema.index({ createdAt: -1 });
