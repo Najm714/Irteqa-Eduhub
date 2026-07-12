@@ -34,8 +34,35 @@ const videosDir = path.join(uploadsDir, 'videos');
 const ordersDir = path.join(uploadsDir, 'orders');
 const summariesDir = path.join(uploadsDir, 'summaries');
 const businessOrdersDir = path.join(uploadsDir, 'business-orders');
-const chatFilesDir = path.join(uploadsDir, 'chat-files');
+const chatFilesDir = path.join(uploadsDir, 'chat-files'); // ✅ أضف هذا
 
+
+// ✅ إنشاء جميع المجلدات
+const dirs = [
+    { path: uploadsDir, name: 'uploads' },
+    { path: videosDir, name: 'videos' },
+    { path: ordersDir, name: 'orders' },
+    { path: summariesDir, name: 'summaries' },
+    { path: businessOrdersDir, name: 'business-orders' },
+    { path: chatFilesDir, name: 'chat-files' } // ✅ أضف هذا
+];
+
+dirs.forEach(dir => {
+    if (!fs.existsSync(dir.path)) {
+        fs.mkdirSync(dir.path, { recursive: true });
+        console.log(`📁 تم إنشاء مجلد ${dir.name}`);
+    } else {
+        console.log(`📁 مجلد ${dir.name} موجود بالفعل`);
+    }
+});
+
+// ✅ التحقق من صلاحيات مجلد chat-files
+try {
+    fs.accessSync(chatFilesDir, fs.constants.W_OK);
+    console.log('✅ مجلد chat-files قابل للكتابة');
+} catch (err) {
+    console.error('❌ مجلد chat-files غير قابل للكتابة:', err);
+}
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
