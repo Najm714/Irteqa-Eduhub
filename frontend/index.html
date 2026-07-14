@@ -4522,5 +4522,158 @@ setInterval(updateChatBadge, 5000);
         console.log('🔧 تم إضافة Tooltip لجميع أيقونات التواصل الاجتماعي');
         console.log('✨ جميع المميزات الرائعة تم إضافتها');
     </script>
+        <!-- ============================================================
+    نهاية محتوى الصفحة
+    ============================================================ -->
+
+    <!-- ====== ✅ ضع الكود هنا ====== -->
+    <script>
+        // ============================================================
+        // تعريف مجموعات الأقسام والكلمات المفتاحية
+        // ============================================================
+        const SIDEBAR_GROUPS = {
+            'الصفحات الرئيسية': {
+                icon: '🏠',
+                keywords: ['الرئيسية', 'نبذة عنا', 'آلية العمل', 'من نحن', 'عن المنصة']
+            },
+            'الخدمات': {
+                icon: '⚡',
+                keywords: ['خدمات', 'خدمة', 'البحث العلمي', 'الأعمال', 'استشارات']
+            },
+            'المحتوى التعليمي': {
+                icon: '📚',
+                keywords: ['مكتبة', 'فيديوهات', 'شروحات', 'دروس', 'محاضرات']
+            },
+            'الأدوات والموارد': {
+                icon: '🛠️',
+                keywords: ['نماذج', 'انفوجرافيك', 'مدونة', 'حاسبة', 'أدوات']
+            },
+            'التواصل والدعم': {
+                icon: '💬',
+                keywords: ['دردشة', 'آراء', 'أسئلة', 'تواصل', 'دعم', 'اتصل']
+            },
+            'المعلومات القانونية': {
+                icon: '⚖️',
+                keywords: ['سياسات', 'أحكام', 'خصوصية', 'شروط', 'استرداد', 'دفع', 'DMCA']
+            },
+            'الحساب والإدارة': {
+                icon: '👤',
+                keywords: ['لوحة التحكم', 'دخول', 'تسجيل', 'حساب', 'مدير', 'خبير']
+            }
+        };
+
+        // ============================================================
+        // دالة تقسيم القائمة
+        // ============================================================
+        function organizeSidebarAutomatically() {
+            const menu = document.querySelector('.sidebar-menu');
+            if (!menu) {
+                console.warn('⚠️ القائمة الجانبية غير موجودة');
+                return;
+            }
+
+            const items = menu.querySelectorAll('li');
+            const groupedItems = {};
+            const ungrouped = [];
+
+            Object.keys(SIDEBAR_GROUPS).forEach(group => {
+                groupedItems[group] = [];
+            });
+
+            items.forEach(item => {
+                const link = item.querySelector('a');
+                if (!link) return;
+
+                const text = link.textContent.trim();
+                const href = link.getAttribute('href') || '';
+                const isDivider = item.classList.contains('menu-divider');
+                
+                if (isDivider) return;
+
+                let assigned = false;
+                
+                for (const [groupName, groupData] of Object.entries(SIDEBAR_GROUPS)) {
+                    for (const keyword of groupData.keywords) {
+                        if (text.includes(keyword) || href.includes(keyword)) {
+                            groupedItems[groupName].push(item);
+                            assigned = true;
+                            break;
+                        }
+                    }
+                    if (assigned) break;
+                }
+
+                if (!assigned) {
+                    ungrouped.push(item);
+                }
+            });
+
+            menu.innerHTML = '';
+
+            const groupOrder = [
+                'الصفحات الرئيسية',
+                'الخدمات',
+                'المحتوى التعليمي',
+                'الأدوات والموارد',
+                'التواصل والدعم',
+                'المعلومات القانونية',
+                'الحساب والإدارة'
+            ];
+
+            groupOrder.forEach(groupName => {
+                if (groupedItems[groupName] && groupedItems[groupName].length > 0) {
+                    const groupIcon = SIDEBAR_GROUPS[groupName]?.icon || '📌';
+                    const header = document.createElement('li');
+                    header.className = 'menu-divider';
+                    header.textContent = `───── ${groupIcon} ${groupName} ─────`;
+                    menu.appendChild(header);
+
+                    groupedItems[groupName].forEach(item => {
+                        menu.appendChild(item.cloneNode(true));
+                    });
+                }
+            });
+
+            if (ungrouped.length > 0) {
+                const header = document.createElement('li');
+                header.className = 'menu-divider';
+                header.textContent = '───── 📌 أخرى ─────';
+                menu.appendChild(header);
+
+                ungrouped.forEach(item => {
+                    menu.appendChild(item.cloneNode(true));
+                });
+            }
+
+            // إعادة ربط الأحداث
+            const authBtn = document.querySelector('#sidebarAuth');
+            if (authBtn) {
+                authBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof showAuth === 'function') {
+                        showAuth();
+                    }
+                });
+            }
+
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (typeof closeSidebar === 'function') {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            console.log('✅ تم تقسيم القائمة الجانبية تلقائياً');
+        }
+
+        // ============================================================
+        // تشغيل التقسيم
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(organizeSidebarAutomatically, 100);
+            console.log('🚀 نظام تقسيم القائمة الجانبية جاهز!');
+        });
+    </script>
 </body>
 </html>
